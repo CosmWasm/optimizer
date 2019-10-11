@@ -8,8 +8,8 @@ USER_GROUP = $(shell id -g)
 build:
 	docker build . -t confio/cosmwasm-opt:$(DOCKER_TAG)
 
-publish:
-
+publish: build
+	docker push confio/cosmwasm-opt:$(DOCKER_TAG)
 
 # Usage: make run CODE=/path/to/contract
 run:
