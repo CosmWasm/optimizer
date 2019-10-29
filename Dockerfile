@@ -14,9 +14,9 @@ RUN tar xzf wasm-pack-v0.8.1.tar.gz
 RUN cp wasm-pack-v0.8.1-x86_64-unknown-linux-musl/wasm-pack /usr/local/bin
 
 # and pre-install wasm-bindgen cli to avoid issues later
-RUN curl -L -sSf https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.51/wasm-bindgen-0.2.51-x86_64-unknown-linux-musl.tar.gz > wasm-bindgen.tar.gz
+RUN curl -L -sSf https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.53/wasm-bindgen-0.2.53-x86_64-unknown-linux-musl.tar.gz > wasm-bindgen.tar.gz
 RUN tar xzf wasm-bindgen.tar.gz
-RUN cp wasm-bindgen-0.2.51-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin
+RUN cp wasm-bindgen-0.2.53-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin
 
 # cleanup
 RUN rm -rf wasm-*
@@ -24,7 +24,7 @@ RUN rm -rf wasm-*
 # Precache all cosmwasm dependencies, so we don't redownload everytime
 # We will have to download contract-specific ones, but it should be a nice speed-up
 # TODO: this didn't seem to have much effect... test this assumption
-RUN cargo install cosmwasm --version 0.1.0 || true
+#RUN cargo install cosmwasm --version 0.4.1 || true
 RUN chmod -R 777 /usr/local/cargo
 
 # copy wasm-opt into our path
