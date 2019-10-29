@@ -17,9 +17,7 @@ and use `sha256sum` to prove to yourself that this is consistent. I challenge
 you to produce a smaller build that works with the cosmwasm integration tests
 (and if you do, please make an issue/PR):
 
-`docker run --rm -u $(id -u):$(id -g) -v "${CODE}":/code confio/cosmwasm-opt:1.38`
-
-(We assume `${CODE}` is the absolute path to your contract code)
+`docker run --rm -u $(id -u):$(id -g) -v $(pwd):/code confio/cosmwasm-opt:0.4.1`
 
 ## Development
 
