@@ -2,7 +2,7 @@
 FROM trzeci/emscripten:1.38.47
 
 # Note: I tried slim and had issues compiling wasm-pack, even with --features vendored-openssl
-FROM rust:1.38.0
+FROM rust:1.39.0
 
 # setup rust with wasm-pack
 RUN rustup target add wasm32-unknown-unknown
@@ -14,9 +14,9 @@ RUN tar xzf wasm-pack-v0.8.1.tar.gz
 RUN cp wasm-pack-v0.8.1-x86_64-unknown-linux-musl/wasm-pack /usr/local/bin
 
 # and pre-install wasm-bindgen cli to avoid issues later
-RUN curl -L -sSf https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.53/wasm-bindgen-0.2.53-x86_64-unknown-linux-musl.tar.gz > wasm-bindgen.tar.gz
+RUN curl -L -sSf https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.55/wasm-bindgen-0.2.55-x86_64-unknown-linux-musl.tar.gz > wasm-bindgen.tar.gz
 RUN tar xzf wasm-bindgen.tar.gz
-RUN cp wasm-bindgen-0.2.53-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin
+RUN cp wasm-bindgen-0.2.55-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin
 
 # cleanup
 RUN rm -rf wasm-*
@@ -24,7 +24,7 @@ RUN rm -rf wasm-*
 # Precache all cosmwasm dependencies, so we don't redownload everytime
 # We will have to download contract-specific ones, but it should be a nice speed-up
 # TODO: this didn't seem to have much effect... test this assumption
-#RUN cargo install cosmwasm --version 0.4.1 || true
+#RUN cargo install cosmwasm --version 0.5.2 || true
 RUN chmod -R 777 /usr/local/cargo
 
 # copy wasm-opt into our path
