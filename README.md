@@ -17,7 +17,16 @@ and use `sha256sum` to prove to yourself that this is consistent. I challenge
 you to produce a smaller build that works with the cosmwasm integration tests
 (and if you do, please make an issue/PR):
 
-`docker run --rm -u $(id -u):$(id -g) -v $(pwd):/code confio/cosmwasm-opt:0.4.1`
+```sh
+docker run --rm -v $(pwd):/code \
+  --mount type=volume,source=$(basename $(pwd))_cache,target=/code/target \
+  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  confio/cosmwasm-opt:0.6.0
+```
+
+Note that we use one registry cache (to avoid excessive downloads), but the target cache is a different volume per
+contract that we compile. This means no interference between contracts, but very fast recompile times when making
+minor adjustments to a contract you had previously created an optimized build for.
 
 ## Development
 
