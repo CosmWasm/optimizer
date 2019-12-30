@@ -17,7 +17,9 @@ and use `sha256sum` to prove to yourself that this is consistent. I challenge
 you to produce a smaller build that works with the cosmwasm integration tests
 (and if you do, please make an issue/PR):
 
-`docker run --rm -u $(id -u):$(id -g) -v $(pwd):/code confio/cosmwasm-opt:0.4.1`
+```sh
+docker run --rm -v $(pwd):/code --mount type=volume,source=target_cache,target=/code/target --mount type=volume,source=registry_cache,target=/use/local/cargo/registry confio/cosmwasm-opt:0.6.0
+```
 
 ## Development
 

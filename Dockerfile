@@ -21,12 +21,6 @@ RUN cp wasm-bindgen-0.2.55-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin
 # cleanup
 RUN rm -rf wasm-*
 
-# Precache all cosmwasm dependencies, so we don't redownload everytime
-# We will have to download contract-specific ones, but it should be a nice speed-up
-# TODO: this didn't seem to have much effect... test this assumption
-RUN cargo install cosmwasm --version 0.6.0 || true
-# RUN chmod -R 777 /usr/local/cargo
-
 # copy wasm-opt into our path
 COPY --from=0 /emsdk_portable/binaryen/bin/wasm-opt /usr/local/bin
 
