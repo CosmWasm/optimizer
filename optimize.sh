@@ -10,4 +10,8 @@ wasm-pack build -m no-install --release --out-dir "${outdir}"
 
 wasm-opt -Os "${outdir}"/*.wasm -o contract.wasm
 
+sha256sum contract.wasm > hash.txt
+
+cargo run --example schema
+
 echo "done"
