@@ -18,8 +18,15 @@ you to produce a smaller build that works with the cosmwasm integration tests
 (and if you do, please make an issue/PR):
 
 ```sh
-docker run --rm -v $(pwd):/code --mount type=volume,source=target_cache,target=/code/target --mount type=volume,source=registry_cache,target=/use/local/cargo/registry confio/cosmwasm-opt:0.6.0
+docker run --rm -v $(pwd):/code \
+  --mount type=volume,source=$(basename $(pwd))_cache,target=/code/target \
+  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  confio/cosmwasm-opt:0.6.0
 ```
+
+Note that we use one registry cache (to avoid excessive downloads), but the target cache is a different volume per
+contract that we compile. This means no interference between contracts, but very fast recompile times when making
+minor adjustments to a contract you had previously created an optimized build for.
 
 ## Development
 
