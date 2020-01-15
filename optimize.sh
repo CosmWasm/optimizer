@@ -5,7 +5,7 @@ set -e
 export PATH=$PATH:/root/.cargo/bin
 outdir=$(mktemp -d)
 
-wasm-pack build --release --out-dir "${outdir}"
+wasm-pack build --release --out-dir "${outdir}" -- --locked
 
 wasm-opt -Os "${outdir}"/*.wasm -o contract.wasm
 
