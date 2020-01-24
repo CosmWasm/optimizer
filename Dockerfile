@@ -31,4 +31,6 @@ WORKDIR /code
 ADD optimize.sh /opt/optimize.sh
 RUN chmod +x /opt/optimize.sh
 
-CMD ["/opt/optimize.sh"]
+ENTRYPOINT ["/opt/optimize.sh"]
+# Default argument when none is provided
+CMD ["."]
