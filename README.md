@@ -21,7 +21,7 @@ you to produce a smaller build that works with the cosmwasm integration tests
 docker run --rm -v $(pwd):/code \
   --mount type=volume,source=$(basename $(pwd))_cache,target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  confio/cosmwasm-opt:0.6.1
+  confio/cosmwasm-opt:0.6.2
 ```
 
 Note that we use one registry cache (to avoid excessive downloads), but the target cache is a different volume per
