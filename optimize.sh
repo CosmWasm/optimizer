@@ -1,6 +1,6 @@
-#!/bin/sh
-
-set -e
+#!/bin/bash
+set -o errexit -o nounset -o pipefail
+command -v shellcheck > /dev/null && shellcheck "$0"
 
 export PATH=$PATH:/root/.cargo/bin
 outdir=$(mktemp -d)
