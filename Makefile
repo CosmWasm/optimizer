@@ -1,6 +1,6 @@
 .PHONY: build publish run debug
 
-DOCKER_TAG := 0.6.2
+DOCKER_TAG := 0.6.3
 CODE ?= "/path/to/contract"
 USER_ID := $(shell id -u)
 USER_GROUP = $(shell id -g)
