@@ -14,6 +14,9 @@ echo "Building contract in $(realpath -m "$contractdir")"
   wasm-pack build --release --out-dir "${outdir}" -- --locked
   wasm-opt -Os "${outdir}"/*.wasm -o contract.wasm
   sha256sum contract.wasm > hash.txt
+
+  # Is this necessary here? This step takes a long time because it compiles all devDependencies, including the whole VM.
+  echo "Rebuilding schema ..."
   cargo run --example schema
 )
 
