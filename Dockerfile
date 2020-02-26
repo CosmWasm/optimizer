@@ -13,11 +13,6 @@ RUN curl -L -sSf https://github.com/rustwasm/wasm-pack/releases/download/v0.8.1/
 RUN tar xzf wasm-pack-v0.8.1.tar.gz
 RUN cp wasm-pack-v0.8.1-x86_64-unknown-linux-musl/wasm-pack /usr/local/bin
 
-# and pre-install wasm-bindgen cli to avoid issues later
-RUN curl -L -sSf https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.55/wasm-bindgen-0.2.55-x86_64-unknown-linux-musl.tar.gz > wasm-bindgen.tar.gz
-RUN tar xzf wasm-bindgen.tar.gz
-RUN cp wasm-bindgen-0.2.55-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin
-
 # cleanup
 RUN rm -rf wasm-*
 
