@@ -3,7 +3,7 @@
 FROM trzeci/emscripten:1.39.8-fastcomp
 
 # Note: I tried slim and had issues compiling wasm-pack, even with --features vendored-openssl
-FROM rust:1.41.0
+FROM rust:1.41.1
 
 # setup rust with wasm-pack
 RUN rustup target add wasm32-unknown-unknown
