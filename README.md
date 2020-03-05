@@ -4,7 +4,7 @@
 
 This is a Docker build with a locked set of dependencies to produce
 reproducible builds of cosmwasm smart contracts. It also does heavy
-optimization on the build size, using `wasm-pack` and `wasm-opt`.
+optimization on the build size, using binary stripping and `wasm-opt`.
 
 ## Usage
 
@@ -21,7 +21,7 @@ you to produce a smaller build that works with the cosmwasm integration tests
 docker run --rm -v $(pwd):/code \
   --mount type=volume,source=$(basename $(pwd))_cache,target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  confio/cosmwasm-opt:0.7.1
+  confio/cosmwasm-opt:0.7.2
 ```
 
 Note that we use one registry cache (to avoid excessive downloads), but the target cache is a different volume per
