@@ -4,7 +4,7 @@
 
 This is a Docker build with a locked set of dependencies to produce
 reproducible builds of cosmwasm smart contracts. It also does heavy
-optimization on the build size, using `wasm-pack` and `wasm-opt`.
+optimization on the build size, using binary stripping and `wasm-opt`.
 
 ## Usage
 
