@@ -13,7 +13,8 @@ echo "Building contract in $(realpath -m "$contractdir")"
   cd "$contractdir"
 
   # Linker flag "-s" for stripping (https://github.com/rust-lang/cargo/issues/3483#issuecomment-431209957)
-  RUSTFLAGS='-C link-arg=-s' cargo wasm --locked
+  # Note that shortcuts from .cargo/config are not available in source code packages from crates.io
+  RUSTFLAGS='-C link-arg=-s' cargo build --release --target wasm32-unknown-unknown --locked
   wasm-opt -Os target/wasm32-unknown-unknown/release/*.wasm -o contract.wasm
 
   sha256sum contract.wasm > hash.txt
