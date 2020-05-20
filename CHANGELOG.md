@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.8.0
+
+- Rename Github repo from `confio/cosmwasm-opt` to `CosmWasm/rust-optimizer`
+- Rename Docker name from `confio/cosmwasm-opt` to `cosmwasm/rust-optimizer`
+- Bump Rust to 1.43.1
+
 ## 0.7.3
 
 - Avoid using CosmWasm shortcut `cargo wasm` since the config file
