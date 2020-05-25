@@ -18,8 +18,8 @@ you to produce a smaller build that works with the cosmwasm integration tests
 (and if you do, please make an issue/PR):
 
 ```sh
-docker run --rm -v $(pwd):/code \
-  --mount type=volume,source=$(basename $(pwd))_cache,target=/code/target \
+docker run --rm -v "$(pwd)":/code \
+  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
   cosmwasm/rust-optimizer:0.8.0
 ```
