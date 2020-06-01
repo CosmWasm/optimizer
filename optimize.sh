@@ -12,6 +12,9 @@ echo "Building contract in $(realpath -m "$contractdir")"
 (
   cd "$contractdir"
 
+  # delete all pre-existing wasm files first (otherwise reusing volume for different contracts fails)
+  rm target/wasm32-unknown-unknown/release/*.wasm
+
   # Linker flag "-s" for stripping (https://github.com/rust-lang/cargo/issues/3483#issuecomment-431209957)
   # Note that shortcuts from .cargo/config are not available in source code packages from crates.io
   RUSTFLAGS='-C link-arg=-s' cargo build --release --target wasm32-unknown-unknown --locked
