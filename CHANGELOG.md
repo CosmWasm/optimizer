@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.9.0
+
+- Bump Rust to 1.45.0
+
 ## 0.8.0
 
 - Rename Github repo from `confio/cosmwasm-opt` to `CosmWasm/rust-optimizer`
