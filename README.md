@@ -66,9 +66,9 @@ in `artifacts` directory:
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="cosmwasm_plus_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.10.0 multi-optimize.sh ./contracts/*
+  cosmwasm/rust-optimizer:0.10.0 multi-optimize.sh
 ls -l ./artifacts/*.wasm
-cat ./artifacts/hash.txt
+cat ./artifacts/contracts.txt
 ```
 
 ## Development
