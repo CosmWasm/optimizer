@@ -1,7 +1,7 @@
 .PHONY: build publish run debug
 
 DOCKER_NAME := "cosmwasm/rust-optimizer"
-DOCKER_TAG := 0.9.0
+DOCKER_TAG := 0.10.0
 CODE ?= "/path/to/contract"
 USER_ID := $(shell id -u)
 USER_GROUP = $(shell id -g)
