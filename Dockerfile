@@ -15,9 +15,9 @@ COPY --from=0 /emsdk_portable/binaryen/bin/wasm-opt /usr/local/bin
 WORKDIR /code
 
 # Add out script as entry point
-ADD optimize.sh /opt/optimize.sh
-RUN chmod +x /opt/optimize.sh
+ADD optimize.sh /usr/local/bin/optimize.sh
+RUN chmod +x /usr/local/bin/optimize.sh
 
-ENTRYPOINT ["/opt/optimize.sh"]
+ENTRYPOINT ["optimize.sh"]
 # Default argument when none is provided
 CMD ["."]

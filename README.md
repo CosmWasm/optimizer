@@ -8,9 +8,12 @@ optimization on the build size, using binary stripping and `wasm-opt`.
 
 ## Usage
 
+*This works for most cases, for cosmwasm builds see advanced*
+
 The easiest way is to simply use the [published docker image](https://hub.docker.com/r/cosmwasm/rust-optimizer).
 You must set the local path to the smart contract you wish to compile and
-it will produce a `contract.wasm` file in the same directory.
+it will produce an `artifacts` directory with `<crate_name>.wasm`
+and `contracts.txt` containing the hashes. This is just one file.
 
 Run it a few times on different computers
 and use `sha256sum` to prove to yourself that this is consistent. I challenge
@@ -21,12 +24,36 @@ you to produce a smaller build that works with the cosmwasm integration tests
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.9.0
+  cosmwasm/rust-optimizer:0.10.0
 ```
+
+Demo this with `cosmwasm-examples` (going into eg. `erc20` subdir before running),
+with `cosmwasm-plus`, or with a sample app from `cosmwasm-template`.
 
 Note that we use one registry cache (to avoid excessive downloads), but the target cache is a different volume per
 contract that we compile. This means no interference between contracts, but very fast recompile times when making
 minor adjustments to a contract you had previously created an optimized build for.
+
+## Advanced usage
+
+*This is designed for cosmwasm samples. You cannot provide automatic verification for these*
+
+If you have a more complex build environment, you need to pass a few more
+arguments to define how to run the build process.
+
+[`cosmwasm`](https://github.com/CosmWasm/cosmwasm) has a root workspace
+and many contracts under `./contracts/*`, which are **excluded** in the
+top-level `Cargo.toml`. In this case, we compile each contract separately
+with it's own cache. However, since they may refer to packages via path
+(`../../packages/std`), we need to run the script in the repo root. In this
+case, we can use the optimize.sh command:
+
+```shell
+docker run --rm -v "$(pwd)":/code \
+  --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
+  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  cosmwasm/rust-optimizer:0.10.0 ./contracts/burner
+```
 
 ## Development
 
