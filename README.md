@@ -25,9 +25,6 @@ docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
   cosmwasm/rust-optimizer:0.10.0
-
-ls -l ./artifacts/*.wasm
-cat ./artifacts/contracts.txt
 ```
 
 Demo this with `cosmwasm-examples` (going into eg. `erc20` subdir before running),
@@ -56,9 +53,6 @@ docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
   cosmwasm/rust-optimizer:0.10.0 ./contracts/burner
-
-ls -l ./artifacts/*.wasm
-cat ./artifacts/contracts.txt
 ```
 
 ## Development

@@ -16,7 +16,7 @@ WORKDIR /code
 
 # Add out script as entry point
 ADD optimize.sh /usr/local/bin/optimize.sh
-RUN chmod +x /usr/local/bin/*.sh
+RUN chmod +x /usr/local/bin/optimize.sh
 
 ENTRYPOINT ["optimize.sh"]
 # Default argument when none is provided
