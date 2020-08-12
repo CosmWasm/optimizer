@@ -16,8 +16,8 @@ WORKDIR /code
 
 # Add out script as entry point
 ADD optimize.sh /usr/local/bin/optimize.sh
-ADD multi-optimize.sh /usr/local/bin/multi-optimize.sh
 RUN chmod +x /usr/local/bin/*.sh
 
+ENTRYPOINT ["optimize.sh"]
 # Default argument when none is provided
-CMD ["optimize.sh", "."]
+CMD ["."]

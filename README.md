@@ -6,13 +6,14 @@ This is a Docker build with a locked set of dependencies to produce
 reproducible builds of cosmwasm smart contracts. It also does heavy
 optimization on the build size, using binary stripping and `wasm-opt`.
 
-## Basic Usage
+## Usage
 
-*This works for repos with one contract, or where there is no Cargo.toml above the contract dir*
+*This works for most cases, for cosmwasm builds see advanced*
 
 The easiest way is to simply use the [published docker image](https://hub.docker.com/r/cosmwasm/rust-optimizer).
 You must set the local path to the smart contract you wish to compile and
-it will produce a `contract.wasm` file in the same directory.
+it will produce an `artifacts` directory with `<crate_name>.wasm`
+and `contracts.txt` containing the hashes. This is just one file.
 
 Run it a few times on different computers
 and use `sha256sum` to prove to yourself that this is consistent. I challenge
@@ -24,7 +25,13 @@ docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
   cosmwasm/rust-optimizer:0.10.0
+
+ls -l ./artifacts/*.wasm
+cat ./artifacts/contracts.txt
 ```
+
+Demo this with `cosmwasm-examples` (going into eg. `erc20` subdir before running),
+with `cosmwasm-plus`, or with a sample app from `cosmwasm-template`.
 
 Note that we use one registry cache (to avoid excessive downloads), but the target cache is a different volume per
 contract that we compile. This means no interference between contracts, but very fast recompile times when making
@@ -32,12 +39,10 @@ minor adjustments to a contract you had previously created an optimized build fo
 
 ## Advanced usage
 
-*For repos with one multiple contracts inside a root workspace*
+*This is designed for cosmwasm samples. You cannot provide automatic verification for these*
 
 If you have a more complex build environment, you need to pass a few more
-arguments to define how to run the build process. We have defined two
-approaches here, for two use cases we are using. Hopefully, one will fit
-your needs.
+arguments to define how to run the build process.
 
 [`cosmwasm`](https://github.com/CosmWasm/cosmwasm) has a root workspace
 and many contracts under `./contracts/*`, which are **excluded** in the
@@ -50,23 +55,8 @@ case, we can use the optimize.sh command:
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.10.0 optimize.sh ./contracts/burner
-ls -l ./contracts/burner/contract.wasm
-cat ./contracts/burner/hash.txt
-```
+  cosmwasm/rust-optimizer:0.10.0 ./contracts/burner
 
-[`cosmwasm-plus`](https://github.com/CosmWasm/cosmwasm-plus) has a root
-workspace, which **includes** many contracts, as well as a number of shared
-packages. In this case, we cannot just build inside one contract, as above,
-as the target dir is in the root. Here we have a special command, which
-will compile all the contracts at once and export the named wasm files
-in `artifacts` directory:
-
-```shell
-docker run --rm -v "$(pwd)":/code \
-  --mount type=volume,source="cosmwasm_plus_cache",target=/code/target \
-  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.10.0 multi-optimize.sh
 ls -l ./artifacts/*.wasm
 cat ./artifacts/contracts.txt
 ```
