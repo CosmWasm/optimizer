@@ -35,7 +35,7 @@ done
 # create hash
 (
   cd artifacts
-  sha256sum -- *.wasm > contracts.txt
+  sha256sum -- *.wasm > checksums.txt
 )
 
 echo "done"
