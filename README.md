@@ -8,11 +8,12 @@ optimization on the build size, using binary stripping and `wasm-opt`.
 
 ## Usage
 
-*This works for most cases, for cosmwasm builds see advanced*
+*This works for one or more independent crates. When working with workspaces, see below.*
 
 The easiest way is to simply use the [published docker image](https://hub.docker.com/r/cosmwasm/rust-optimizer).
-You must set the local path to the smart contract you wish to compile and
-it will produce an `artifacts` directory with `<crate_name>.wasm`
+It searches for all `Cargo.toml`s in the source tree and creates
+a smart contract build for every result.
+It will produce an `artifacts` directory with `<crate_name>.wasm`
 and `contracts.txt` containing the hashes. This is just one file.
 
 Run it a few times on different computers
@@ -24,7 +25,7 @@ you to produce a smaller build that works with the cosmwasm integration tests
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.10.1
+  cosmwasm/rust-optimizer:0.10.2
 ```
 
 Demo this with `cosmwasm-examples` (going into eg. `erc20` subdir before running),
@@ -34,26 +35,32 @@ Note that we use one registry cache (to avoid excessive downloads), but the targ
 contract that we compile. This means no interference between contracts, but very fast recompile times when making
 minor adjustments to a contract you had previously created an optimized build for.
 
-## Advanced usage
+## Workspace usage
 
-*This is designed for cosmwasm samples. You cannot provide automatic verification for these*
+Sometimes the basic usage above finds and builds too many `Cargo.toml`s,
+leading to undesired results, especially in workspaces. In such cases
+you can pass an extra argument that serves as a path to the search root.
+This way you can avoid running the build command on a workspace root or dependencies.
 
-If you have a more complex build environment, you need to pass a few more
-arguments to define how to run the build process.
+**Build all packages somewhere in ./contracts**
 
-[`cosmwasm`](https://github.com/CosmWasm/cosmwasm) has a root workspace
-and many contracts under `./contracts/*`, which are **excluded** in the
-top-level `Cargo.toml`. In this case, we compile each contract separately
-with it's own cache. However, since they may refer to packages via path
-(`../../packages/std`), we need to run the script in the repo root. In this
-case, we can use the optimize.sh command:
-
-```shell
+```sh
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.10.1 ./contracts/burner
+  cosmwasm/rust-optimizer:0.10.2 ./contracts
 ```
+
+**Build a single cotract in a sub-folder**
+
+```sh
+docker run --rm -v "$(pwd)":/code \
+  --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
+  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  cosmwasm/rust-optimizer:0.10.2 ./contracts/burner
+```
+
+Note: the path argument must be relative since it is evaluated in the docker guest environment.
 
 ## Development
 

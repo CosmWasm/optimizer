@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.10.2
+
+- Bump Rust to 1.45.2
+- Build all packages found in the source tree individually. The search root is
+  the first command line argument, defaulting to `.`.
+
+## 0.10.1
+
+## 0.10.0
+
 ## 0.9.0
 
 - Bump Rust to 1.45.0
