@@ -1,20 +1,21 @@
-.PHONY: build publish run debug
+.PHONY: build-rust-optimizer build-workspace-optimizer build publish-rust-optimizer publish-workspace-optimizer publish
 
-DOCKER_NAME := "cosmwasm/rust-optimizer"
-DOCKER_TAG := 0.10.1
-CODE ?= "/path/to/contract"
-USER_ID := $(shell id -u)
-USER_GROUP = $(shell id -g)
+DOCKER_NAME_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
+DOCKER_NAME_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
+DOCKER_TAG := 0.10.2
 
-build:
-	docker build . -t $(DOCKER_NAME):$(DOCKER_TAG)
+build-rust-optimizer:
+	docker build -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --file rust-optimizer.Dockerfile .
 
-publish: build
-	docker push $(DOCKER_NAME):$(DOCKER_TAG)
+build-workspace-optimizer:
+	docker build -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --file workspace-optimizer.Dockerfile .
 
-# Usage: make run CODE=/path/to/contract
-run:
-	docker run --rm -u $(USER_ID):$(USER_GROUP) -v "$(CODE)":/code $(DOCKER_NAME):$(DOCKER_TAG)
+publish-rust-optimizer: build-rust-optimizer
+	docker push $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG)
 
-debug:
-	docker run --rm -it -u $(USER_ID):$(USER_GROUP) -v "$(CODE)":/code $(DOCKER_NAME):$(DOCKER_TAG) /bin/bash
+publish-workspace-optimizer: build-workspace-optimizer
+	docker push $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG)
+
+build: build-rust-optimizer build-workspace-optimizer
+
+publish: publish-rust-optimizer publish-workspace-optimizer
