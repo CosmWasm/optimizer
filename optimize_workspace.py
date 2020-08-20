@@ -7,6 +7,7 @@ PACKAGE_PREFIX="contracts/"
 
 import glob
 import os
+import shutil
 import stat
 import subprocess
 import toml
@@ -43,3 +44,4 @@ for contract in contract_packages:
         name = os.path.basename(build_result)
         cmd = ["wasm-opt", "-Os", "-o", "artifacts/{}".format(name), build_result]
         subprocess.check_call(cmd)
+    shutil.rmtree(os.path.realpath(contract) + "/contract_artifacts")
