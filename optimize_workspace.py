@@ -7,17 +7,12 @@ PACKAGE_PREFIX="contracts/"
 
 import glob
 import os
-import shutil
 import stat
 import subprocess
 import toml
 
 def log(*args):
     print(*args, flush=True)
-
-def remove_executable_bit(path):
-    current = os.stat(path)
-    os.chmod(path, current.st_mode | stat.S_IEXEC)
 
 with open("Cargo.toml") as file:
     document = toml.load(file)
@@ -43,7 +38,8 @@ for contract in contract_packages:
     cmd = [CARGO_PATH, "-Z=unstable-options", "build", "--release", "--target=wasm32-unknown-unknown", "--locked", "--out-dir=./contract_artifacts"]
     os.environ["RUSTFLAGS"] = "-C link-arg=-s"
     subprocess.check_call(cmd, cwd=contract)
-    for wasm in glob.glob(os.path.realpath(contract) + "/contract_artifacts/*wasm"):
-        log("Successfully built", wasm)
-        remove_executable_bit(wasm)
-        shutil.copy(wasm, artifacts_dir)
+    for build_result in glob.glob(os.path.realpath(contract) + "/contract_artifacts/*wasm"):
+        log("Optimizing built {} ...".format(build_result))
+        name = os.path.basename(build_result)
+        cmd = ["wasm-opt", "-Os", "-o", "artifacts/{}".format(name), build_result]
+        subprocess.check_call(cmd)

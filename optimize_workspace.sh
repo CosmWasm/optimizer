@@ -9,9 +9,10 @@ cargo --version
 
 optimize_workspace.py
 
-# create hash
+# Postprocess artifacts
 (
   cd artifacts
+  chmod -x ./*.wasm
   sha256sum -- *.wasm > checksums.txt
 )
 
