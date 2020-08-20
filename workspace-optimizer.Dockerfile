@@ -4,8 +4,8 @@ FROM trzeci/emscripten:1.39.8-fastcomp
 
 # This version of Rust will not be used for compilation but just serves as a stable base image to get debian+rustup.
 # See Rust nightly config below.
-FROM rust:1.45.0
-RUN rustup toolchain remove 1.45.0
+FROM rust:1.45.2
+RUN rustup toolchain remove 1.45.2
 
 RUN apt update
 RUN apt install python3 python3-toml -y
