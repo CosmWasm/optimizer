@@ -8,7 +8,7 @@ optimization on the build size, using binary stripping and `wasm-opt`.
 
 ## Usage
 
-*This works for most cases, for cosmwasm builds see advanced*
+*This works for most cases, for monorepo builds see advanced*
 
 The easiest way is to simply use the [published docker image](https://hub.docker.com/r/cosmwasm/rust-optimizer).
 You must set the local path to the smart contract you wish to compile and
@@ -24,7 +24,7 @@ you to produce a smaller build that works with the cosmwasm integration tests
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.10.1
+  cosmwasm/rust-optimizer:0.10.2
 ```
 
 Demo this with `cosmwasm-examples` (going into eg. `erc20` subdir before running),
@@ -34,7 +34,38 @@ Note that we use one registry cache (to avoid excessive downloads), but the targ
 contract that we compile. This means no interference between contracts, but very fast recompile times when making
 minor adjustments to a contract you had previously created an optimized build for.
 
-## Advanced usage
+## Mono Repos
+
+### Contracts as Workspace Members
+
+*This is designed for cosmwasm-plus samples. We use a separate docker image*
+
+Sometime you want many contracts to be related and import common functionality. This is
+exactly the case of [`cosmwasm-plus`](https://github.com/CosmWasm/cosmwasm-plus).
+In such a case, we can often not just compile from root, as the compile order is
+not deterministic and there are feature flags shared among the repos.
+This has lead to [issues in the past](https://github.com/CosmWasm/rust-optimizer/issues/21).
+
+For this use-case we made a second docker image, which will compile all the
+`contracts/*` folders inside the workspace and do so one-by-one in alphabetical order.
+It will then add all the generated wasm files to an `artifacts` directory with a checksum,
+just like the basic docker image (same output format).
+
+To compile all contracts in the workspace deterministically, you can run:
+
+```shell
+docker run --rm -v "$(pwd)":/code \
+  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  cosmwasm/workspace-optimizer:0.10.2
+```
+
+The downside is that to verify one contract in the workspace, you need to compile them
+all, but the majority of the build time is in dependencies, which are shared and cached
+between the various contracts and thus the time is sub-linear with respect to number
+of contracts.
+
+### Contracts excluded from Workspace
 
 *This is designed for cosmwasm samples. You cannot provide automatic verification for these*
 
@@ -52,7 +83,7 @@ case, we can use the optimize.sh command:
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.10.1 ./contracts/burner
+  cosmwasm/rust-optimizer:0.10.2 ./contracts/burner
 ```
 
 ## Development
