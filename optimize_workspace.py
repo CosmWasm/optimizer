@@ -35,13 +35,18 @@ os.makedirs(artifacts_dir, exist_ok=True)
 
 for contract in contract_packages:
     log("Building {} ...".format(contract))
+    # make a tmp dir for the output (*.wasm and other) to not touch the host filesystem
+    tmp_dir = "/tmp/" + contract
+    os.makedirs(tmp_dir, exist_ok=True)
+
     # Rust nightly and unstable-options is needed to use --out-dir
-    cmd = [CARGO_PATH, "-Z=unstable-options", "build", "--release", "--target=wasm32-unknown-unknown", "--locked", "--out-dir=./contract_artifacts"]
+    cmd = [CARGO_PATH, "-Z=unstable-options", "build", "--release", "--target=wasm32-unknown-unknown", "--locked", "--out-dir={}".format(tmp_dir)]
     os.environ["RUSTFLAGS"] = "-C link-arg=-s"
     subprocess.check_call(cmd, cwd=contract)
-    for build_result in glob.glob(os.path.realpath(contract) + "/contract_artifacts/*.wasm"):
+
+    for build_result in glob.glob("{}/*.wasm".format(tmp_dir)):
         log("Optimizing built {} ...".format(build_result))
         name = os.path.basename(build_result)
         cmd = ["wasm-opt", "-Os", "-o", "artifacts/{}".format(name), build_result]
         subprocess.check_call(cmd)
-    shutil.rmtree(os.path.realpath(contract) + "/contract_artifacts")
+
