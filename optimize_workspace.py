@@ -39,7 +39,7 @@ for contract in contract_packages:
     cmd = [CARGO_PATH, "-Z=unstable-options", "build", "--release", "--target=wasm32-unknown-unknown", "--locked", "--out-dir=./contract_artifacts"]
     os.environ["RUSTFLAGS"] = "-C link-arg=-s"
     subprocess.check_call(cmd, cwd=contract)
-    for build_result in glob.glob(os.path.realpath(contract) + "/contract_artifacts/*wasm"):
+    for build_result in glob.glob(os.path.realpath(contract) + "/contract_artifacts/*.wasm"):
         log("Optimizing built {} ...".format(build_result))
         name = os.path.basename(build_result)
         cmd = ["wasm-opt", "-Os", "-o", "artifacts/{}".format(name), build_result]
