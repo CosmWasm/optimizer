@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## 0.10.3 (unreleased)
+
+- `cosmwasm/rust-optimizer`: bump Rust to 1.45.2
+
+## 0.9.1
+
+- Bump Rust to 1.45.2
+
+## 0.10.2
+
+- Split into `cosmwasm/rust-optimizer` and `cosmwasm/workspace-optimizer` to
+  restore 0.9 stability for single contract builds while building adding support
+  for monorepo builds. `cosmwasm/workspace-optimizer` now uses Rust
+  `nightly-2020-08-20`.
+
+## 0.10.1
+
+- Rename `./artifacts/contracts.txt` to `./artifacts/checksums.txt`.
+
+## 0.10.0
+
+- Initial attempt to support workspace repos. Contracts are now writtien to
+  `./articfacts/{contract name}.wasm` and `./artifacts/contracts.txt`.
+
 ## 0.9.0
 
 - Bump Rust to 1.45.0
