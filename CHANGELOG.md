@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.9.1
+
+- Bump Rust to 1.45.2
+
 ## 0.9.0
 
 - Bump Rust to 1.45.0
