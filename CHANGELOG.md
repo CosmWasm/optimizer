@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.10.3 (unreleased)
+## 0.10.3
 
 - `cosmwasm/rust-optimizer`: bump Rust to 1.45.2
 
