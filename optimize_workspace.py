@@ -45,8 +45,7 @@ for contract in contract_packages:
     subprocess.check_call(cmd, cwd=contract)
 
     for build_result in glob.glob("{}/*.wasm".format(tmp_dir)):
-        log("Optimizing built {} ...".format(build_result))
+        log("Optimizing build {} ...".format(build_result))
         name = os.path.basename(build_result)
         cmd = ["wasm-opt", "-Os", "-o", "artifacts/{}".format(name), build_result]
         subprocess.check_call(cmd)
-
