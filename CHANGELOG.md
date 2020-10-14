@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.10.4
+
+- `cosmwasm/rust-optimizer`: bump Rust to 1.47.0
+- `cosmwasm/workspace-optimizer`: bump Rust to nightly-2020-10-14
+
 ## 0.10.3
 
 - `cosmwasm/rust-optimizer`: bump Rust to 1.45.2
