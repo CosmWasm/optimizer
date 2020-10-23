@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.10.5
+
+- Remove `trzeci/emscripten` dependency and install `wasm-opt` manually
+
 ## 0.10.4
 
 - `cosmwasm/rust-optimizer`: bump Rust to 1.47.0
