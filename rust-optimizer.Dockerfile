@@ -11,6 +11,9 @@ RUN rustup target add wasm32-unknown-unknown
 # copy wasm-opt into our path
 COPY --from=0 /emsdk_portable/binaryen/bin/wasm-opt /usr/local/bin
 
+# Check wasm-opt version
+RUN wasm-opt --version
+
 # Assume we mount the source code in /code
 WORKDIR /code
 
