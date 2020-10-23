@@ -17,8 +17,8 @@ RUN rustup toolchain list
 RUN cargo --version
 
 # Download binaryen and verify checksum
-ADD https://github.com/WebAssembly/binaryen/releases/download/version_90/binaryen-version_90-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
-RUN sha256sum /tmp/binaryen.tar.gz | grep ea0bf4151103b19fce5a184044b7492715078187e88fd95b997089a4a16af082
+ADD https://github.com/WebAssembly/binaryen/releases/download/version_96/binaryen-version_96-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
+RUN sha256sum /tmp/binaryen.tar.gz | grep 9f8397a12931df577b244a27c293d7c976bc7e980a12457839f46f8202935aac
 
 # Extract and install wasm-opt
 RUN tar -xf /tmp/binaryen.tar.gz --wildcards '*/wasm-opt'
