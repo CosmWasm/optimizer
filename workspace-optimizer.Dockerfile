@@ -1,7 +1,3 @@
-# See https://github.com/emscripten-core/emscripten/pull/9119/files for fastcomp vs. upstream docs
-# Using the traditional fastcomp for now.
-FROM trzeci/emscripten:1.39.8-fastcomp
-
 # This version of Rust will not be used for compilation but just serves as a stable base image to get debian+rustup.
 # See Rust nightly config below.
 FROM rust:1.47.0
@@ -20,8 +16,16 @@ RUN rustup toolchain list
 # Check cargo version
 RUN cargo --version
 
-# copy wasm-opt into our path
-COPY --from=0 /emsdk_portable/binaryen/bin/wasm-opt /usr/local/bin
+# Download binaryen and verify checksum
+ADD https://github.com/WebAssembly/binaryen/releases/download/version_96/binaryen-version_96-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
+RUN sha256sum /tmp/binaryen.tar.gz | grep 9f8397a12931df577b244a27c293d7c976bc7e980a12457839f46f8202935aac
+
+# Extract and install wasm-opt
+RUN tar -xf /tmp/binaryen.tar.gz --wildcards '*/wasm-opt'
+RUN mv binaryen-version_*/wasm-opt /usr/local/bin
+
+# Check wasm-opt version
+RUN wasm-opt --version
 
 # Assume we mount the source code in /code
 WORKDIR /code
