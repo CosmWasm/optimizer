@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.10.6
+
+- Add support for building multiple non-workspace contracts at once (#25)
+
 ## 0.10.5
 
 - Remove `trzeci/emscripten` dependency and install `wasm-opt` manually
