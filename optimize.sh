@@ -5,17 +5,19 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 export PATH=$PATH:/root/.cargo/bin
 
 mkdir -p artifacts
-contractdir="$1"
+contractdirs="$@"
 
 # There are two cases here
 # 1. All contracts (or one) are included in the root workspace  (eg. `cosmwasm-template`, `cosmwasm-examples`, `cosmwasm-plus`)
 #    In this case, we pass no argument, just mount the proper directory.
-# 2. Contacts are excluded from the root workspace, but import relative paths from other packages (only `cosmwasm`).
+# 2. Contracts are excluded from the root workspace, but import relative paths from other packages (only `cosmwasm`).
 #    In this case, we mount root workspace and pass in a path `docker run <repo> ./contracts/hackatom`
 
 # This parameter allows us to mount a folder into docker container's "/code"
 # and build "/code/contracts/mycontract".
 # Note: if contractdir is "." (default in Docker), this ends up as a noop
+for contractdir in $contractdirs
+do
 echo "Building contract in $(realpath -m "$contractdir")"
 (
   cd "$contractdir"
@@ -39,3 +41,4 @@ done
 )
 
 echo "done"
+done
