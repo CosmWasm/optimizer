@@ -15,7 +15,7 @@ RUN mv binaryen-version_*/wasm-opt /usr/local/bin
 # Check wasm-opt version
 RUN wasm-opt --version
 
-# Add sscache
+# Add sccache
 RUN cargo install sccache
 ENV RUSTC_WRAPPER=sccache
 
