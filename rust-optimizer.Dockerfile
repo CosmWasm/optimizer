@@ -15,6 +15,10 @@ RUN mv binaryen-version_*/wasm-opt /usr/local/bin
 # Check wasm-opt version
 RUN wasm-opt --version
 
+# Add sscache
+RUN cargo install sccache
+ENV RUSTC_WRAPPER=sccache
+
 # Assume we mount the source code in /code
 WORKDIR /code
 
