@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.10.7
+
+- Add shared build cache (sccache) to rust-optimizer
+
 ## 0.10.6
 
 - Add support for building multiple non-workspace contracts at once (#25)
