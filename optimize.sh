@@ -6,6 +6,9 @@ export PATH=$PATH:/root/.cargo/bin
 
 echo "Info: RUSTC_WRAPPER=$RUSTC_WRAPPER"
 
+echo "Info: sccache stats before build"
+sccache -s
+
 mkdir -p artifacts
 contractdirs="$@"
 
@@ -41,6 +44,9 @@ done
   cd artifacts
   sha256sum -- *.wasm > checksums.txt
 )
+
+echo "Info: sccache stats after build"
+sccache -s
 
 echo "done"
 done
