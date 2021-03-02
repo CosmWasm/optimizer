@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.10.8
+
+- `cosmwasm/rust-optimizer`: bump Rust to 1.50.0
+- `cosmwasm/workspace-optimizer`: bump Rust to nightly-2021-03-01
+
 ## 0.10.7
 
 - Add shared build cache (sccache) to rust-optimizer
