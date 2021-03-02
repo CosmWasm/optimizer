@@ -1,5 +1,5 @@
 # Note: I tried slim and had issues compiling wasm-pack, even with --features vendored-openssl
-FROM rust:1.47.0
+FROM rust:1.50.0
 
 # setup rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
@@ -7,7 +7,7 @@ RUN rustup target add wasm32-unknown-unknown
 # Install sccache from https://crates.io/crates/sccache
 # This is slow due to full release compilation from source.
 # Use full version string here to ensure Docker caching works well.
-RUN cargo install --version 0.2.13 sccache
+RUN cargo install --version 0.2.15 sccache
 
 # Download binaryen and verify checksum
 ADD https://github.com/WebAssembly/binaryen/releases/download/version_96/binaryen-version_96-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
