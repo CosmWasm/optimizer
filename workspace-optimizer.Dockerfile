@@ -1,10 +1,7 @@
 # This version of Rust will not be used for compilation but just serves as a stable base image to get debian+rustup.
 # See Rust nightly config below.
 FROM rust:1.50.0
-#RUN rustup toolchain remove 1.50.0
-
-# setup rust with Wasm support
-RUN rustup target add wasm32-unknown-unknown
+RUN rustup toolchain remove 1.50.0
 
 RUN apt update
 RUN apt install python3 python3-toml -y
@@ -13,8 +10,8 @@ RUN python3 --version
 
 # Install Rust nightly
 # Choose version from: https://rust-lang.github.io/rustup-components-history/x86_64-unknown-linux-gnu.html
-#RUN rustup toolchain install nightly-2020-10-14 --allow-downgrade --profile minimal --target wasm32-unknown-unknown
-#RUN rustup default nightly-2020-10-14
+RUN rustup toolchain install nightly-2021-03-01 --allow-downgrade --profile minimal --target wasm32-unknown-unknown
+RUN rustup default nightly-2021-03-01
 RUN rustup toolchain list
 # Check cargo version
 RUN cargo --version
