@@ -1,7 +1,7 @@
 # This version of Rust will not be used for compilation but just serves as a stable base image to get debian+rustup.
 # See Rust nightly config below.
-FROM rust:1.50.0
-RUN rustup toolchain remove 1.50.0
+FROM rust:1.51.0
+RUN rustup toolchain remove 1.51.0
 
 RUN apt update
 RUN apt install python3 python3-toml -y

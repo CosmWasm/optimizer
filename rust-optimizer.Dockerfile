@@ -1,5 +1,5 @@
 # Note: I tried slim and had issues compiling wasm-pack, even with --features vendored-openssl
-FROM rust:1.50.0
+FROM rust:1.51.0
 
 # setup rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown

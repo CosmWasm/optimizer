@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.10.9
+
+- `cosmwasm/rust-optimizer`: bump Rust to 1.51.0
+
 ## 0.10.8
 
 - `cosmwasm/rust-optimizer`: bump Rust to 1.50.0
