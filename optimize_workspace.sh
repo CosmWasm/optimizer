@@ -17,10 +17,10 @@ echo "done."
 
 echo -n "Optimizing artifacts in workspace..."
 mkdir -p artifacts
-TMPDIR=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
+TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 # Optimize artifacts
 (
-  cd "$TMPDIR"
+  cd "$TMPARTIFACTS"
 
   for WASM in ../target/wasm32-unknown-unknown/release/*/*.wasm
   do
@@ -32,7 +32,7 @@ TMPDIR=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
   done
 	mv ./*.wasm ../artifacts
 )
-rm -rf "$TMPDIR"
+rm -rf "$TMPARTIFACTS"
 echo "done."
 echo -n "Post-processing artifacts in workspace..."
 (
