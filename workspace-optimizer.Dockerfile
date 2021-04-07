@@ -1,10 +1,13 @@
-FROM rust:1.51.0
+FROM rust:1.51.0-alpine
 
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
 
-RUN apt update
-RUN apt install python3 python3-toml -y
+RUN apk update
+# Being required for gcc linking
+RUN apk add --no-cache musl-dev
+
+RUN apk add python3 py3-toml
 
 RUN python3 --version
 
@@ -16,7 +19,7 @@ ADD https://github.com/WebAssembly/binaryen/releases/download/version_96/binarye
 RUN sha256sum /tmp/binaryen.tar.gz | grep 9f8397a12931df577b244a27c293d7c976bc7e980a12457839f46f8202935aac
 
 # Extract and install wasm-opt
-RUN tar -xf /tmp/binaryen.tar.gz --wildcards '*/wasm-opt'
+RUN tar -xf /tmp/binaryen.tar.gz
 RUN mv binaryen-version_*/wasm-opt /usr/local/bin
 RUN rm -rf binaryen-version_*/ /tmp/binaryen.tar.gz
 
