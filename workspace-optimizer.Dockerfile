@@ -1,5 +1,3 @@
-# This version of Rust will not be used for compilation but just serves as a stable base image to get debian+rustup.
-# See Rust nightly config below.
 FROM rust:1.51.0
 
 # Setup Rust with Wasm support
