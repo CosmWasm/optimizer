@@ -4,6 +4,7 @@ FROM rust:1.51.0-alpine
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
 
+RUN apk update
 # Being required for gcc linking
 RUN apk add --no-cache musl-dev
 
