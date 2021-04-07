@@ -17,7 +17,7 @@ echo "done."
 
 echo -n "Optimizing artifacts in workspace..."
 mkdir -p artifacts
-TMPDIR=$(mktemp -d artifacts.XXX)
+TMPDIR=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 # Optimize artifacts
 (
   cd "$TMPDIR"
