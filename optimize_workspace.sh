@@ -32,11 +32,11 @@ TMPDIR=$(mktemp -d artifacts.XXX)
   done
 	mv ./*.wasm ../artifacts
 )
+rm -rf "$TMPDIR"
 echo "done."
 echo -n "Post-processing artifacts in workspace..."
 (
   cd artifacts
   sha256sum -- *.wasm >checksums.txt
 )
-rm -rf "$TMPDIR"
 echo "done."
