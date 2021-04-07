@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
@@ -22,7 +22,7 @@ contractdirs="$@"
 # and build "/code/contracts/mycontract".
 # Note: if contractdir is "." (default in Docker), this ends up as a noop
 for contractdir in $contractdirs; do
-  echo "Building contract in $(realpath -m "$contractdir")"
+  echo "Building contract in $(realpath "$contractdir")"
   (
     cd "$contractdir"
 
