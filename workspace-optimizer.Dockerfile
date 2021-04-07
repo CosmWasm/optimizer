@@ -23,6 +23,7 @@ RUN sha256sum /tmp/binaryen.tar.gz | grep 9f8397a12931df577b244a27c293d7c976bc7e
 # Extract and install wasm-opt
 RUN tar -xf /tmp/binaryen.tar.gz --wildcards '*/wasm-opt'
 RUN mv binaryen-version_*/wasm-opt /usr/local/bin
+RUN rm -rf binaryen-version_*/ /tmp/binaryen.tar.gz
 
 # Check wasm-opt version
 RUN wasm-opt --version

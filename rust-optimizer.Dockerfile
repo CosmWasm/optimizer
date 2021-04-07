@@ -4,10 +4,18 @@ FROM rust:1.51.0
 # setup rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
 
-# Install sccache from https://crates.io/crates/sccache
-# This is slow due to full release compilation from source.
-# Use full version string here to ensure Docker caching works well.
-RUN cargo install --version 0.2.15 sccache
+# Download sccache and verify checksum
+ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-x86_64-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
+RUN sha256sum /tmp/sccache.tar.gz | grep e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca
+
+# Extract and install sccache
+RUN tar -xf /tmp/sccache.tar.gz
+RUN mv sccache-v*/sccache /usr/local/bin/sccache
+RUN chmod +x /usr/local/bin/sccache
+RUN rm -rf sccache-v*/ /tmp/sccache.tar.gz
+
+# Check sccache version
+RUN sccache --version
 
 # Download binaryen and verify checksum
 ADD https://github.com/WebAssembly/binaryen/releases/download/version_96/binaryen-version_96-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
@@ -16,6 +24,7 @@ RUN sha256sum /tmp/binaryen.tar.gz | grep 9f8397a12931df577b244a27c293d7c976bc7e
 # Extract and install wasm-opt
 RUN tar -xf /tmp/binaryen.tar.gz --wildcards '*/wasm-opt'
 RUN mv binaryen-version_*/wasm-opt /usr/local/bin
+RUN rm -rf binaryen-version_*/ /tmp/binaryen.tar.gz
 
 # Check wasm-opt version
 RUN wasm-opt --version
