@@ -1,15 +1,12 @@
+# SHARED BLOCK START (keep in sync between both *.Dockerfile to utilize Docker caching)
 FROM rust:1.51.0-alpine
-
-# Setup Rust with Wasm support
-RUN rustup target add wasm32-unknown-unknown
 
 RUN apk update
 # Being required for gcc linking
 RUN apk add --no-cache musl-dev
 
-RUN apk add python3 py3-toml
-
-RUN python3 --version
+# Setup Rust with Wasm support
+RUN rustup target add wasm32-unknown-unknown
 
 # Check cargo version
 RUN cargo --version
@@ -25,6 +22,11 @@ RUN rm -rf binaryen-version_*/ /tmp/binaryen.tar.gz
 
 # Check wasm-opt version
 RUN wasm-opt --version
+# SHARED BLOCK END
+
+# Install Python
+RUN apk add python3 py3-toml
+RUN python3 --version
 
 # Assume we mount the source code in /code
 WORKDIR /code
