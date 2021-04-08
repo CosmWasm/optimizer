@@ -15,10 +15,6 @@ build-rust-optimizer: build-base-optimizer
 build-workspace-optimizer: build-base-optimizer
 	docker build -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --file workspace-optimizer.Dockerfile .
 
-publish-base-optimizer: build-base-optimizer
-	docker push $(DOCKER_NAME_BASE_OPTIMIZER):$(DOCKER_TAG)
-	docker push $(DOCKER_NAME_BASE_OPTIMIZER):latest
-
 publish-rust-optimizer: build-rust-optimizer
 	docker push $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG)
 
@@ -27,4 +23,4 @@ publish-workspace-optimizer: build-workspace-optimizer
 
 build: build-rust-optimizer build-workspace-optimizer
 
-publish: publish-base-optimizer publish-rust-optimizer publish-workspace-optimizer
+publish: publish-rust-optimizer publish-workspace-optimizer
