@@ -1,4 +1,4 @@
-FROM cosmwasm/base-optimizer:0.12.0
+FROM cosmwasm/base-optimizer:latest
 
 # Download sccache and verify checksum
 ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-x86_64-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
