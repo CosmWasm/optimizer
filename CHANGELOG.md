@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.11.0
+
+- Use precompiled sccache
+- Reduce image size by deleting unnecessary files
+- `cosmwasm/workspace-optimizer`: migrate from Rust nightly to stable (1.51.0)
+- Migrate to alpine-based Rust images for smaller images
+
 ## 0.10.9
 
 - `cosmwasm/rust-optimizer`: bump Rust to 1.51.0
