@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/ash
+# shellcheck shell=dash
+# See https://www.shellcheck.net/wiki/SC2187
 set -o errexit -o nounset -o pipefail
 command -v shellcheck > /dev/null && shellcheck "$0"
 
@@ -10,7 +12,6 @@ echo "Info: sccache stats before build"
 sccache -s
 
 mkdir -p artifacts
-contractdirs="$@"
 
 # There are two cases here
 # 1. All contracts (or one) are included in the root workspace  (eg. `cosmwasm-template`, `cosmwasm-examples`, `cosmwasm-plus`)
@@ -21,7 +22,7 @@ contractdirs="$@"
 # This parameter allows us to mount a folder into docker container's "/code"
 # and build "/code/contracts/mycontract".
 # Note: if contractdir is "." (default in Docker), this ends up as a noop
-for contractdir in $contractdirs; do
+for contractdir in "$@"; do
   echo "Building contract in $(realpath "$contractdir")"
   (
     cd "$contractdir"

@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/ash
+# shellcheck shell=dash
+# See https://www.shellcheck.net/wiki/SC2187
 set -o errexit -o nounset -o pipefail
 command -v shellcheck >/dev/null && shellcheck "$0"
 
