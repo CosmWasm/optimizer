@@ -22,7 +22,7 @@ jobs:
       - run:
           name: Build Docker artifact
           command: make build
-  sanity:
+  lint-scripts:
     executor: ubuntu
     steps:
       - run:
@@ -34,10 +34,22 @@ jobs:
       - run:
           name: Run shellcheck
           command: find . -name "*.sh" -exec shellcheck {} +
+  format-scripts:
+    docker:
+      - image: cimg/go:1.16.3
+    steps:
+      - run:
+          name: Install shfmt
+          command: GO111MODULE=on go get mvdan.cc/sh/v3/cmd/shfmt
+      - checkout
+      - run:
+          name: Run shfmt
+          command: shfmt -d .
 
 workflows:
   version: 2
   test-suite:
     jobs:
       - build
-      - sanity
+      - lint-scripts
+      - format-scripts
