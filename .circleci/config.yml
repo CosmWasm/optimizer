@@ -1,0 +1,43 @@
+version: 2.1
+
+executors:
+  ubuntu:
+    docker:
+      - image: ubuntu:20.04
+
+jobs:
+  build:
+    executor: ubuntu
+    steps:
+      - run:
+          name: Install packages
+          command: |
+            apt update
+            apt install -y git make docker.io
+      - checkout
+      - setup_remote_docker:
+          # We might want to add this when things get slow
+          # https://circleci.com/docs/2.0/docker-layer-caching/
+          docker_layer_caching: false
+      - run:
+          name: Build Docker artifact
+          command: make build
+  sanity:
+    executor: ubuntu
+    steps:
+      - run:
+          name: Install packages
+          command: |
+            apt update
+            apt install -y git shellcheck
+      - checkout
+      - run:
+          name: Run shellcheck
+          command: find . -name "*.sh" -exec shellcheck {} +
+
+workflows:
+  version: 2
+  test-suite:
+    jobs:
+      - build
+      - sanity
