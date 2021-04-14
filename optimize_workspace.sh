@@ -24,15 +24,14 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 (
   cd "$TMPARTIFACTS"
 
-  for WASM in ../target/wasm32-unknown-unknown/release/*/*.wasm
-  do
+  for WASM in ../target/wasm32-unknown-unknown/release/*/*.wasm; do
     echo -n "Optimizing $WASM..."
     BASE=$(basename "$WASM")
     wasm-opt -Os -o "$BASE" "$WASM"
     chmod -x "$BASE"
     echo "done."
   done
-	mv ./*.wasm ../artifacts
+  mv ./*.wasm ../artifacts
 )
 rm -rf "$TMPARTIFACTS"
 echo "done."

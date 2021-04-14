@@ -2,7 +2,7 @@
 # shellcheck shell=dash
 # See https://www.shellcheck.net/wiki/SC2187
 set -o errexit -o nounset -o pipefail
-command -v shellcheck > /dev/null && shellcheck "$0"
+command -v shellcheck >/dev/null && shellcheck "$0"
 
 export PATH=$PATH:/root/.cargo/bin
 
@@ -43,7 +43,7 @@ done
 # create hash
 (
   cd artifacts
-  sha256sum -- *.wasm > checksums.txt
+  sha256sum -- *.wasm >checksums.txt
 )
 
 echo "Info: sccache stats after build"
