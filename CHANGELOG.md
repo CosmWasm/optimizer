@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.11.1
+
+- Issues when running `workspace-optimizer in CircleCI (cosmwasm-plus #273)
+  Revert to using `/bin/sh` for shell.
+
 ## 0.11.0
 
 - Use precompiled sccache

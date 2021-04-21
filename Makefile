@@ -3,7 +3,7 @@
 DOCKER_NAME_BASE_OPTIMIZER := "cosmwasm/base-optimizer"
 DOCKER_NAME_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
 DOCKER_NAME_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
-DOCKER_TAG := 0.11.0
+DOCKER_TAG := 0.11.1
 
 build-base-optimizer:
 	docker build -t $(DOCKER_NAME_BASE_OPTIMIZER):$(DOCKER_TAG) --file base-optimizer.Dockerfile .
