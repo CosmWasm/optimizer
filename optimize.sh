@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/sh
 # shellcheck shell=dash
 # See https://www.shellcheck.net/wiki/SC2187
 set -o errexit -o nounset -o pipefail
