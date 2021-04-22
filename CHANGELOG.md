@@ -1,7 +1,8 @@
 # CHANGELOG
 
 ## 0.11.3
-- Remove `-n` from `echo` to flush logs early. Consolidate log style.
+- Remove `-n` from `echo` to flush logs early.
+- Consolidate log style.
 
 ## 0.11.2
 
