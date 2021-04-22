@@ -1,13 +1,14 @@
 # CHANGELOG
 
 ## 0.11.3
+
 - Remove `-n` from `echo` to flush logs early.
 - Consolidate log style.
+- Revert shell to `/bin/ash`.
 
 ## 0.11.2
 
 - Fix target path for *.wasm files.
-- Revert shell to `/bin/ash`.
 
 ## 0.11.1
 
