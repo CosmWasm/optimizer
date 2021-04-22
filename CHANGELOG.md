@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.11.2
+
+- Fix target path for *.wasm files.
+- Revert shell to `/bin/ash`.
+- Remove `-n` from `echo` to flush logs early.
+
 ## 0.11.1
 
 - Issues when running `workspace-optimizer in CircleCI (cosmwasm-plus #273)
