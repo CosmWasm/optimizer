@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 # shellcheck shell=dash
 # See https://www.shellcheck.net/wiki/SC2187
 set -o errexit -o nounset -o pipefail
@@ -23,7 +23,7 @@ mkdir -p artifacts
 # and build "/code/contracts/mycontract".
 # Note: if contractdir is "." (default in Docker), this ends up as a noop
 for contractdir in "$@"; do
-  echo "Building contract in $(realpath "$contractdir")"
+  echo "Building contract in $(realpath "$contractdir") ..."
   (
     cd "$contractdir"
 
@@ -35,12 +35,13 @@ for contractdir in "$@"; do
   # wasm-optimize on all results
   for wasm in "$contractdir"/target/wasm32-unknown-unknown/release/*.wasm; do
     name=$(basename "$wasm")
-    echo "Optimizing $name"
+    echo "Optimizing $name ..."
     wasm-opt -Os "$wasm" -o "artifacts/$name"
   done
 done
 
 # create hash
+echo "Creating hashes ..."
 (
   cd artifacts
   sha256sum -- *.wasm >checksums.txt

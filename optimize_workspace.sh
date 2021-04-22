@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 # shellcheck shell=dash
 # See https://www.shellcheck.net/wiki/SC2187
 set -o errexit -o nounset -o pipefail
@@ -13,11 +13,10 @@ cargo --version
 rm -f target/wasm32-unknown-unknown/release/*.wasm
 
 # Build artifacts
-echo -n "Building artifacts in workspace..."
+echo "Building artifacts in workspace ..."
 /usr/local/bin/build_workspace.py
-echo "done."
 
-echo -n "Optimizing artifacts in workspace..."
+echo "Optimizing artifacts in workspace ..."
 mkdir -p artifacts
 TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 # Optimize artifacts
@@ -25,19 +24,19 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
   cd "$TMPARTIFACTS"
 
   for WASM in ../target/wasm32-unknown-unknown/release/*.wasm; do
-    echo -n "Optimizing $WASM..."
+    echo "Optimizing $WASM ..."
     BASE=$(basename "$WASM")
     wasm-opt -Os -o "$BASE" "$WASM"
     chmod -x "$BASE"
-    echo "done."
   done
+  echo "Moving wasm files ..."
   mv ./*.wasm ../artifacts
 )
 rm -rf "$TMPARTIFACTS"
-echo "done."
-echo -n "Post-processing artifacts in workspace..."
+echo "Post-processing artifacts in workspace ..."
 (
   cd artifacts
   sha256sum -- *.wasm >checksums.txt
 )
-echo "done."
+
+echo "done"
