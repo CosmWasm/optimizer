@@ -1,10 +1,13 @@
 # Cosmwasm Optimizing Compiler
 
-[![DockerHub](https://img.shields.io/docker/pulls/cosmwasm/rust-optimizer?style=plastic)](https://hub.docker.com/r/cosmwasm/rust-optimizer)
-
 This is a Docker build with a locked set of dependencies to produce
 reproducible builds of cosmwasm smart contracts. It also does heavy
 optimization on the build size, using binary stripping and `wasm-opt`.
+
+| Image               | Description | DockerHub |
+|---------------------|-------------|-----------|
+| rust-optimizer      | Single contract builds (default) | [![DockerHub](https://img.shields.io/docker/v/cosmwasm/rust-optimizer?sort=semver&style=plastic)](https://hub.docker.com/r/cosmwasm/rust-optimizer) |
+| workspace-optimizer | Multi-contract workspaces (e.g. cosmwasm-plus) | [![DockerHub](https://img.shields.io/docker/v/cosmwasm/workspace-optimizer?sort=semver&style=plastic)](https://hub.docker.com/r/cosmwasm/workspace-optimizer) |
 
 ## Usage
 
