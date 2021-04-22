@@ -29,6 +29,7 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
     wasm-opt -Os -o "$BASE" "$WASM"
     chmod -x "$BASE"
   done
+  echo "Moving wasm files ..."
   mv ./*.wasm ../artifacts
 )
 rm -rf "$TMPARTIFACTS"
@@ -37,3 +38,5 @@ echo "Post-processing artifacts in workspace ..."
   cd artifacts
   sha256sum -- *.wasm >checksums.txt
 )
+
+echo "done"
