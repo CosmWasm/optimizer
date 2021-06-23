@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.11.4
+
+- Bump Rust to 1.53.0
+
 ## 0.11.3
 
 - Remove `-n` from `echo` to flush logs early.
