@@ -1,4 +1,4 @@
-FROM rust:1.53.0-alpine
+FROM rust:1.54.0-alpine
 
 RUN apk update
 # Being required for gcc linking
