@@ -1,4 +1,4 @@
-FROM cosmwasm/base-optimizer:latest
+FROM base-optimizer:latest
 
 # Install Python
 RUN apk add python3 py3-toml

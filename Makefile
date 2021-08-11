@@ -1,6 +1,6 @@
 .PHONY: build-rust-optimizer build-workspace-optimizer build publish-rust-optimizer publish-workspace-optimizer publish
 
-DOCKER_NAME_BASE_OPTIMIZER := "cosmwasm/base-optimizer"
+DOCKER_NAME_BASE_OPTIMIZER := "base-optimizer"
 DOCKER_NAME_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
 DOCKER_NAME_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
 DOCKER_TAG := 0.11.5
