@@ -10,10 +10,10 @@ build-base-optimizer:
 	docker tag $(DOCKER_NAME_BASE_OPTIMIZER):$(DOCKER_TAG) $(DOCKER_NAME_BASE_OPTIMIZER):latest
 
 build-rust-optimizer: build-base-optimizer
-	docker build -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --file rust-optimizer.Dockerfile .
+	docker build -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --pull=false --file rust-optimizer.Dockerfile .
 
 build-workspace-optimizer: build-base-optimizer
-	docker build -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --file workspace-optimizer.Dockerfile .
+	docker build -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --pull=false --file workspace-optimizer.Dockerfile .
 
 publish-rust-optimizer: build-rust-optimizer
 	docker push $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG)
