@@ -4,14 +4,14 @@ This is a Docker build with a locked set of dependencies to produce
 reproducible builds of cosmwasm smart contracts. It also does heavy
 optimization on the build size, using binary stripping and `wasm-opt`.
 
-| Image               | Description | DockerHub |
-|---------------------|-------------|-----------|
-| rust-optimizer      | Single contract builds (default) | [![DockerHub](https://img.shields.io/docker/v/cosmwasm/rust-optimizer?sort=semver&style=plastic)](https://hub.docker.com/r/cosmwasm/rust-optimizer) |
+| Image               | Description                                    | DockerHub                                                                                                                                                     |
+| ------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| rust-optimizer      | Single contract builds (default)               | [![DockerHub](https://img.shields.io/docker/v/cosmwasm/rust-optimizer?sort=semver&style=plastic)](https://hub.docker.com/r/cosmwasm/rust-optimizer)           |
 | workspace-optimizer | Multi-contract workspaces (e.g. cosmwasm-plus) | [![DockerHub](https://img.shields.io/docker/v/cosmwasm/workspace-optimizer?sort=semver&style=plastic)](https://hub.docker.com/r/cosmwasm/workspace-optimizer) |
 
 ## Usage
 
-*This works for most cases, for monorepo builds see advanced*
+_This works for most cases, for monorepo builds see advanced_
 
 The easiest way is to simply use the [published docker image](https://hub.docker.com/r/cosmwasm/rust-optimizer).
 You must set the local path to the smart contract you wish to compile and
@@ -27,7 +27,7 @@ you to produce a smaller build that works with the cosmwasm integration tests
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.11.5
+  cosmwasm/rust-optimizer:0.12.0
 ```
 
 Demo this with `cosmwasm-examples` (going into eg. `erc20` subdir before running),
@@ -41,7 +41,7 @@ minor adjustments to a contract you had previously created an optimized build fo
 
 ### Contracts as Workspace Members
 
-*This is designed for cosmwasm-plus samples. We use a separate docker image*
+_This is designed for cosmwasm-plus samples. We use a separate docker image_
 
 Sometime you want many contracts to be related and import common functionality. This is
 exactly the case of [`cosmwasm-plus`](https://github.com/CosmWasm/cosmwasm-plus).
@@ -60,7 +60,7 @@ To compile all contracts in the workspace deterministically, you can run:
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/workspace-optimizer:0.11.5
+  cosmwasm/workspace-optimizer:0.12.0
 ```
 
 The downside is that to verify one contract in the workspace, you need to compile them
@@ -70,7 +70,7 @@ of contracts.
 
 ### Contracts excluded from Workspace
 
-*This is designed for cosmwasm samples. You cannot provide automatic verification for these*
+_This is designed for cosmwasm samples. You cannot provide automatic verification for these_
 
 If you have a more complex build environment, you need to pass a few more
 arguments to define how to run the build process.
@@ -86,7 +86,7 @@ case, we can use the optimize.sh command:
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.11.5 ./contracts/burner
+  cosmwasm/rust-optimizer:0.12.0 ./contracts/burner
 ```
 
 ## Development
