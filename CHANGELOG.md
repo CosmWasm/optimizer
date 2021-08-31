@@ -16,11 +16,11 @@
 
 ## 0.11.2
 
-- Fix target path for *.wasm files.
+- Fix target path for \*.wasm files.
 
 ## 0.11.1
 
-- Issues when running `workspace-optimizer in CircleCI (cosmwasm-plus #273)
+- Issues when running `workspace-optimizer` in CircleCI (cosmwasm-plus #273).
   Revert to using `/bin/sh` for shell.
 
 ## 0.11.0
