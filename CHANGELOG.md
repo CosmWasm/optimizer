@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.12.0
+
+- Reorganize project to use multi-stage builds instead of different docker files. This
+  way no `cosmwasm/base-optimizer` image is expected on DockerHub.
+
 ## 0.11.5
 
 - Bump Rust to 1.54.0
