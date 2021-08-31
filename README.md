@@ -89,6 +89,35 @@ docker run --rm -v "$(pwd)":/code \
   cosmwasm/rust-optimizer:0.12.0 ./contracts/burner
 ```
 
+## Using on M1 Macs (ARM processor)
+
+The images on DockerHub are not yet built for ARM (see [#49]). Some people successfully use
+the x86 images through emulation. But this tends to be slow and may crash due to increased
+memory consumption.
+
+A workaround for the problem is to build the images locally on an M1 Mac.
+
+```
+$ git clone https://github.com/CosmWasm/rust-optimizer.git
+$ cd rust-optimizer
+$ git checkout v0.12.0
+$ make build
+```
+
+You now have the images available locally built for your platform.
+
+```
+$ docker image ls | grep cosmwasm/
+cosmwasm/workspace-optimizer   0.12.0        aa29e67e7612   10 seconds ago   1.03GB
+cosmwasm/rust-optimizer        0.12.0        d8d95af0a0c4   17 seconds ago   1.06GB
+```
+
+While this is better than nothing, it creates the risk that contracts cannot
+be built reproducibly. For this reason a solution to [#49] means getting
+ARM builds to DockerHub that are used by everyone.
+
+[#49]: https://github.com/CosmWasm/rust-optimizer/issues/49
+
 ## Development
 
 Take a look at the [Makefile](https://github.com/CosmWasm/rust-optimizer/blob/master/Makefile)
