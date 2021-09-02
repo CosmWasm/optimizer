@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.12.1
+
+- Use the Docker builder pattern to reduce image sizes by preventing temporary files from
+  entering the `cosmwasm/rust-optimizer` and `cosmwasm/workspace-optimizer` images
+
 ## 0.12.0
 
 - Reorganize project to use multi-stage builds instead of different docker files. This

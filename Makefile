@@ -2,7 +2,7 @@
 
 DOCKER_NAME_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
 DOCKER_NAME_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
-DOCKER_TAG := 0.12.0
+DOCKER_TAG := 0.12.1
 
 build-rust-optimizer:
 	docker build -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer .
