@@ -27,7 +27,7 @@ you to produce a smaller build that works with the cosmwasm integration tests
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.12.0
+  cosmwasm/rust-optimizer:0.12.1
 ```
 
 Demo this with `cosmwasm-examples` (going into eg. `erc20` subdir before running),
@@ -60,7 +60,7 @@ To compile all contracts in the workspace deterministically, you can run:
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/workspace-optimizer:0.12.0
+  cosmwasm/workspace-optimizer:0.12.1
 ```
 
 The downside is that to verify one contract in the workspace, you need to compile them
@@ -86,7 +86,7 @@ case, we can use the optimize.sh command:
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.12.0 ./contracts/burner
+  cosmwasm/rust-optimizer:0.12.1 ./contracts/burner
 ```
 
 ## Using on M1 Macs (ARM processor)
@@ -100,7 +100,7 @@ A workaround for the problem is to build the images locally on an M1 Mac.
 ```
 $ git clone https://github.com/CosmWasm/rust-optimizer.git
 $ cd rust-optimizer
-$ git checkout v0.12.0
+$ git checkout v0.12.1
 $ make build
 ```
 
@@ -108,8 +108,8 @@ You now have the images available locally built for your platform.
 
 ```
 $ docker image ls | grep cosmwasm/
-cosmwasm/workspace-optimizer   0.12.0        aa29e67e7612   10 seconds ago   1.03GB
-cosmwasm/rust-optimizer        0.12.0        d8d95af0a0c4   17 seconds ago   1.06GB
+cosmwasm/workspace-optimizer   0.12.1        aa29e67e7612   10 seconds ago   1.03GB
+cosmwasm/rust-optimizer        0.12.1        d8d95af0a0c4   17 seconds ago   1.06GB
 ```
 
 While this is better than nothing, it creates the risk that contracts cannot
