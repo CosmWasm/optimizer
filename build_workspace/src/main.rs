@@ -1,10 +1,6 @@
 use glob::glob;
 use serde::Deserialize;
-use std::{
-    fs,
-    io::{self, Write},
-    process::Command,
-};
+use std::{fs, process::Command};
 
 const CARGO_PATH: &str = "cargo";
 const PACKAGE_PREFIX: &str = "contracts/";
@@ -19,26 +15,23 @@ pub struct Workspace {
     members: Vec<String>,
 }
 
-pub fn parse_cargo_toml(path: String) -> CargoToml {
-    let file = fs::read_to_string(path).expect("Something went wrong reading the file");
-
-    let cargo_toml: CargoToml = toml::from_str(&file).unwrap();
-    cargo_toml
-}
-
 fn main() {
-    let cargo_toml = parse_cargo_toml("Cargo.toml".to_string());
+    let file = fs::read_to_string("Cargo.toml").unwrap();
+    let cargo_toml: CargoToml = toml::from_str(&file).unwrap();
     let members = cargo_toml.workspace.members;
+
     println!("Found workspace member entries: {:?}", members);
 
-    let mut all_packages = vec![];
-
-    for member in members.into_iter() {
-        let g = glob(&member).expect("bar");
-        for entry in g {
-            all_packages.push(entry.unwrap());
-        }
-    }
+    let mut all_packages = members
+        .iter()
+        .map(|member| {
+            glob(member)
+                .unwrap()
+                .map(|path| path.unwrap())
+                .collect::<Vec<_>>()
+        })
+        .flatten()
+        .collect::<Vec<_>>();
 
     all_packages.sort();
 
@@ -54,7 +47,7 @@ fn main() {
     for contract in contract_packages {
         println!("Building {:?} ...", contract);
 
-        let output = Command::new(CARGO_PATH)
+        let mut child = Command::new(CARGO_PATH)
             .args(&[
                 "build",
                 "--release",
@@ -62,12 +55,9 @@ fn main() {
                 "--locked",
             ])
             .env("RUSTFLAGS", "-C link-arg=-s")
-            .output()
-            .expect("baz");
-
-        io::stdout().write_all(&output.stdout).unwrap();
-        io::stderr().write_all(&output.stderr).unwrap();
-
-        assert!(output.status.success());
+            .spawn()
+            .unwrap();
+        let error_code = child.wait().unwrap();
+        assert!(error_code.success());
     }
 }
