@@ -75,11 +75,7 @@ RUN cd build_workspace && \
 #
 # base-optimizer
 #
-FROM rust:1.54.0-alpine as base-optimizer
-
-# Being required for gcc linking
-RUN apk update && \
-  apk add --no-cache musl-dev
+FROM base as base-optimizer
 
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
