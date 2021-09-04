@@ -1,6 +1,9 @@
 use glob::glob;
 use serde::Deserialize;
-use std::{fs, process::Command};
+use std::{
+    fs::{self, canonicalize},
+    process::Command,
+};
 
 const CARGO_PATH: &str = "cargo";
 const PACKAGE_PREFIX: &str = "contracts/";
@@ -38,7 +41,7 @@ fn main() {
     println!("Package directories: {:?}", all_packages);
 
     let contract_packages = all_packages
-        .into_iter()
+        .iter()
         .filter(|p| p.starts_with(PACKAGE_PREFIX))
         .collect::<Vec<_>>();
 
@@ -55,6 +58,7 @@ fn main() {
                 "--locked",
             ])
             .env("RUSTFLAGS", "-C link-arg=-s")
+            .current_dir(canonicalize(contract).unwrap())
             .spawn()
             .unwrap();
         let error_code = child.wait().unwrap();
