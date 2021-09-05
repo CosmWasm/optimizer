@@ -1,7 +1,18 @@
-FROM rust:1.54.0-alpine as builder
+FROM rust:1.54.0-alpine as targetarch
 
-ARG ARCH
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM
+ARG TARGETARCH
 
+RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
+
+FROM targetarch as builder-amd64
+ARG ARCH="x86_64"
+
+FROM targetarch as builder-arm64
+ARG ARCH="aarch64"
+
+FROM builder-${TARGETARCH} as builder
 # Check cargo version
 RUN cargo --version
 
