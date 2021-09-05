@@ -1,11 +1,13 @@
 FROM rust:1.54.0-alpine as builder
 
+ARG ARCH
+
 # Check cargo version
 RUN cargo --version
 
 # Download sccache and verify checksum
-ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-x86_64-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
-RUN sha256sum /tmp/sccache.tar.gz | grep e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca
+ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-$ARCH-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
+RUN sha256sum /tmp/sccache.tar.gz | egrep '(e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca|90d91d21a767e3f558196dbd52395f6475c08de5c4951a4c8049575fa6894489)'
 
 # Extract and install sccache
 RUN tar -xf /tmp/sccache.tar.gz

@@ -4,13 +4,15 @@ DOCKER_NAME_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
 DOCKER_NAME_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
 DOCKER_TAG := 0.12.2
 
+ARCH := $(shell uname -m)
+
 # Build images locally for the host CPU architecture
 
 build-rust-optimizer:
-	docker build -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer .
+	docker build -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --build-arg ARCH=$(ARCH) --target rust-optimizer .
 
 build-workspace-optimizer:
-	docker build -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer .
+	docker build -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --build-arg ARCH=$(ARCH) --target workspace-optimizer .
 
 build: build-rust-optimizer build-workspace-optimizer
 
@@ -24,21 +26,23 @@ use-rust-optimizer-multi:
 	docker buildx use rust-optimizer-multi
 
 build-rust-optimizer-amd64: use-rust-optimizer-multi
-	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --load .
+	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --build-arg ARCH=x86_64 --target rust-optimizer --load .
 
 build-rust-optimizer-arm64: use-rust-optimizer-multi
-	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --load .
+	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --build-arg ARCH=aarch64 --target rust-optimizer --load .
 
-build-workspace-optimize-amd64: use-rust-optimizer-multi
-	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --load .
+build-workspace-optimizer-amd64: use-rust-optimizer-multi
+	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --build-arg ARCH=x86_64 --target workspace-optimizer --load .
 
-build-workspace-optimize-amd64: use-rust-optimizer-multi
-	docker buildx build --platform linux/arm64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --load .
+build-workspace-optimizer-arm64: use-rust-optimizer-multi
+	docker buildx build --platform linux/arm64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --build-arg ARCH=$(ARCH) --target workspace-optimizer --load .
 
 publish-rust-optimizer: use-rust-optimizer-multi
-	docker buildx build --platform linux/amd64,linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --push .
+	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --build-arg ARCH=x86_64 --target rust-optimizer --push .
+	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --build-arg ARCH=aarch64 --target rust-optimizer --push .
 
 publish-workspace-optimizer: use-rust-optimizer-multi
-	docker buildx build --platform linux/amd64,linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --push .
+	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --build-arg ARCH=x86_64 --target workspace-optimizer --push .
+	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --build-arg ARCH=aarch64 --target workspace-optimizer --push .
 
 publish: publish-rust-optimizer publish-workspace-optimizer
