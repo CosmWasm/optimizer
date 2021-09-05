@@ -3,12 +3,6 @@ FROM rust:1.54.0-alpine as builder
 # Check cargo version
 RUN cargo --version
 
-# Install platform-specific binaryen
-RUN apk update && apk add binaryen
-
-# Check wasm-opt version
-RUN wasm-opt --version
-
 # Download sccache and verify checksum
 ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-x86_64-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
 RUN sha256sum /tmp/sccache.tar.gz | grep e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca
@@ -40,7 +34,7 @@ RUN apk update && \
   apk add --no-cache musl-dev
 
 # Install platform-specific binaryen
-RUN apk add binaryen
+RUN apk add binaryen=98-r0
 
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
