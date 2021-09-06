@@ -15,14 +15,17 @@ jobs:
             apt update
             apt install -y git make
       - run:
-          name: Install docker-ce
+          name: Install docker-ce (buildx)
           command: |
             apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
             curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
             echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
             apt update
-            apt install -y docker-ce docker-ce-cli containerd.io qemu-user-static binfmt-support
-            # TODO: Check support for qemu / binfmt is enabled
+            apt install -y docker-ce docker-ce-cli containerd.io
+      - run:
+          name: Install multi-arch support (qemu + binfmt)
+          command: |
+            apt install -y qemu-user-static binfmt-support
       - checkout
       - setup_remote_docker:
           # We might want to add this when things get slow
