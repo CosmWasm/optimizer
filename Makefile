@@ -11,7 +11,8 @@ BUILDARCH := $(shell uname -m)
 build: build-rust-optimizer build-workspace-optimizer
 
 create-rust-optimizer-multi:
-	docker buildx create --name rust-optimizer-multi
+	docker context create rust-optimizer-multi
+	docker buildx create --name rust-optimizer-multi rust-optimizer-multi
 
 use-rust-optimizer-multi:
 	$(MAKE) create-rust-optimizer-multi || true
