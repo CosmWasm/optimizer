@@ -1,29 +1,37 @@
 version: 2.1
 
 executors:
-  ubuntu:
+  debian:
     docker:
-      - image: ubuntu:20.04
+      - image: debian:bullseye
 
 jobs:
   build:
-    executor: ubuntu
+    executor: debian
     steps:
       - run:
           name: Install packages
           command: |
             apt update
-            apt install -y git make docker.io
+            apt install -y git make
+      - run:
+          name: Install docker-ce
+          command: |
+            apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
+            apt update
+            apt install -y docker-ce docker-ce-cli containerd.io qemu-user-static binfmt-support
+            # TODO: Check support for qemu / binfmt is enabled
       - checkout
       - setup_remote_docker:
           # We might want to add this when things get slow
           # https://circleci.com/docs/2.0/docker-layer-caching/
           docker_layer_caching: false
       - run:
-          name: Build Docker artifact
+          name: Build docker multi-platform artifacts
           command: make build
   lint-scripts:
-    executor: ubuntu
+    executor: debian
     steps:
       - run:
           name: Install packages
