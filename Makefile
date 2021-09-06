@@ -1,4 +1,4 @@
-.PHONY: build-rust-optimizer build-workspace-optimizer build create-rust-optimizer-builder use-rust-optimizer-builder publish-rust-optimizer publish-workspace-optimizer publish
+.PHONY: build-rust-optimizer build-workspace-optimizer build create-rust-optimizer-multi use-rust-optimizer-multi publish-rust-optimizer publish-workspace-optimizer publish
 
 DOCKER_NAME_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
 DOCKER_NAME_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
