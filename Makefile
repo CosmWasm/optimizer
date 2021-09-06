@@ -21,7 +21,7 @@ use-rust-optimizer-multi:
 build-rust-optimizer-x86_64: use-rust-optimizer-multi
 	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --load .
 
-build-rust-optimizer-aarch64: use-rust-optimizer-multi
+build-rust-optimizer-arm64: use-rust-optimizer-multi
 	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --load .
 
 build-workspace-optimizer-x86_64: use-rust-optimizer-multi
