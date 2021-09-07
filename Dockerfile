@@ -16,8 +16,13 @@ FROM builder-${TARGETARCH} as builder
 # Check cargo version
 RUN cargo --version
 
-# Install platform-specific binaryen
-RUN apk update && apk add binaryen
+# Download binaryen and verify checksum
+ADD https://github.com/WebAssembly/binaryen/releases/download/version_96/binaryen-version_96-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
+RUN sha256sum /tmp/binaryen.tar.gz | grep 9f8397a12931df577b244a27c293d7c976bc7e980a12457839f46f8202935aac
+
+# Extract and install wasm-opt
+RUN tar -xf /tmp/binaryen.tar.gz
+RUN mv binaryen-version_*/wasm-opt /usr/local/bin
 
 # Check wasm-opt version
 RUN wasm-opt --version
@@ -52,11 +57,11 @@ FROM rust:1.54.0-alpine as base-optimizer
 RUN apk update && \
   apk add --no-cache musl-dev
 
-# Install platform-specific binaryen
-RUN apk add binaryen
-
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
+
+# Add wasm-opt
+COPY --from=builder /usr/local/bin/wasm-opt /usr/local/bin
 
 #
 # rust-optimizer
