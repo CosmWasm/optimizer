@@ -53,10 +53,6 @@ jobs:
             apt update
             apt install -y docker-ce-cli
       - checkout
-      - setup_remote_docker:
-          # We might want to add this when things get slow
-          # https://circleci.com/docs/2.0/docker-layer-caching/
-          docker_layer_caching: false
       - run:
           name: Build docker artifacts (linux/arm64)
           command: make build-rust-optimizer-arm64 build-workspace-optimizer-arm64
