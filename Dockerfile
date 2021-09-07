@@ -16,6 +16,12 @@ FROM builder-${TARGETARCH} as builder
 # Check cargo version
 RUN cargo --version
 
+# Install platform-specific binaryen
+RUN apk update && apk add binaryen
+
+# Check wasm-opt version
+RUN wasm-opt --version
+
 # Download sccache and verify checksum
 ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-$ARCH-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
 RUN sha256sum /tmp/sccache.tar.gz | egrep '(e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca|90d91d21a767e3f558196dbd52395f6475c08de5c4951a4c8049575fa6894489)'
@@ -47,7 +53,7 @@ RUN apk update && \
   apk add --no-cache musl-dev
 
 # Install platform-specific binaryen
-RUN apk add binaryen=98-r0
+RUN apk add binaryen
 
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
