@@ -32,7 +32,7 @@ jobs:
           command: make build-rust-optimizer-x86_64 build-workspace-optimizer-x86_64
       - run:
           name: Build docker artifacts (linux/arm64)
-          command: make build-rust-optimizer-aarch64 build-workspace-optimizer-aarch64
+          command: make build-rust-optimizer-arm64 build-workspace-optimizer-arm64
   lint-scripts:
     executor: ubuntu
     steps:
