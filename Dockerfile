@@ -4,7 +4,8 @@ ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 ARG TARGETARCH
 
-ARG BINARYEN="version_101"
+ARG BINARYEN_VERSION="version_101"
+ARG BINARYEN_CHECKSUM="20d0b19ca716c51d927f181802125f04d5685250c8a22ec3022ac28bf4f20c57"
 
 RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 
@@ -12,9 +13,10 @@ RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 FROM targetarch as builder-amd64
 ARG ARCH="x86_64"
 
+
 # Download binaryen binary and verify checksum
-ADD https://github.com/WebAssembly/binaryen/releases/download/$BINARYEN/binaryen-$BINARYEN-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
-RUN sha256sum /tmp/binaryen.tar.gz | grep 9f8397a12931df577b244a27c293d7c976bc7e980a12457839f46f8202935aac
+ADD https://github.com/WebAssembly/binaryen/releases/download/$BINARYEN_VERSION/binaryen-$BINARYEN_VERSION-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
+RUN sha256sum /tmp/binaryen.tar.gz | grep $BINARYEN_CHECKSUM
 
 # Extract wasm-opt
 RUN tar -xf /tmp/binaryen.tar.gz
@@ -23,9 +25,8 @@ RUN tar -xf /tmp/binaryen.tar.gz
 FROM targetarch as builder-arm64
 ARG ARCH="aarch64"
 
-# Download binaryen sources and verify checksum
-ADD https://github.com/WebAssembly/binaryen/archive/refs/tags/$BINARYEN.tar.gz /tmp/binaryen.tar.gz
-RUN sha256sum /tmp/binaryen.tar.gz | grep fe140191607c76f02bd0f1cc641715cefcb48e723409418c2a39a50905a4514c
+# Download binaryen sources
+ADD https://github.com/WebAssembly/binaryen/archive/refs/tags/$BINARYEN_VERSION.tar.gz /tmp/binaryen.tar.gz
 
 # Extract and compile wasm-opt
 # Adapted from https://github.com/WebAssembly/binaryen/blob/main/.github/workflows/build_release.yml
@@ -33,13 +34,12 @@ RUN apk update && apk add build-base cmake git clang ninja
 RUN tar -xf /tmp/binaryen.tar.gz
 RUN cd binaryen-version_*/ && cmake . -G Ninja -DCMAKE_CXX_FLAGS="-static" -DCMAKE_C_FLAGS="-static" -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC_LIB=ON && ninja wasm-opt
 RUN strip binaryen-version_*/bin/wasm-opt
-RUN mv binaryen-version_*/bin/wasm-opt binaryen-version_*/
 
 # GENERIC
 FROM builder-${TARGETARCH} as builder
 
 # Install wasm-opt
-RUN mv binaryen-version_*/wasm-opt /usr/local/bin
+RUN mv binaryen-version_*/bin/wasm-opt /usr/local/bin
 
 # Check cargo version
 RUN cargo --version
