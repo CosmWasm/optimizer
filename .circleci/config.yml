@@ -38,6 +38,9 @@ jobs:
       - run:
           name: Build workspace-optimizer
           command: make build-workspace-optimizer-x86_64
+      - run:
+          name: Show docker images
+          command: docker image ls
   build-arm64:
     executor: ubuntu-arm64
     steps:
@@ -62,6 +65,9 @@ jobs:
       - run:
           name: Build workspace-optimizer
           command: make build-workspace-optimizer-arm64
+      - run:
+          name: Show docker images
+          command: docker image ls
   lint-scripts:
     executor: ubuntu-amd64
     steps:
