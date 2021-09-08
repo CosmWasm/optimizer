@@ -4,6 +4,8 @@ ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 ARG TARGETARCH
 
+ARG BINARYEN="version_101"
+
 RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 
 # AMD64
@@ -11,7 +13,7 @@ FROM targetarch as builder-amd64
 ARG ARCH="x86_64"
 
 # Download binaryen binary and verify checksum
-ADD https://github.com/WebAssembly/binaryen/releases/download/version_96/binaryen-version_96-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
+ADD https://github.com/WebAssembly/binaryen/releases/download/$BINARYEN/binaryen-$BINARYEN-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
 RUN sha256sum /tmp/binaryen.tar.gz | grep 9f8397a12931df577b244a27c293d7c976bc7e980a12457839f46f8202935aac
 
 # Extract wasm-opt
@@ -22,7 +24,7 @@ FROM targetarch as builder-arm64
 ARG ARCH="aarch64"
 
 # Download binaryen sources and verify checksum
-ADD https://github.com/WebAssembly/binaryen/archive/refs/tags/version_96.tar.gz /tmp/binaryen.tar.gz
+ADD https://github.com/WebAssembly/binaryen/archive/refs/tags/$BINARYEN.tar.gz /tmp/binaryen.tar.gz
 RUN sha256sum /tmp/binaryen.tar.gz | grep fe140191607c76f02bd0f1cc641715cefcb48e723409418c2a39a50905a4514c
 
 # Extract and compile wasm-opt
