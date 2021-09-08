@@ -12,6 +12,8 @@ executors:
 jobs:
   build-amd64:
     executor: ubuntu-amd64
+    environment:
+      BUILDKIT_PROGRESS: plain
     steps:
       - run: uname -a
       - run:
@@ -43,6 +45,8 @@ jobs:
           command: docker image ls
   build-arm64:
     executor: ubuntu-arm64
+    environment:
+      BUILDKIT_PROGRESS: plain
     steps:
       - run: uname -a
       - run:
