@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.12.2
+
+- Support for arm64 Docker images.
+
 ## 0.12.1
 
 - Use the Docker builder pattern to reduce image sizes by preventing temporary files from

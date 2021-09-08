@@ -1,22 +1,55 @@
-FROM rust:1.54.0-alpine as builder
+FROM rust:1.54.0-alpine as targetarch
+
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM
+ARG TARGETARCH
+
+ARG BINARYEN_VERSION="version_96"
+ARG BINARYEN_CHECKSUM="9f8397a12931df577b244a27c293d7c976bc7e980a12457839f46f8202935aac"
+
+RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
+
+# AMD64
+FROM targetarch as builder-amd64
+ARG ARCH="x86_64"
+
+# Download binaryen binary and verify checksum
+ADD https://github.com/WebAssembly/binaryen/releases/download/$BINARYEN_VERSION/binaryen-$BINARYEN_VERSION-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
+RUN sha256sum /tmp/binaryen.tar.gz | grep $BINARYEN_CHECKSUM
+
+# Extract wasm-opt
+RUN tar -xf /tmp/binaryen.tar.gz
+
+# ARM64
+FROM targetarch as builder-arm64
+ARG ARCH="aarch64"
+
+# Download binaryen sources
+ADD https://github.com/WebAssembly/binaryen/archive/refs/tags/$BINARYEN_VERSION.tar.gz /tmp/binaryen.tar.gz
+
+# Extract and compile wasm-opt
+# Adapted from https://github.com/WebAssembly/binaryen/blob/main/.github/workflows/build_release.yml
+RUN apk update && apk add build-base cmake git python3 clang ninja
+RUN tar -xf /tmp/binaryen.tar.gz
+RUN cd binaryen-version_*/ && cmake . -G Ninja -DCMAKE_CXX_FLAGS="-static" -DCMAKE_C_FLAGS="-static" -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC_LIB=ON && ninja wasm-opt
+RUN strip binaryen-version_*/bin/wasm-opt
+RUN mv binaryen-version_*/bin/wasm-opt binaryen-version_*/
+
+# GENERIC
+FROM builder-${TARGETARCH} as builder
+
+# Install wasm-opt
+RUN mv binaryen-version_*/wasm-opt /usr/local/bin
 
 # Check cargo version
 RUN cargo --version
-
-# Download binaryen and verify checksum
-ADD https://github.com/WebAssembly/binaryen/releases/download/version_96/binaryen-version_96-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
-RUN sha256sum /tmp/binaryen.tar.gz | grep 9f8397a12931df577b244a27c293d7c976bc7e980a12457839f46f8202935aac
-
-# Extract and install wasm-opt
-RUN tar -xf /tmp/binaryen.tar.gz
-RUN mv binaryen-version_*/wasm-opt /usr/local/bin
 
 # Check wasm-opt version
 RUN wasm-opt --version
 
 # Download sccache and verify checksum
-ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-x86_64-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
-RUN sha256sum /tmp/sccache.tar.gz | grep e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca
+ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-$ARCH-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
+RUN sha256sum /tmp/sccache.tar.gz | egrep '(e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca|90d91d21a767e3f558196dbd52395f6475c08de5c4951a4c8049575fa6894489)'
 
 # Extract and install sccache
 RUN tar -xf /tmp/sccache.tar.gz

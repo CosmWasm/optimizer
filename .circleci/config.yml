@@ -1,29 +1,63 @@
 version: 2.1
 
 executors:
-  ubuntu:
+  ubuntu-amd64:
     docker:
       - image: ubuntu:20.04
+  ubuntu-arm64:
+    machine:
+      image: ubuntu-2004:202101-01
+    resource_class: arm.large
 
 jobs:
-  build:
-    executor: ubuntu
+  build-amd64:
+    executor: ubuntu-amd64
     steps:
+      - run: uname -a
       - run:
           name: Install packages
           command: |
             apt update
-            apt install -y git make docker.io
+            apt install -y git make
+      - run:
+          name: Install docker-ce cli (buildx)
+          command: |
+            apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
+            apt update
+            apt install -y docker-ce-cli
       - checkout
       - setup_remote_docker:
           # We might want to add this when things get slow
           # https://circleci.com/docs/2.0/docker-layer-caching/
           docker_layer_caching: false
       - run:
-          name: Build Docker artifact
-          command: make build
+          name: Build docker artifacts (linux/amd64)
+          command: make build-rust-optimizer-x86_64 build-workspace-optimizer-x86_64
+  build-arm64:
+    executor: ubuntu-arm64
+    steps:
+      - run: uname -a
+      - run:
+          name: Install packages
+          command: |
+            sudo apt update
+            sudo apt install -y git make
+      - run:
+          name: Install docker-ce (buildx)
+          command: |
+            sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+            sudo apt update
+            sudo apt install -y docker-ce docker-ce-cli containerd.io
+      - checkout
+      - run:
+          name: Build docker artifacts (linux/arm64)
+          command: make build-rust-optimizer-arm64 build-workspace-optimizer-arm64
   lint-scripts:
-    executor: ubuntu
+    executor: ubuntu-amd64
     steps:
       - run:
           name: Install packages
@@ -50,6 +84,7 @@ workflows:
   version: 2
   test-suite:
     jobs:
-      - build
+      - build-amd64
+      - build-arm64
       - lint-scripts
       - format-scripts
