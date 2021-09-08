@@ -32,7 +32,7 @@ RUN sha256sum /tmp/binaryen.tar.gz | grep fe140191607c76f02bd0f1cc641715cefcb48e
 RUN apk update && apk add build-base cmake git clang ninja
 RUN tar -xf /tmp/binaryen.tar.gz
 RUN cd binaryen-version_*/ && cmake . -G Ninja -DCMAKE_CXX_FLAGS="-static" -DCMAKE_C_FLAGS="-static" -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC_LIB=ON && ninja wasm-opt
-RUN strip -x binaryen-version_*/bin/wasm-opt
+RUN strip binaryen-version_*/bin/wasm-opt
 RUN mv binaryen-version_*/bin/wasm-opt binaryen-version_*/
 
 # GENERIC
