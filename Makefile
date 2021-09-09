@@ -28,7 +28,7 @@ build-workspace-optimizer-x86_64: use-rust-optimizer-multi
 	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --load .
 
 build-workspace-optimizer-arm64: use-rust-optimizer-multi
-	docker buildx build --platform linux/arm64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --load .
+	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --load .
 
 # Build only the native version by default
 build-rust-optimizer: build-rust-optimizer-$(BUILDARCH)
