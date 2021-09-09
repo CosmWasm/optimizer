@@ -12,7 +12,7 @@ echo "Info: sccache stats before build"
 sccache -s
 
 mkdir -p artifacts
-touch artifacts/checksums_intermediate.txt
+rm -f artifacts/checksums_intermediate.txt
 
 # There are two cases here
 # 1. All contracts (or one) are included in the root workspace  (eg. `cosmwasm-template`, `cosmwasm-examples`, `cosmwasm-plus`)
