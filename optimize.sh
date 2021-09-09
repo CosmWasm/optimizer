@@ -12,6 +12,7 @@ echo "Info: sccache stats before build"
 sccache -s
 
 mkdir -p artifacts
+>artifacts/checksums_intermediate.txt
 
 # There are two cases here
 # 1. All contracts (or one) are included in the root workspace  (eg. `cosmwasm-template`, `cosmwasm-examples`, `cosmwasm-plus`)
@@ -35,6 +36,8 @@ for contractdir in "$@"; do
   # wasm-optimize on all results
   for wasm in "$contractdir"/target/wasm32-unknown-unknown/release/*.wasm; do
     name=$(basename "$wasm")
+    echo "Creating intermediate hash for $name ..."
+    sha256sum -- "$wasm" | tee -a artifacts/checksums_intermediate.txt
     echo "Optimizing $name ..."
     wasm-opt -Os "$wasm" -o "artifacts/$name"
   done
@@ -44,7 +47,7 @@ done
 echo "Creating hashes ..."
 (
   cd artifacts
-  sha256sum -- *.wasm >checksums.txt
+  sha256sum -- *.wasm | tee checksums.txt
 )
 
 echo "Info: sccache stats after build"

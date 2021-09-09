@@ -16,8 +16,11 @@ rm -f target/wasm32-unknown-unknown/release/*.wasm
 echo "Building artifacts in workspace ..."
 /usr/local/bin/build_workspace.py
 
-echo "Optimizing artifacts in workspace ..."
 mkdir -p artifacts
+echo "Creating intermediate hashes ..."
+sha256sum -- target/wasm32-unknown-unknown/release/*.wasm | tee artifacts/checksums_intermediate.txt
+
+echo "Optimizing artifacts in workspace ..."
 TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 # Optimize artifacts
 (
@@ -36,7 +39,7 @@ rm -rf "$TMPARTIFACTS"
 echo "Post-processing artifacts in workspace ..."
 (
   cd artifacts
-  sha256sum -- *.wasm >checksums.txt
+  sha256sum -- *.wasm | tee checksums.txt
 )
 
 echo "done"
