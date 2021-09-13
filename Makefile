@@ -2,11 +2,7 @@
 
 DOCKER_NAME_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
 DOCKER_NAME_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
-<<<<<<< HEAD
-DOCKER_TAG := 0.12.2
-=======
 DOCKER_TAG := 0.12.3
->>>>>>> b4f148f (Port build_workspace script to Rust)
 
 # Native arch
 BUILDARCH := $(shell uname -m)
