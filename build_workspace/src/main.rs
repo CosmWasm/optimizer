@@ -27,12 +27,7 @@ fn main() {
 
     let mut all_packages = members
         .iter()
-        .map(|member| {
-            glob(member)
-                .unwrap()
-                .map(|path| path.unwrap())
-                .collect::<Vec<_>>()
-        })
+        .map(|member| glob(member).unwrap().map(|path| path.unwrap()))
         .flatten()
         .collect::<Vec<_>>();
 
