@@ -65,8 +65,11 @@ RUN chmod +x /usr/local/bin/optimize.sh
 
 ADD optimize_workspace.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/optimize_workspace.sh
-ADD build_workspace.py /usr/local/bin/
-RUN chmod +x /usr/local/bin/build_workspace.py
+
+ADD build_workspace build_workspace
+RUN cd build_workspace && \
+  cargo build --release && \
+  mv target/release/build_workspace /usr/local/bin
 
 #
 # base-optimizer
@@ -107,16 +110,12 @@ CMD ["."]
 #
 FROM base-optimizer as workspace-optimizer
 
-# Install Python
-RUN apk add python3 py3-toml
-RUN python3 --version
-
 # Assume we mount the source code in /code
 WORKDIR /code
 
 # Add script as entry point
 COPY --from=builder /usr/local/bin/optimize_workspace.sh /usr/local/bin
-COPY --from=builder /usr/local/bin/build_workspace.py /usr/local/bin
+COPY --from=builder /usr/local/bin/build_workspace /usr/local/bin
 
 ENTRYPOINT ["optimize_workspace.sh"]
 # Default argument when none is provided

@@ -11,6 +11,6 @@ insert_final_newline = true
 indent_style = tab
 indent_size = 4
 
-[*.py]
+[*.rs]
 indent_style = space
 indent_size = 4

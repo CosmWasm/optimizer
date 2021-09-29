@@ -14,7 +14,7 @@ rm -f target/wasm32-unknown-unknown/release/*.wasm
 
 # Build artifacts
 echo "Building artifacts in workspace ..."
-/usr/local/bin/build_workspace.py
+/usr/local/bin/build_workspace
 
 mkdir -p artifacts
 echo "Creating intermediate hashes ..."
