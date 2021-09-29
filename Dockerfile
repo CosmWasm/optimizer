@@ -67,7 +67,6 @@ ADD optimize_workspace.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/optimize_workspace.sh
 
 ADD build_workspace build_workspace
-ENV RUSTFLAGS="-C link-arg=-s"
 RUN cd build_workspace && \
   cargo build --release && \
   mv target/release/build_workspace /usr/local/bin

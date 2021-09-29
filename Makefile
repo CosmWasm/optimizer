@@ -2,7 +2,7 @@
 
 DOCKER_NAME_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
 DOCKER_NAME_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
-DOCKER_TAG := 0.12.2_rust_port
+DOCKER_TAG := 0.12.3
 
 # Native arch
 BUILDARCH := $(shell uname -m)

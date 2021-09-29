@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.12.3
+
+- Port workspace-optimizer Python script to Rust to reduce image sizes.
+
 ## 0.12.2
 
 - Support for arm64 Docker images.
