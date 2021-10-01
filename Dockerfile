@@ -69,6 +69,8 @@ RUN chmod +x /usr/local/bin/optimize_workspace.sh
 ADD build_workspace build_workspace
 RUN cd build_workspace && \
   cargo build --release && \
+  ls -ls target/release/build_workspace && \
+  ldd target/release/build_workspace && \
   mv target/release/build_workspace /usr/local/bin
 
 #
