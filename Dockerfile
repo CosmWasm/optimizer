@@ -71,9 +71,17 @@ RUN apk add --no-cache musl-dev
 
 ADD build_workspace build_workspace
 RUN cd build_workspace && \
-  cargo build --release && \
-  ls -ls target/release/build_workspace && \
-  ldd target/release/build_workspace && \
+  echo "Installed targets:" && (rustup target list | grep installed) && \
+  echo "Default target:" && (rustc -vV | grep 'host:' | cut -d' ' -f2) && \
+  # Okay, this is funny: If we explcitly set the --target to the default target
+  # x86_64-unknown-linux-musl/aarch64-unknown-linux-musl, we get a static binary
+  # of approximatly 700KB.
+  # Otherwise it is dynamically linked against ld-musl-x86_64.so.1 and 4 MB big.
+  # See https://internals.rust-lang.org/t/static-binary-support-in-rust/2011
+  cargo build --release --target "$(rustc -vV | grep 'host:' | cut -d' ' -f2)" && \
+  # cargo build --release && \
+  ls -lh target/release/build_workspace && \
+  (ldd target/release/build_workspace || true) && \
   mv target/release/build_workspace /usr/local/bin
 
 #
