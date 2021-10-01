@@ -66,6 +66,9 @@ RUN chmod +x /usr/local/bin/optimize.sh
 ADD optimize_workspace.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/optimize_workspace.sh
 
+# Being required for gcc linking of build_workspace
+RUN apk add --no-cache musl-dev
+
 ADD build_workspace build_workspace
 RUN cd build_workspace && \
   cargo build --release && \
