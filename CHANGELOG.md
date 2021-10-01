@@ -3,6 +3,7 @@
 ## 0.12.3
 
 - Port workspace-optimizer Python script to Rust to reduce image sizes.
+- Bump Rust to 1.55.0
 
 ## 0.12.2
 
