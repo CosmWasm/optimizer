@@ -3,10 +3,13 @@
 ## 0.12.3
 
 - Port workspace-optimizer Python script to Rust to reduce image sizes.
+- Bump Rust to 1.55.0
 
 ## 0.12.2
 
-- Support for arm64 Docker images.
+- Support for arm64 Docker images (not published; see ([#60])).
+
+[#60]: https://github.com/CosmWasm/rust-optimizer/issues/60
 
 ## 0.12.1
 

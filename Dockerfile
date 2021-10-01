@@ -1,4 +1,4 @@
-FROM rust:1.54.0-alpine as targetarch
+FROM rust:1.55.0-alpine as targetarch
 
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
@@ -66,15 +66,23 @@ RUN chmod +x /usr/local/bin/optimize.sh
 ADD optimize_workspace.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/optimize_workspace.sh
 
+# Being required for gcc linking of build_workspace
+RUN apk add --no-cache musl-dev
+
 ADD build_workspace build_workspace
 RUN cd build_workspace && \
-  cargo build --release && \
+  echo "Installed targets:" && (rustup target list | grep installed) && \
+  export DEFAULT_TARGET="$(rustc -vV | grep 'host:' | cut -d' ' -f2)" && echo "Default target: $DEFAULT_TARGET" && \
+  # Those RUSTFLAGS reduce binary size from 4MB to 600 KB
+  RUSTFLAGS='-C link-arg=-s' cargo build --release && \
+  ls -lh target/release/build_workspace && \
+  (ldd target/release/build_workspace || true) && \
   mv target/release/build_workspace /usr/local/bin
 
 #
 # base-optimizer
 #
-FROM rust:1.54.0-alpine as base-optimizer
+FROM rust:1.55.0-alpine as base-optimizer
 
 # Being required for gcc linking
 RUN apk update && \
