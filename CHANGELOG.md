@@ -6,7 +6,9 @@
 
 ## 0.12.2
 
-- Support for arm64 Docker images.
+- Support for arm64 Docker images (not published; see ([#60])).
+
+[#60]: https://github.com/CosmWasm/rust-optimizer/issues/60
 
 ## 0.12.1
 
