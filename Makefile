@@ -43,3 +43,5 @@ publish-workspace-optimizer-multi: use-rust-optimizer-multi
 	docker buildx build --platform linux/amd64,linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --push .
 
 publish-multi: publish-rust-optimizer-multi publish-workspace-optimizer-multi
+
+build-x86_64: build-rust-optimizer-x86_64 build-workspace-optimizer-x86_64
