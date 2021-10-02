@@ -32,10 +32,10 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
   cd "$TMPARTIFACTS"
 
   for WASM in ../target/wasm32-unknown-unknown/release/*.wasm; do
-    echo "Optimizing $WASM ..."
-    BASE=$(basename "$WASM" .wasm)${SUFFIX}.wasm
-    wasm-opt -Os -o "$BASE" "$WASM"
-    chmod -x "$BASE"
+    NAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
+    echo "Optimizing $NAME ..."
+    wasm-opt -Os "$WASM" -o "$NAME"
+    chmod -x "$NAME"
   done
   echo "Moving wasm files ..."
   mv ./*.wasm ../artifacts

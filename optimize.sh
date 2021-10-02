@@ -45,6 +45,7 @@ for CONTRACTDIR in "$@"; do
     sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt
     echo "Optimizing $NAME ..."
     wasm-opt -Os "$WASM" -o "artifacts/$NAME"
+    chmod -x "$NAME"
   done
 done
 
