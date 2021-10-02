@@ -35,7 +35,6 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
     NAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
     echo "Optimizing $NAME ..."
     wasm-opt -Os "$WASM" -o "$NAME"
-    chmod -x "$NAME"
   done
   echo "Moving wasm files ..."
   mv ./*.wasm ../artifacts
