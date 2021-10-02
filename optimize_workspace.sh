@@ -9,7 +9,7 @@ export PATH="$PATH:/root/.cargo/bin"
 # Suffix for non-Intel built artifacts
 MACHINE=$(uname -m)
 SUFFIX=${MACHINE#x86_64}
-SUFFIX=${SUFFIX:+_$SUFFIX}
+SUFFIX=${SUFFIX:+-$SUFFIX}
 
 rustup toolchain list
 cargo --version
