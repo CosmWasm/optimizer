@@ -68,6 +68,16 @@ all, but the majority of the build time is in dependencies, which are shared and
 between the various contracts and thus the time is sub-linear with respect to number
 of contracts.
 
+For release builds, you must specify the processor architecture as Intel / Amd64
+(see ##Notice below for details of why this is needed):
+
+```shell
+docker run --platform linux/amd64 --rm -v "$(pwd)":/code \
+  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  cosmwasm/workspace-optimizer:0.12.3
+```
+
 ### Contracts excluded from Workspace
 
 _This is designed for cosmwasm samples. You cannot provide automatic verification for these_
@@ -89,6 +99,16 @@ docker run --rm -v "$(pwd)":/code \
   cosmwasm/rust-optimizer:0.12.3 ./contracts/burner
 ```
 
+For release builds, you must specify the processor architecture as Intel / Amd64
+(see ##Notice below for details of why this is needed):
+
+```shell
+docker run --platform linux/amd64 --rm -v "$(pwd)":/code \
+  --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
+  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  cosmwasm/rust-optimizer:0.12.3 ./contracts/burner
+```
+
 ## Development
 
 Take a look at the [Makefile](https://github.com/CosmWasm/rust-optimizer/blob/master/Makefile)
@@ -98,7 +118,7 @@ and `make run` to test it (requires the `CODE` env var to be set)
 ## Notice
 
 This has been tested on Linux (Ubuntu / Debian). There are currently versions of both optimizers for two processor
-architectures: Intel 64-bits, and Arm 64-bits (these images run natively on Mac M1 machines).
+architectures: Intel / Amd 64-bits, and Arm 64-bits (these run natively on Mac M1 machines).
 
 **However**, the native Arm version produces different wasm artifacts than the Intel version. Given that that impacts
 reproducibility, non-Intel built artifact names contain a suffix (the machine's hardware name), to differentiate and
