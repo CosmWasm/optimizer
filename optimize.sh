@@ -6,6 +6,11 @@ command -v shellcheck >/dev/null && shellcheck "$0"
 
 export PATH=$PATH:/root/.cargo/bin
 
+# Suffix for non-Intel built artifacts
+MACHINE=$(uname -m)
+SUFFIX=${MACHINE#x86_64}
+SUFFIX=${SUFFIX:+_$SUFFIX}
+
 echo "Info: RUSTC_WRAPPER=$RUSTC_WRAPPER"
 
 echo "Info: sccache stats before build"
@@ -35,7 +40,7 @@ for contractdir in "$@"; do
 
   # wasm-optimize on all results
   for wasm in "$contractdir"/target/wasm32-unknown-unknown/release/*.wasm; do
-    name=$(basename "$wasm")
+    name=$(basename "$wasm" .wasm)${SUFFIX}.wasm
     echo "Creating intermediate hash for $name ..."
     sha256sum -- "$wasm" | tee -a artifacts/checksums_intermediate.txt
     echo "Optimizing $name ..."

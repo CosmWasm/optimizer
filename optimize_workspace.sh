@@ -6,6 +6,11 @@ command -v shellcheck >/dev/null && shellcheck "$0"
 
 export PATH="$PATH:/root/.cargo/bin"
 
+# Suffix for non-Intel built artifacts
+MACHINE=$(uname -m)
+SUFFIX=${MACHINE#x86_64}
+SUFFIX=${SUFFIX:+_$SUFFIX}
+
 rustup toolchain list
 cargo --version
 
@@ -28,7 +33,7 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 
   for WASM in ../target/wasm32-unknown-unknown/release/*.wasm; do
     echo "Optimizing $WASM ..."
-    BASE=$(basename "$WASM")
+    BASE=$(basename "$WASM" .wasm)${SUFFIX}.wasm
     wasm-opt -Os -o "$BASE" "$WASM"
     chmod -x "$BASE"
   done
