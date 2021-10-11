@@ -22,13 +22,13 @@ build-rust-optimizer-x86_64: use-rust-optimizer-multi
 	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --load .
 
 build-rust-optimizer-arm64: use-rust-optimizer-multi
-	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --load .
+	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG) --target rust-optimizer --load .
 
 build-workspace-optimizer-x86_64: use-rust-optimizer-multi
 	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --load .
 
 build-workspace-optimizer-arm64: use-rust-optimizer-multi
-	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --load .
+	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG) --target workspace-optimizer --load .
 
 # Build only the native version by default
 build-rust-optimizer: build-rust-optimizer-$(BUILDARCH)
@@ -37,10 +37,12 @@ build-rust-optimizer: build-rust-optimizer-$(BUILDARCH)
 build-workspace-optimizer: build-workspace-optimizer-$(BUILDARCH)
 
 publish-rust-optimizer-multi: use-rust-optimizer-multi
-	docker buildx build --platform linux/amd64,linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --push .
+	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --push .
+	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG) --target rust-optimizer --push .
 
 publish-workspace-optimizer-multi: use-rust-optimizer-multi
-	docker buildx build --platform linux/amd64,linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --push .
+	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --push .
+	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG) --target workspace-optimizer --push .
 
 publish-multi: publish-rust-optimizer-multi publish-workspace-optimizer-multi
 
