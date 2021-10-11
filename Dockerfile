@@ -4,8 +4,7 @@ ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 ARG TARGETARCH
 
-ARG BINARYEN_VERSION="version_96"
-ARG BINARYEN_CHECKSUM="9f8397a12931df577b244a27c293d7c976bc7e980a12457839f46f8202935aac"
+ARG BINARYEN_VERSION="version_102"
 
 RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 
@@ -13,16 +12,12 @@ RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 FROM targetarch as builder-amd64
 ARG ARCH="x86_64"
 
-# Download binaryen binary and verify checksum
-ADD https://github.com/WebAssembly/binaryen/releases/download/$BINARYEN_VERSION/binaryen-$BINARYEN_VERSION-x86_64-linux.tar.gz /tmp/binaryen.tar.gz
-RUN sha256sum /tmp/binaryen.tar.gz | grep $BINARYEN_CHECKSUM
-
-# Extract wasm-opt
-RUN tar -xf /tmp/binaryen.tar.gz
-
 # ARM64
 FROM targetarch as builder-arm64
 ARG ARCH="aarch64"
+
+# GENERIC
+FROM builder-${TARGETARCH} as builder
 
 # Download binaryen sources
 ADD https://github.com/WebAssembly/binaryen/archive/refs/tags/$BINARYEN_VERSION.tar.gz /tmp/binaryen.tar.gz
@@ -32,14 +27,14 @@ ADD https://github.com/WebAssembly/binaryen/archive/refs/tags/$BINARYEN_VERSION.
 RUN apk update && apk add build-base cmake git python3 clang ninja
 RUN tar -xf /tmp/binaryen.tar.gz
 RUN cd binaryen-version_*/ && cmake . -G Ninja -DCMAKE_CXX_FLAGS="-static" -DCMAKE_C_FLAGS="-static" -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC_LIB=ON && ninja wasm-opt
-RUN strip binaryen-version_*/bin/wasm-opt
-RUN mv binaryen-version_*/bin/wasm-opt binaryen-version_*/
 
-# GENERIC
-FROM builder-${TARGETARCH} as builder
+# Run tests
+RUN cd binaryen-version_*/ && ninja wasm-as wasm-dis
+RUN cd binaryen-version_*/ && python3 check.py wasm-opt
 
 # Install wasm-opt
-RUN mv binaryen-version_*/wasm-opt /usr/local/bin
+RUN strip binaryen-version_*/bin/wasm-opt
+RUN mv binaryen-version_*/bin/wasm-opt /usr/local/bin
 
 # Check cargo version
 RUN cargo --version
