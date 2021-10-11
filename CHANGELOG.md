@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Unreleased
+
+- Update to binaryen v102. Build binaryen from sources and test it in both,
+  Intel and Arm 64.
+
 ## 0.12.3
 
 - Port workspace-optimizer Python script to Rust to reduce image sizes.
