@@ -68,13 +68,6 @@ all, but the majority of the build time is in dependencies, which are shared and
 between the various contracts and thus the time is sub-linear with respect to number
 of contracts.
 
-```shell
-docker run --rm -v "$(pwd)":/code \
-  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
-  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/workspace-optimizer:0.12.3
-```
-
 ### Contracts excluded from Workspace
 
 _This is designed for cosmwasm samples. You cannot provide automatic verification for these_
@@ -88,13 +81,6 @@ top-level `Cargo.toml`. In this case, we compile each contract separately
 with it's own cache. However, since they may refer to packages via path
 (`../../packages/std`), we need to run the script in the repo root. In this
 case, we can use the optimize.sh command:
-
-```shell
-docker run --rm -v "$(pwd)":/code \
-  --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
-  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.12.3 ./contracts/burner
-```
 
 ```shell
 docker run --rm -v "$(pwd)":/code \
