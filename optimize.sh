@@ -6,6 +6,11 @@ command -v shellcheck >/dev/null && shellcheck "$0"
 
 export PATH=$PATH:/root/.cargo/bin
 
+# Suffix for non-Intel built artifacts
+MACHINE=$(uname -m)
+SUFFIX=${MACHINE#x86_64}
+SUFFIX=${SUFFIX:+-$SUFFIX}
+
 echo "Info: RUSTC_WRAPPER=$RUSTC_WRAPPER"
 
 echo "Info: sccache stats before build"
@@ -22,11 +27,11 @@ rm -f artifacts/checksums_intermediate.txt
 
 # This parameter allows us to mount a folder into docker container's "/code"
 # and build "/code/contracts/mycontract".
-# Note: if contractdir is "." (default in Docker), this ends up as a noop
-for contractdir in "$@"; do
-  echo "Building contract in $(realpath "$contractdir") ..."
+# Note: if CONTRACTDIR is "." (default in Docker), this ends up as a noop
+for CONTRACTDIR in "$@"; do
+  echo "Building contract in $(realpath "$CONTRACTDIR") ..."
   (
-    cd "$contractdir"
+    cd "$CONTRACTDIR"
 
     # Linker flag "-s" for stripping (https://github.com/rust-lang/cargo/issues/3483#issuecomment-431209957)
     # Note that shortcuts from .cargo/config are not available in source code packages from crates.io
@@ -34,12 +39,12 @@ for contractdir in "$@"; do
   )
 
   # wasm-optimize on all results
-  for wasm in "$contractdir"/target/wasm32-unknown-unknown/release/*.wasm; do
-    name=$(basename "$wasm")
-    echo "Creating intermediate hash for $name ..."
-    sha256sum -- "$wasm" | tee -a artifacts/checksums_intermediate.txt
-    echo "Optimizing $name ..."
-    wasm-opt -Os "$wasm" -o "artifacts/$name"
+  for WASM in "$CONTRACTDIR"/target/wasm32-unknown-unknown/release/*.wasm; do
+    NAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
+    echo "Creating intermediate hash for $NAME ..."
+    sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt
+    echo "Optimizing $NAME ..."
+    wasm-opt -Os "$WASM" -o "artifacts/$NAME"
   done
 done
 

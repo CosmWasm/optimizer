@@ -97,6 +97,11 @@ and `make run` to test it (requires the `CODE` env var to be set)
 
 ## Notice
 
-This has only been tested on Linux (Ubuntu). There are likely some minor compatibility
-issues on OSX and I doubt it runs on Windows without larger changes. If you use one of
-those platforms, please submit a PR for better support.
+This has been tested on Linux (Ubuntu / Debian). There are currently versions of both optimizers for two processor
+architectures: Intel/Amd 64-bits, and Arm 64-bits (these run natively on Mac M1 machines).
+
+**However**, the native Arm version produces different wasm artifacts than the Intel version. Given that that impacts
+reproducibility, non-Intel images and build artifacts contain a "-arm64" suffix, to differentiate and flag them.
+
+Arm images are released to ease development and testing on Mac M1 machines. **For release / production use,
+only contracts built with the Intel optimizers must be used.**
