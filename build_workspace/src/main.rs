@@ -27,7 +27,14 @@ fn main() {
 
     let mut all_packages = members
         .iter()
-        .map(|member| glob(member).unwrap().map(|path| path.unwrap()))
+        .map(|member| {
+            glob(member)
+                .unwrap()
+                .map(|path| path.unwrap())
+                // Checks whether given path is a directory, since additional
+                // files may cause panic later
+                .filter(|path| path.is_dir())
+        })
         .flatten()
         .collect::<Vec<_>>();
 
