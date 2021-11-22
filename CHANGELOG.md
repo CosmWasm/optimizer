@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.12.4
+
 - Update to binaryen v102. Build binaryen from sources and test it in both,
   Intel and Arm 64.
 - Adds the "-arm64" suffix to Arm 64 image names. Also adds a suffix to non-x86_64 (Intel 64 bits) built artifacts.
