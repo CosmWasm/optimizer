@@ -36,15 +36,23 @@ build-rust-optimizer: build-rust-optimizer-$(BUILDARCH)
 # Build only the native version by default
 build-workspace-optimizer: build-workspace-optimizer-$(BUILDARCH)
 
-publish-rust-optimizer-multi: use-rust-optimizer-multi
-	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --push .
-	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG) --target rust-optimizer --push .
+# publish-rust-optimizer-multi: use-rust-optimizer-multi
+# 	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --push .
+# 	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG) --target rust-optimizer --push .
 
-publish-workspace-optimizer-multi: use-rust-optimizer-multi
-	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --push .
-	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG) --target workspace-optimizer --push .
+# publish-workspace-optimizer-multi: use-rust-optimizer-multi
+# 	docker buildx build --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --push .
+# 	docker buildx build --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG) --target workspace-optimizer --push .
 
-publish-multi: publish-rust-optimizer-multi publish-workspace-optimizer-multi
+# publish-multi: publish-rust-optimizer-multi publish-workspace-optimizer-multi
 
 build-x86_64: build-rust-optimizer-x86_64 build-workspace-optimizer-x86_64
 build-arm64: build-rust-optimizer-arm64 build-workspace-optimizer-arm64
+
+publish-x86_64: build-x86_64
+	docker push $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG)
+	docker push $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG)
+
+publish-arm64: build-arm64
+	docker push $(DOCKER_NAME_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG)
+	docker push $(DOCKER_NAME_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG)
