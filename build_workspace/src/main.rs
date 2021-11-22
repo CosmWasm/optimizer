@@ -2,6 +2,7 @@ use glob::glob;
 use serde::Deserialize;
 use std::{
     fs::{self, canonicalize},
+    path::PathBuf,
     process::Command,
 };
 
@@ -18,6 +19,17 @@ pub struct Workspace {
     members: Vec<String>,
 }
 
+/// Checks if the given path is a Cargo project. This is needed
+/// to filter the glob results of a workspace member like `contracts/*`
+/// to exclude things like non-directories.
+#[allow(clippy::ptr_arg)]
+fn is_cargo_project(path: &PathBuf) -> bool {
+    // Should we do other checks in here? E.g. filter out hidden directories
+    // or directories without Cargo.toml. This should be in line with what
+    // cargo does for wildcard workspace members.
+    path.is_dir()
+}
+
 fn main() {
     let file = fs::read_to_string("Cargo.toml").unwrap();
     let cargo_toml: CargoToml = toml::from_str(&file).unwrap();
@@ -31,9 +43,7 @@ fn main() {
             glob(member)
                 .unwrap()
                 .map(|path| path.unwrap())
-                // Checks whether given path is a directory, since additional
-                // files may cause panic later
-                .filter(|path| path.is_dir())
+                .filter(is_cargo_project)
         })
         .flatten()
         .collect::<Vec<_>>();
