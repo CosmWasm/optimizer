@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Bump Rust to current stable v1.58.1
+
 ## 0.12.4
 
 - Update to binaryen v102. Build binaryen from sources and test it in both,
