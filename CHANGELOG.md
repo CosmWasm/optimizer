@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Bump Rust to current stable v1.58.1
+- Update to binaryen v105.
+- Bump Rust to current stable v1.58.1.
 
 ## 0.12.4
 
