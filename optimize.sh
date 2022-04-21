@@ -4,6 +4,7 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck >/dev/null && shellcheck "$0"
 
+[ -n "${GIT_CREDENTIALS=""}" ] && echo "$GIT_CREDENTIALS" >~/.git-credentials && git config --global credential.helper store
 export PATH=$PATH:/root/.cargo/bin
 
 # Suffix for non-Intel built artifacts

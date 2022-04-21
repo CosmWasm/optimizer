@@ -79,9 +79,10 @@ RUN cd build_workspace && \
 #
 FROM rust:1.60.0-alpine as base-optimizer
 
-# Being required for gcc linking
+# musl-dev is required for gcc linking.
+# Adding Git for usage within projects that use `git-fetch-with-cli = true`.
 RUN apk update && \
-  apk add --no-cache musl-dev
+  apk add --no-cache musl-dev git
 
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown

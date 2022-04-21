@@ -35,6 +35,23 @@ docker run --rm -v "$(pwd)":/code \
 Demo this with `cosmwasm-examples` (going into eg. `erc20` subdir before running),
 with `cosmwasm-plus`, or with a sample app from `cosmwasm-template`.
 
+### Configuring Private Repo Dependencies
+
+SSH credentials for fetching private repo dependencies can be configured through environment variable `GIT_CREDENTIALS` 
+
+```sh
+docker run -e GIT_CREDENTIALS=https://<gituser>:<token>@github.com --rm -v "$(pwd)":/code \
+  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+  --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  cosmwasm/rust-optimizer:0.12.6
+```
+
+
+**Note**: *This makes reproducible builds somewhere between hard and impossible.*
+
+
+## Caching
+
 Note that we use one registry cache (to avoid excessive downloads), but the target cache is a different volume per
 contract that we compile. This means no interference between contracts, but very fast recompile times when making
 minor adjustments to a contract you had previously created an optimized build for.
