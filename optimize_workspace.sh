@@ -36,19 +36,33 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
     INTERMEDIATE_SHA=$(sha256sum -- "$WASM" | sed 's,../target,target,g')
     INTERMEDIATE_SHAS="../artifacts/checksums_intermediate.txt"
 
-    OPTIMIZATION_EXISTS=1
+    SKIP_OPTIMIZATION=false
     if test -f "../artifacts/${OPTIMIZED_WASM}"; then
+      INTERMEDIATE_CACHE_HIT=$(
+        grep -Fxsq "$INTERMEDIATE_SHA" "$INTERMEDIATE_SHAS"
+        echo $?
+      )
       OPTIMIZED_SHA=$(sha256sum -- "../artifacts/$OPTIMIZED_WASM" | sed 's,../artifacts/,,g')
       OPTIMIZED_SHAS="../artifacts/checksums.txt"
-      grep -Fxq "$OPTIMIZED_SHA" "$OPTIMIZED_SHAS"
-      OPTIMIZATION_EXISTS=$?
+      OPTIMIZED_CACHE_HIT=$(
+        grep -Fxsq "$OPTIMIZED_SHA" "$OPTIMIZED_SHAS"
+        echo $?
+      )
+      if [ "$INTERMEDIATE_CACHE_HIT" -eq 0 ] && [ "$OPTIMIZED_CACHE_HIT" -eq 0 ]; then
+        SKIP_OPTIMIZATION=true
+      fi
     fi
 
-    if grep -Fxq "$INTERMEDIATE_SHA" "$INTERMEDIATE_SHAS" && test "$OPTIMIZATION_EXISTS" -eq 0; then
+    if [ "$SKIP_OPTIMIZATION" = true ]; then
       echo "$BASENAME unchanged. Skipping optimization."
     else
-      grep -vs "$BASENAME" "$INTERMEDIATE_SHAS" >tmp_shas && mv -f tmp_shas "$INTERMEDIATE_SHAS"
-      echo "Creating intermediate hash for ${BASENAME}..."
+      if test -f "$INTERMEDIATE_SHAS"; then
+        echo "Updating intermediate hash for ${BASENAME}..."
+        grep -v "$BASENAME" "$INTERMEDIATE_SHAS" >tmp_shas && mv -f tmp_shas "$INTERMEDIATE_SHAS"
+      else
+        echo "Creating intermediate hash for ${BASENAME}..."
+      fi
+
       echo "$INTERMEDIATE_SHA" | tee -a "$INTERMEDIATE_SHAS" >/dev/null
       echo "Optimizing ${BASENAME}..."
       wasm-opt -Os "$WASM" -o "$OPTIMIZED_WASM"
