@@ -35,7 +35,7 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 
     SHA256=$(sha256sum -- "$WASM" | sed 's/..\/target/target/g')
     INTERMEDIATES="../artifacts/checksums_intermediate.txt"
-    if grep -Fxq "$SHA256" "$INTERMEDIATES"; then
+    if grep -Fxq "$SHA256" "$INTERMEDIATES" && test -f "../artifacts/${FILENAME}"; then
       echo "$BASENAME unchanged. Skipping optimization."
     else
       grep -vs "$BASENAME" "$INTERMEDIATES" >tmp_shas && mv -f tmp_shas "$INTERMEDIATES"
@@ -43,8 +43,8 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
       echo "$SHA256" | tee -a "$INTERMEDIATES" >/dev/null
       echo "Optimizing ${BASENAME}..."
       wasm-opt -Os "$WASM" -o "$FILENAME"
-      echo "Moving wasm files..."
-      mv ./*.wasm ../artifacts
+      echo "Moving wasm file..."
+      mv "$FILENAME" ../artifacts
     fi
   done
 )
