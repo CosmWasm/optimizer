@@ -62,8 +62,8 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
       else
         echo "Creating intermediate hash for ${BASENAME}..."
       fi
+      echo "$INTERMEDIATE_SHA" >>"$INTERMEDIATE_SHAS"
 
-      echo "$INTERMEDIATE_SHA" | tee -a "$INTERMEDIATE_SHAS" >/dev/null
       echo "Optimizing ${BASENAME}..."
       wasm-opt -Os "$WASM" -o "$OPTIMIZED_WASM"
       echo "Moving wasm file..."
