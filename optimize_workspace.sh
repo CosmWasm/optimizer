@@ -58,7 +58,7 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
     else
       if test -f "$INTERMEDIATE_SHAS"; then
         echo "Updating intermediate hash for ${BASENAME}..."
-        grep -v "$BASENAME" "$INTERMEDIATE_SHAS" >tmp_shas && mv -f tmp_shas "$INTERMEDIATE_SHAS"
+        sed -ni "/$BASENAME/!p" "$INTERMEDIATE_SHAS"
       else
         echo "Creating intermediate hash for ${BASENAME}..."
       fi
