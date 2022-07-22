@@ -27,6 +27,8 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 # Optimize artifacts
 (
   cd "$TMPARTIFACTS"
+  INTERMEDIATE_SHAS="../artifacts/checksums_intermediate.txt"
+  OPTIMIZED_SHAS="../artifacts/checksums.txt"
 
   for WASM in ../target/wasm32-unknown-unknown/release/*.wasm; do
     BASENAME=$(basename "$WASM" .wasm)
@@ -34,7 +36,6 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
     OPTIMIZED_WASM=${NAME}.wasm
 
     INTERMEDIATE_SHA=$(sha256sum -- "$WASM" | sed 's,../target,target,g')
-    INTERMEDIATE_SHAS="../artifacts/checksums_intermediate.txt"
 
     SKIP_OPTIMIZATION=false
     if test -f "../artifacts/${OPTIMIZED_WASM}"; then
@@ -43,7 +44,6 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
         echo $?
       )
       OPTIMIZED_SHA=$(sha256sum -- "../artifacts/$OPTIMIZED_WASM" | sed 's,../artifacts/,,g')
-      OPTIMIZED_SHAS="../artifacts/checksums.txt"
       OPTIMIZED_CACHE_HIT=$(
         grep -Fxsq "$OPTIMIZED_SHA" "$OPTIMIZED_SHAS"
         echo $?
