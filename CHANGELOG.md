@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.12.7
+
 - Support incremental workspace optimizations ([#84])
 - Bump Rust to current stable v1.63.0.
 
