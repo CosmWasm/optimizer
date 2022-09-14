@@ -29,6 +29,8 @@ jobs:
             echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
             apt update
             apt install -y docker-ce-cli
+            systemctl status docker
+            docker version
       - checkout
       - setup_remote_docker:
           # We might want to add this when things get slow
@@ -62,6 +64,8 @@ jobs:
             echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
             sudo apt update
             sudo apt install -y docker-ce docker-ce-cli containerd.io
+            sudo systemctl status docker
+            docker version
       - checkout
       - run:
           name: Build rust-optimizer
