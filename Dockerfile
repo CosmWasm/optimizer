@@ -1,5 +1,8 @@
 FROM rust:1.63.0-alpine as targetarch
 
+# Variables set by docker
+# See https://www.docker.com/blog/faster-multi-platform-builds-dockerfile-cross-compilation-guide/
+# and https://docs.docker.com/build/buildx/multiplatform-images/
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 ARG TARGETARCH
