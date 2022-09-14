@@ -29,10 +29,10 @@ jobs:
             echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
             apt update
             apt install -y docker-ce-cli
-            docker version
-      - run:
-          name: Check docker installation
-          command: docker version
+            # Version command fails due to the lack of a Docker daemon
+            # but docker-ce-cli is a "A self-sufficient runtime for containers."
+            # https://github.com/docker/docker-ce/blob/master/components/cli/docs/reference/commandline/cli.md
+            docker version || true
       - checkout
       - setup_remote_docker:
           # We might want to add this when things get slow
