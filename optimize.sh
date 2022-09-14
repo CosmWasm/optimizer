@@ -35,7 +35,7 @@ for CONTRACTDIR in "$@"; do
 
     # Linker flag "-s" for stripping (https://github.com/rust-lang/cargo/issues/3483#issuecomment-431209957)
     # Note that shortcuts from .cargo/config are not available in source code packages from crates.io
-    RUSTFLAGS='-C link-arg=-s' cargo build --release --target wasm32-unknown-unknown --locked
+    RUSTFLAGS='-C link-arg=-s' cargo build --release --lib --target wasm32-unknown-unknown --locked
   )
 
   # wasm-optimize on all results

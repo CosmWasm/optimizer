@@ -66,6 +66,7 @@ fn main() {
             .args(&[
                 "build",
                 "--release",
+                "--lib",
                 "--target=wasm32-unknown-unknown",
                 "--locked",
             ])
