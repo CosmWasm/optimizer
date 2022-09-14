@@ -1,7 +1,10 @@
 # The following line activates a syntax version for this Dockerfile that allows us to
-# use heredoc (https://github.com/moby/moby/issues/16058#issuecomment-881901519).
-# See https://hub.docker.com/r/docker/dockerfile.
-# syntax = docker/dockerfile:1.3
+# use heredoc.
+# See
+# - https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/
+# - https://github.com/moby/moby/issues/16058#issuecomment-881901519
+# - https://hub.docker.com/r/docker/dockerfile.
+# syntax=docker/dockerfile:1.3
 
 FROM rust:1.63.0-alpine as builder
 

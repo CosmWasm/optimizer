@@ -11,16 +11,16 @@ BUILDARCH := $(shell uname -m)
 build: build-rust-optimizer build-workspace-optimizer
 
 build-rust-optimizer-x86_64:
-	docker build --pull --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer .
+	DOCKER_BUILDKIT=1 docker build --pull --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer .
 
 build-rust-optimizer-arm64:
-	docker build --pull --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG) --target rust-optimizer .
+	DOCKER_BUILDKIT=1 docker build --pull --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG) --target rust-optimizer .
 
 build-workspace-optimizer-x86_64:
-	docker build --pull --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer .
+	DOCKER_BUILDKIT=1 docker build --pull --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer .
 
 build-workspace-optimizer-arm64:
-	docker build --pull --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG) --target workspace-optimizer .
+	DOCKER_BUILDKIT=1 docker build --pull --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG) --target workspace-optimizer .
 
 # Build only the native version by default
 build-rust-optimizer: build-rust-optimizer-$(BUILDARCH)
