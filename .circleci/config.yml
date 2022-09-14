@@ -3,7 +3,7 @@ version: 2.1
 executors:
   ubuntu-amd64:
     docker:
-      - image: ubuntu:20.04
+      - image: ubuntu:22.04
   ubuntu-arm64:
     machine:
       image: ubuntu-2004:202101-01
@@ -21,16 +21,19 @@ jobs:
           command: |
             apt update
             apt install -y git make
+      # - run:
+      #     name: Install docker-ce cli (buildx)
+      #     command: |
+      #       apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+      #       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      #       echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
+      #       apt update
+      #       apt install -y docker-ce-cli
+      #       systemctl status docker
+      #       docker version
       - run:
-          name: Install docker-ce cli (buildx)
-          command: |
-            apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
-            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
-            apt update
-            apt install -y docker-ce-cli
-            systemctl status docker
-            docker version
+          name: Check docker installation
+          command: docker version
       - checkout
       - setup_remote_docker:
           # We might want to add this when things get slow
