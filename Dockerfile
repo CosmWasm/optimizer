@@ -1,4 +1,4 @@
-# syntax = docker/dockerfile:1.4
+# syntax = docker/dockerfile:1.3
 
 FROM rust:1.63.0-alpine as builder
 
