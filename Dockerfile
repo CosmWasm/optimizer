@@ -1,26 +1,12 @@
-FROM rust:1.63.0-alpine as targetarch
+# syntax = docker/dockerfile:1.4
 
-# Variables set by docker
-# See https://www.docker.com/blog/faster-multi-platform-builds-dockerfile-cross-compilation-guide/
-# and https://docs.docker.com/build/buildx/multiplatform-images/
-ARG BUILDPLATFORM
-ARG TARGETPLATFORM
-ARG TARGETARCH
+FROM rust:1.63.0-alpine as builder
 
 ARG BINARYEN_VERSION="version_105"
-
-RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
-
-# AMD64
-FROM targetarch as builder-amd64
-ARG ARCH="x86_64"
-
-# ARM64
-FROM targetarch as builder-arm64
-ARG ARCH="aarch64"
-
-# GENERIC
-FROM builder-${TARGETARCH} as builder
+ARG SCCACHE_VERSION="0.2.15"
+ARG SCCACHE_CHECKSUM_AMD64="e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca"
+ARG SCCACHE_CHECKSUM_ARM64="90d91d21a767e3f558196dbd52395f6475c08de5c4951a4c8049575fa6894489"
+ARG TARGETARCH
 
 # Download binaryen sources
 ADD https://github.com/WebAssembly/binaryen/archive/refs/tags/$BINARYEN_VERSION.tar.gz /tmp/binaryen.tar.gz
@@ -45,17 +31,26 @@ RUN cargo --version
 # Check wasm-opt version
 RUN wasm-opt --version
 
-# Download sccache and verify checksum
-ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-$ARCH-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
-RUN sha256sum /tmp/sccache.tar.gz | egrep '(e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca|90d91d21a767e3f558196dbd52395f6475c08de5c4951a4c8049575fa6894489)'
+# Install install
+RUN <<EOT
+  if [ "amd64" = "$TARGETARCH" ]; then
+    wget -O /tmp/sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v$SCCACHE_VERSION/sccache-v$SCCACHE_VERSION-x86_64-unknown-linux-musl.tar.gz
+    sha256sum /tmp/sccache.tar.gz | grep "$SCCACHE_CHECKSUM_AMD64"
+  elif [ "arm64" = "$TARGETARCH" ]; then
+    wget -O /tmp/sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v$SCCACHE_VERSION/sccache-v$SCCACHE_VERSION-aarch64-unknown-linux-musl.tar.gz
+    sha256sum /tmp/sccache.tar.gz | grep "$SCCACHE_CHECKSUM_ARM64"
+  else
+    echo "Got unexpected value for TARGETARCH: '$TARGETARCH'"
+    exit 42
+  fi
 
-# Extract and install sccache
-RUN tar -xf /tmp/sccache.tar.gz
-RUN mv sccache-v*/sccache /usr/local/bin/sccache
-RUN chmod +x /usr/local/bin/sccache
+  tar -xf /tmp/sccache.tar.gz
+  mv sccache-v*/sccache /usr/local/bin/sccache
+  chmod +x /usr/local/bin/sccache
+  rm /tmp/sccache.tar.gz
 
-# Check sccache version
-RUN sccache --version
+  sccache --version
+EOT
 
 # Add scripts
 ADD optimize.sh /usr/local/bin/optimize.sh
