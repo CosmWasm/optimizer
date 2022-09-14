@@ -1,3 +1,6 @@
+# The following line activates a syntax version for this Dockerfile that allows us to
+# use heredoc (https://github.com/moby/moby/issues/16058#issuecomment-881901519).
+# See https://hub.docker.com/r/docker/dockerfile.
 # syntax = docker/dockerfile:1.3
 
 FROM rust:1.63.0-alpine as builder
@@ -31,8 +34,8 @@ RUN cargo --version
 # Check wasm-opt version
 RUN wasm-opt --version
 
-# Install install
-RUN <<EOT
+# Install sccache
+RUN <<EOT ash
   if [ "amd64" = "$TARGETARCH" ]; then
     wget -O /tmp/sccache.tar.gz https://github.com/mozilla/sccache/releases/download/v$SCCACHE_VERSION/sccache-v$SCCACHE_VERSION-x86_64-unknown-linux-musl.tar.gz
     sha256sum /tmp/sccache.tar.gz | grep "$SCCACHE_CHECKSUM_AMD64"
