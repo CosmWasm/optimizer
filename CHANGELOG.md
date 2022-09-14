@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.12.8
+
+- Add --lib to cargo build
+
 ## 0.12.7
 
 - Support incremental workspace optimizations ([#84])
