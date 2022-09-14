@@ -10,24 +10,16 @@ BUILDARCH := $(shell uname -m)
 # Build multi-CPU architecture images and publish them. rust alpine images support the linux/amd64 and linux/arm64/v8 architectures.
 build: build-rust-optimizer build-workspace-optimizer
 
-create-rust-optimizer-multi:
-	docker context create rust-optimizer-multi
-	docker buildx create --name rust-optimizer-multi rust-optimizer-multi
-
-use-rust-optimizer-multi:
-	$(MAKE) create-rust-optimizer-multi || true
-	docker buildx use rust-optimizer-multi
-
-build-rust-optimizer-x86_64: use-rust-optimizer-multi
+build-rust-optimizer-x86_64:
 	docker buildx build --pull --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --load .
 
-build-rust-optimizer-arm64: use-rust-optimizer-multi
+build-rust-optimizer-arm64:
 	docker buildx build --pull --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG) --target rust-optimizer --load .
 
-build-workspace-optimizer-x86_64: use-rust-optimizer-multi
+build-workspace-optimizer-x86_64:
 	docker buildx build --pull --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --load .
 
-build-workspace-optimizer-arm64: use-rust-optimizer-multi
+build-workspace-optimizer-arm64:
 	docker buildx build --pull --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG) --target workspace-optimizer --load .
 
 # Build only the native version by default
