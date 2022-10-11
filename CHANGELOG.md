@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Bump Rust to current stable v1.64.0
+
 ## 0.12.8
 
 - Add --lib to cargo build
