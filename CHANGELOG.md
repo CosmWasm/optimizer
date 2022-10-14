@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.12.9
+
 - Bump Rust to current stable v1.64.0
 
 ## 0.12.8
