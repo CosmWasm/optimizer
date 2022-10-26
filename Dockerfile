@@ -4,7 +4,7 @@ ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 ARG TARGETARCH
 
-ARG BINARYEN_VERSION="version_105"
+ARG BINARYEN_VERSION="version_110"
 
 RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 
@@ -26,7 +26,7 @@ ADD https://github.com/WebAssembly/binaryen/archive/refs/tags/$BINARYEN_VERSION.
 # Adapted from https://github.com/WebAssembly/binaryen/blob/main/.github/workflows/build_release.yml
 RUN apk update && apk add build-base cmake git python3 clang ninja
 RUN tar -xf /tmp/binaryen.tar.gz
-RUN cd binaryen-version_*/ && cmake . -G Ninja -DCMAKE_CXX_FLAGS="-static" -DCMAKE_C_FLAGS="-static" -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC_LIB=ON && ninja wasm-opt
+RUN cd binaryen-version_*/ && git clone --depth 1 https://github.com/google/googletest.git ./third_party/googletest && cmake . -G Ninja -DCMAKE_CXX_FLAGS="-static" -DCMAKE_C_FLAGS="-static" -DCMAKE_BUILD_TYPE=Release -DBUILD_STATIC_LIB=ON && ninja wasm-opt
 
 # Run tests
 RUN cd binaryen-version_*/ && ninja wasm-as wasm-dis
