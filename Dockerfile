@@ -1,4 +1,4 @@
-FROM rust:1.64.0-alpine as targetarch
+FROM rust:1.65.0-alpine as targetarch
 
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
