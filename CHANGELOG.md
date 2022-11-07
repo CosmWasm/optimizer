@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Update to binaryen v110.
+- Bump Rust to current stable v1.65.0
 
 ## 0.12.9
 
