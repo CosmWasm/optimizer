@@ -77,7 +77,7 @@ RUN cd build_workspace && \
 #
 # base-optimizer
 #
-FROM rust:1.64.0-alpine as base-optimizer
+FROM rust:1.65.0-alpine as base-optimizer
 
 # Being required for gcc linking
 RUN apk update && \
