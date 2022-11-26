@@ -68,9 +68,6 @@ RUN chmod +x /usr/local/bin/optimize_workspace.sh
 RUN apk add --no-cache musl-dev
 
 ADD build_workspace build_workspace
-# What do we need this for?
-RUN echo "Installed targets:" && (rustup target list | grep installed) && \
-  export DEFAULT_TARGET="$(rustc -vV | grep 'host:' | cut -d' ' -f2)" && echo "Default target: $DEFAULT_TARGET"
 # Build build_workspace binary
 # Those RUSTFLAGS reduce binary size from 4MB to 600 KB
 RUN cd build_workspace && RUSTFLAGS='-C link-arg=-s' cargo build --release
