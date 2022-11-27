@@ -17,6 +17,9 @@ FROM targetarch as builder-arm64
 ARG ARCH="aarch64"
 
 # GENERIC
+# The builder image builds binaries like wasm-opt, sccache and build_workspace.
+# After the build process, only the final binaries are copied into the *-optimizer
+# images to avoid shipping all the source code and intermediate build results to the user.
 FROM builder-${TARGETARCH} as builder
 
 # Download binaryen sources
@@ -65,11 +68,11 @@ RUN chmod +x /usr/local/bin/optimize_workspace.sh
 RUN apk add --no-cache musl-dev
 
 ADD build_workspace build_workspace
+# Build build_workspace binary
+# Those RUSTFLAGS reduce binary size from 4MB to 600 KB
+RUN cd build_workspace && RUSTFLAGS='-C link-arg=-s' cargo build --release
+# Check build_workspace binary
 RUN cd build_workspace && \
-  echo "Installed targets:" && (rustup target list | grep installed) && \
-  export DEFAULT_TARGET="$(rustc -vV | grep 'host:' | cut -d' ' -f2)" && echo "Default target: $DEFAULT_TARGET" && \
-  # Those RUSTFLAGS reduce binary size from 4MB to 600 KB
-  RUSTFLAGS='-C link-arg=-s' cargo build --release && \
   ls -lh target/release/build_workspace && \
   (ldd target/release/build_workspace || true) && \
   mv target/release/build_workspace /usr/local/bin
