@@ -1,17 +1,10 @@
 version: 2.1
 
-executors:
-  ubuntu-amd64:
-    docker:
-      - image: ubuntu:20.04
-  ubuntu-arm64:
-    machine:
-      image: ubuntu-2004:202101-01
-    resource_class: arm.large
-
 jobs:
   build-amd64:
-    executor: ubuntu-amd64
+    docker:
+      - image: ubuntu:20.04
+    resource_class: xlarge
     environment:
       BUILDKIT_PROGRESS: plain
     steps:
@@ -43,8 +36,12 @@ jobs:
       - run:
           name: Show docker images
           command: docker image ls
+
   build-arm64:
-    executor: ubuntu-arm64
+    machine:
+      # https://circleci.com/docs/configuration-reference/#available-linux-machine-images-cloud
+      image: ubuntu-2004:2022.10.1
+    resource_class: arm.large
     environment:
       BUILDKIT_PROGRESS: plain
     steps:
@@ -72,8 +69,10 @@ jobs:
       - run:
           name: Show docker images
           command: docker image ls
+
   lint-scripts:
-    executor: ubuntu-amd64
+    docker:
+      - image: ubuntu:20.04
     steps:
       - run:
           name: Install packages
