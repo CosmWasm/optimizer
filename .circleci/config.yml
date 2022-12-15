@@ -1,5 +1,23 @@
 version: 2.1
 
+commands:
+  test_images:
+    steps:
+      - run:
+          name: Show docker images
+          command: docker image ls
+      - run:
+          name: Test rust-optimizer
+          command: |
+            IMAGE=$(docker images "cosmwasm/rust-optimizer" --format "{{.Repository}}:{{.Tag}}" | head -n 1)
+            wget -O cosmwasm.tar.gz https://github.com/CosmWasm/cosmwasm/archive/refs/tags/v1.2.0-beta.0.tar.gz
+            tar -zxvf cosmwasm.tar.gz --strip-components=2 'cosmwasm-*/contracts/hackatom'
+            cd hackatom
+            docker run --rm -v "$(pwd)":/code \
+              --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+              --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+              "$IMAGE"
+
 jobs:
   build-amd64:
     docker:
@@ -33,9 +51,7 @@ jobs:
       - run:
           name: Build workspace-optimizer
           command: make build-workspace-optimizer-x86_64
-      - run:
-          name: Show docker images
-          command: docker image ls
+      - test_images
 
   build-arm64:
     machine:
@@ -66,9 +82,7 @@ jobs:
       - run:
           name: Build workspace-optimizer
           command: make build-workspace-optimizer-arm64
-      - run:
-          name: Show docker images
-          command: docker image ls
+      - test_images
 
   lint-scripts:
     docker:
