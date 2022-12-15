@@ -10,8 +10,8 @@ commands:
           name: Test rust-optimizer
           command: |
             IMAGE=$(docker images "cosmwasm/rust-optimizer" --format "{{.Repository}}:{{.Tag}}" | head -n 1)
-            wget -O cosmwasm.tar.gz https://github.com/CosmWasm/cosmwasm/archive/refs/tags/v1.2.0-beta.0.tar.gz
-            tar -zxvf cosmwasm.tar.gz --strip-components=2 'cosmwasm-*/contracts/hackatom'
+            curl -sS -L https://github.com/CosmWasm/cosmwasm/archive/refs/tags/v1.2.0-beta.0.tar.gz > cosmwasm.tar.gz
+            tar -zxv -f cosmwasm.tar.gz --wildcards --strip-components=2 'cosmwasm-*/contracts/hackatom'
             cd hackatom
             docker run --rm -v "$(pwd)":/code \
               --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
