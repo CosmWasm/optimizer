@@ -7,12 +7,12 @@ commands:
           name: Show docker images
           command: docker image ls
       - run:
-          name: Test rust-optimizer
+          name: Test workspace-optimizer
           command: |
-            IMAGE=$(docker images ls --filter 'reference=cosmwasm/rust-optimizer*' --format "{{.Repository}}:{{.Tag}}" | head -n 1)
-            curl -sS -L https://github.com/CosmWasm/cosmwasm/archive/refs/tags/v1.2.0-beta.0.tar.gz > cosmwasm.tar.gz
-            tar -zxv -f cosmwasm.tar.gz --wildcards --strip-components=2 'cosmwasm-*/contracts/hackatom'
-            cd hackatom
+            IMAGE=$(docker images ls --filter 'reference=cosmwasm/workspace-optimizer*' --format "{{.Repository}}:{{.Tag}}" | head -n 1)
+            curl -sS -L https://github.com/CosmWasm/cw-plus/archive/refs/tags/v1.0.0.tar.gz > cw-plus.tar.gz
+            tar -zxv -f cw-plus.tar.gz --wildcards
+            cd cw-plus-*
             docker run --rm -v "$(pwd)":/code \
               --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
               --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
