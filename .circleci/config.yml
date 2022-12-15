@@ -57,7 +57,8 @@ jobs:
     machine:
       # https://circleci.com/docs/configuration-reference/#available-linux-machine-images-cloud
       image: ubuntu-2004:2022.10.1
-    resource_class: arm.large
+    # resource_class: arm.large
+    resource_class: arm.xlarge
     environment:
       BUILDKIT_PROGRESS: plain
     steps:
