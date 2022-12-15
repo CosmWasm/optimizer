@@ -84,17 +84,18 @@ jobs:
       - run:
           name: Run shellcheck
           command: find . -name "*.sh" -exec shellcheck {} +
+
   format-scripts:
     docker:
-      - image: cimg/go:1.16.3
+      - image: cimg/go:1.18.8
     steps:
       - run:
           name: Install shfmt
-          command: GO111MODULE=on go get mvdan.cc/sh/v3/cmd/shfmt
+          command: GO111MODULE=on go install mvdan.cc/sh/v3/cmd/shfmt@v3.6.0
       - checkout
       - run:
           name: Run shfmt
-          command: shfmt -d .
+          command: shfmt --diff .
 
 workflows:
   version: 2
