@@ -7,6 +7,15 @@ commands:
           name: Show docker images
           command: docker image ls
       - run:
+          name: Test rust-optimizer
+          command: |
+            cd tests/simple-contract
+            IMAGE=$(docker images ls --filter 'reference=cosmwasm/rust-optimizer*' --format "{{.Repository}}:{{.Tag}}" | head -n 1)
+            docker run --rm -v "$(pwd)":/code \
+              --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+              --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+              "$IMAGE"
+      - run:
           name: Test workspace-optimizer
           command: |
             IMAGE=$(docker images ls --filter 'reference=cosmwasm/workspace-optimizer*' --format "{{.Repository}}:{{.Tag}}" | head -n 1)
