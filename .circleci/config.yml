@@ -124,7 +124,7 @@ workflows:
   version: 2
   test-suite:
     jobs:
-      # - build-amd64
+      - build-amd64
       - build-arm64
       - lint-scripts
       - format-scripts
