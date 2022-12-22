@@ -1,4 +1,4 @@
-FROM rust:1.65.0-alpine as targetarch
+FROM rust:1.66.0-alpine as targetarch
 
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
@@ -83,7 +83,7 @@ RUN cd build_workspace && \
 #
 # base-optimizer
 #
-FROM rust:1.65.0-alpine as base-optimizer
+FROM rust:1.66.0-alpine as base-optimizer
 
 # Being required for gcc linking
 RUN apk update && \
