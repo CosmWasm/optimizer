@@ -31,9 +31,12 @@ commands:
 
 jobs:
   build-amd64:
-    docker:
-      - image: ubuntu:20.04
-    resource_class: xlarge
+    # Use machine to avoid building on the Remote Docker Environment, which is to weak for us
+    # (https://circleci.com/docs/building-docker-images/#specifications).
+    machine:
+      # https://circleci.com/docs/configuration-reference/#available-linux-machine-images-cloud
+      image: ubuntu-2004:2022.10.1
+    resource_class: large
     environment:
       BUILDKIT_PROGRESS: plain
     steps:
@@ -52,10 +55,6 @@ jobs:
             apt update
             apt install -y docker-ce-cli
       - checkout
-      - setup_remote_docker:
-          # We might want to add this when things get slow
-          # https://circleci.com/docs/2.0/docker-layer-caching/
-          docker_layer_caching: false
       - run:
           name: Build rust-optimizer
           command: make build-rust-optimizer-x86_64
