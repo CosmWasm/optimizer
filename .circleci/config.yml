@@ -11,6 +11,7 @@ commands:
           command: |
             cd tests/simple-contract
             IMAGE=$(docker images ls --filter 'reference=cosmwasm/rust-optimizer*' --format "{{.Repository}}:{{.Tag}}" | head -n 1)
+            echo "Testing $IMAGE in $(pwd) ..."
             docker run --rm -v "$(pwd)":/code \
               --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
               --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
@@ -18,10 +19,11 @@ commands:
       - run:
           name: Test workspace-optimizer
           command: |
-            IMAGE=$(docker images ls --filter 'reference=cosmwasm/workspace-optimizer*' --format "{{.Repository}}:{{.Tag}}" | head -n 1)
             curl -sS -L https://github.com/CosmWasm/cw-nfts/archive/refs/tags/v0.16.0.tar.gz > cw-nfts.tar.gz
             tar -zxv -f cw-nfts.tar.gz --wildcards
             cd cw-nfts-*
+            IMAGE=$(docker images ls --filter 'reference=cosmwasm/workspace-optimizer*' --format "{{.Repository}}:{{.Tag}}" | head -n 1)
+            echo "Testing $IMAGE in $(pwd) ..."
             docker run --rm -v "$(pwd)":/code \
               --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
               --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
