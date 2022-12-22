@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Bump Rust 1.66.0
+
 ## [0.12.10] - 2022-11-18
 
 - Update to binaryen v110.
