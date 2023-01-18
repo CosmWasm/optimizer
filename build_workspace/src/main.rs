@@ -60,8 +60,11 @@ fn main() {
     println!("Contracts to be built: {:?}", contract_packages);
 
     for contract in contract_packages {
-        println!("Building {:?} ...", contract);
+        println!("\nBuilding {:?}...", contract);
 
+        let path = canonicalize(contract).unwrap();
+
+        println!("  1. compiling Wasm");
         let mut child = Command::new(CARGO_PATH)
             .args(&[
                 "build",
@@ -71,10 +74,19 @@ fn main() {
                 "--locked",
             ])
             .env("RUSTFLAGS", "-C link-arg=-s")
-            .current_dir(canonicalize(contract).unwrap())
+            .current_dir(path.clone())
             .spawn()
             .unwrap();
         let error_code = child.wait().unwrap();
-        assert!(error_code.success());
+        assert!(error_code.success(), "Compiling Wasm failed!");
+
+        println!("  2. building schema JSON");
+        let mut child = Command::new(CARGO_PATH)
+            .args(&["run", "--bin", "schema"])
+            .current_dir(path)
+            .spawn()
+            .unwrap();
+        let error_code = child.wait().unwrap();
+        assert!(error_code.success(), "Building schema failed!");
     }
 }
