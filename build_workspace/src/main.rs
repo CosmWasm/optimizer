@@ -1,3 +1,7 @@
+mod ext;
+
+use crate::ext::compress_file;
+use anyhow::Result;
 use glob::glob;
 use serde::Deserialize;
 use std::{
@@ -30,7 +34,7 @@ fn is_cargo_project(path: &PathBuf) -> bool {
     path.is_dir()
 }
 
-fn main() {
+fn main() -> Result<()> {
     let file = fs::read_to_string("Cargo.toml").unwrap();
     let cargo_toml: CargoToml = toml::from_str(&file).unwrap();
     let members = cargo_toml.workspace.members;
@@ -65,7 +69,7 @@ fn main() {
         let path = canonicalize(contract).unwrap();
 
         println!("  1. compiling Wasm");
-        let mut child = Command::new(CARGO_PATH)
+        Command::new(CARGO_PATH)
             .args(&[
                 "build",
                 "--release",
@@ -76,17 +80,25 @@ fn main() {
             .env("RUSTFLAGS", "-C link-arg=-s")
             .current_dir(path.clone())
             .spawn()
-            .unwrap();
-        let error_code = child.wait().unwrap();
-        assert!(error_code.success(), "Compiling Wasm failed!");
+            .unwrap()
+            .wait()?;
 
         println!("  2. building schema JSON");
-        let mut child = Command::new(CARGO_PATH)
+        Command::new(CARGO_PATH)
             .args(&["run", "--bin", "schema"])
-            .current_dir(path)
+            .current_dir(path.clone())
             .spawn()
-            .unwrap();
-        let error_code = child.wait().unwrap();
-        assert!(error_code.success(), "Building schema failed!");
+            .unwrap()
+            .wait()?;
+
+        println!("  3. compressing schema");
+        let schema_stem = path.join("schema").join(path.file_name().unwrap());
+        fs::write(
+            &schema_stem.with_extension("json.br"),
+            compress_file(&schema_stem.with_extension("json")).unwrap(),
+        )
+        .map_err(anyhow::Error::from)?;
     }
+
+    Ok(())
 }
