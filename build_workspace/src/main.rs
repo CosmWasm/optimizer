@@ -102,19 +102,20 @@ fn main() -> Result<()> {
         let mut module = Module::from_file(input.clone())?;
         module.customs.add(RawCustomSection {
             name: "schema".to_string(),
-            data,
+            data: data.clone(),
         });
         println!(
             "     updating in place: {}",
             input.clone().to_string_lossy()
         );
+        println!("     compressed schema size:    {:>4}kB", data.len() / 1024);
         println!(
-            "     original size:           {}kB",
+            "     original Wasm size:        {:>4}kB",
             fs::metadata(input.clone())?.len() / 1024
         );
         module.emit_wasm_file(input.clone())?;
         println!(
-            "     with schema, compressed: {}kB",
+            "     Wasm with injected schema: {:>4}kB",
             fs::metadata(input)?.len() / 1024
         );
     }
