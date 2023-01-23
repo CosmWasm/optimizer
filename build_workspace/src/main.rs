@@ -9,6 +9,7 @@ use std::{
     path::PathBuf,
     process::Command,
 };
+use walrus::{Module, RawCustomSection};
 
 const CARGO_PATH: &str = "cargo";
 const PACKAGE_PREFIX: &str = "contracts/";
@@ -91,13 +92,23 @@ fn main() -> Result<()> {
             .unwrap()
             .wait()?;
 
-        println!("  3. compressing schema");
-        let schema_stem = path.join("schema").join(path.file_name().unwrap());
-        fs::write(
-            &schema_stem.with_extension("json.br"),
-            compress_file(&schema_stem.with_extension("json")).unwrap(),
-        )
-        .map_err(anyhow::Error::from)?;
+        println!("  3. injecting compressed JSON into Wasm");
+        let file_name = path.file_name().unwrap().to_str().unwrap();
+        let schema_stem = path.join("schema").join(file_name);
+        let data = compress_file(&schema_stem.with_extension("json")).unwrap();
+        let input = PathBuf::from("target/wasm32-unknown-unknown/release")
+            .join(file_name.replace("-", "_"))
+            .with_extension("wasm");
+        let mut module = Module::from_file(input.clone())?;
+        module.customs.add(RawCustomSection {
+            name: "schema".to_string(),
+            data,
+        });
+        let output = PathBuf::from("target/wasm32-unknown-unknown/release")
+            .join(format!("{}_with_schema", file_name.replace("-", "_")))
+            .with_extension("wasm");
+        module.emit_wasm_file(output.clone())?;
+        println!("wasm with schema built to: {:?}", output);
     }
 
     Ok(())
