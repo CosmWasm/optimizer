@@ -65,11 +65,11 @@ fn main() -> Result<()> {
     println!("Contracts to be built: {:?}", contract_packages);
 
     for contract in contract_packages {
-        println!("\nBuilding {:?}...", contract);
-
         let path = canonicalize(contract).unwrap();
 
-        println!("  1. compiling Wasm");
+        println!("\nBuilding {:?}...", path.clone());
+
+        println!("  1. compile Wasm");
         Command::new(CARGO_PATH)
             .args(&[
                 "build",
@@ -84,7 +84,7 @@ fn main() -> Result<()> {
             .unwrap()
             .wait()?;
 
-        println!("  2. building schema JSON");
+        println!("  2. build schema JSON");
         Command::new(CARGO_PATH)
             .args(&["run", "--bin", "schema"])
             .current_dir(path.clone())
@@ -92,7 +92,7 @@ fn main() -> Result<()> {
             .unwrap()
             .wait()?;
 
-        println!("  3. injecting compressed JSON into Wasm");
+        println!("  3. inject compressed JSON into Wasm");
         let file_name = path.file_name().unwrap().to_str().unwrap();
         let schema_stem = path.join("schema").join(file_name);
         let data = compress_file(&schema_stem.with_extension("json")).unwrap();
@@ -104,11 +104,19 @@ fn main() -> Result<()> {
             name: "schema".to_string(),
             data,
         });
-        let output = PathBuf::from("target/wasm32-unknown-unknown/release")
-            .join(format!("{}_with_schema", file_name.replace("-", "_")))
-            .with_extension("wasm");
-        module.emit_wasm_file(output.clone())?;
-        println!("wasm with schema built to: {:?}", output);
+        println!(
+            "     updating in place: {}",
+            input.clone().to_string_lossy()
+        );
+        println!(
+            "     original size:           {}kB",
+            fs::metadata(input.clone())?.len() / 1024
+        );
+        module.emit_wasm_file(input.clone())?;
+        println!(
+            "     with schema, compressed: {}kB",
+            fs::metadata(input)?.len() / 1024
+        );
     }
 
     Ok(())
