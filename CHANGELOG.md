@@ -2,9 +2,11 @@
 
 ## [Unreleased]
 
+- Bump Rust to 1.67.1
+
 ## [0.12.11] - 2022-12-22
 
-- Bump Rust 1.66.0
+- Bump Rust to 1.66.0
 
 ## [0.12.10] - 2022-11-18
 
