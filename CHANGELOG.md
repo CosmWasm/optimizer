@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.12.12] - 2023-03-06
+
 - Bump Rust to 1.67.1
 
 ## [0.12.11] - 2022-12-22
@@ -178,6 +180,7 @@ sources and should not be used. 0.7.0, 0.7.1 and 0.7.3 unaffected.
 - Bump emscripten to 1.39.8-fastcomp
 - Bump Rust to 1.41.0
 
-[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.11...HEAD
+[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.12...HEAD
+[0.12.12]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.11...v0.12.12
 [0.12.11]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.10...v0.12.11
 [0.12.10]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.9...v0.12.10
