@@ -1,4 +1,4 @@
-FROM rust:1.67.1-alpine as targetarch
+FROM rust:1.68.0-alpine as targetarch
 
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
@@ -83,7 +83,7 @@ RUN cd build_workspace && \
 #
 # base-optimizer
 #
-FROM rust:1.67.1-alpine as base-optimizer
+FROM rust:1.68.0-alpine as base-optimizer
 
 # Being required for gcc linking
 RUN apk update && \
@@ -99,6 +99,9 @@ COPY --from=builder /usr/local/bin/wasm-opt /usr/local/bin
 # rust-optimizer
 #
 FROM base-optimizer as rust-optimizer
+
+# Download the crates.io index using the new sparse protocol to improve performance
+ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
 # Use sccache. Users can override this variable to disable caching.
 COPY --from=builder /usr/local/bin/sccache /usr/local/bin
