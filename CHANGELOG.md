@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Bump Rust to 1.68.0 [with sparse protocol support](https://blog.rust-lang.org/2023/03/09/Rust-1.68.0.html)
+
 ## [0.12.12] - 2023-03-06
 
 - Bump Rust to 1.67.1
