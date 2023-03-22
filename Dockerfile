@@ -90,7 +90,7 @@ ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
 # Being required for gcc linking
 RUN apk update && \
-  apk add --no-cache musl-dev
+  apk add --no-cache musl-dev llvm clang
 
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
