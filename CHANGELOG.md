@@ -2,7 +2,8 @@
 
 ## [Unreleased]
 
-- Bump Rust to 1.68.2 [with sparse protocol support](https://blog.rust-lang.org/2023/03/09/Rust-1.68.0.html)
+- Bump Rust to 1.68.2.\
+  This contains [cargo's sparse protocol support](https://blog.rust-lang.org/2023/03/09/Rust-1.68.0.html) which is enabled here.
 
 ## [0.12.12] - 2023-03-06
 
