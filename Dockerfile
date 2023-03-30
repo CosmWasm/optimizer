@@ -71,6 +71,11 @@ RUN chmod +x /usr/local/bin/optimize_workspace.sh
 RUN apk add --no-cache musl-dev
 
 ADD build_workspace build_workspace
+
+# Download the crates.io index using the new sparse protocol to improve performance
+# and avoid OOM in the build_workspace build.
+ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
+
 # Build build_workspace binary
 # Those RUSTFLAGS reduce binary size from 4MB to 600 KB
 RUN cd build_workspace && RUSTFLAGS='-C link-arg=-s' cargo build --release
