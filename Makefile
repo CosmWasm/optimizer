@@ -28,8 +28,13 @@ build-rust-optimizer: build-rust-optimizer-$(BUILDARCH)
 # Build only the native version by default
 build-workspace-optimizer: build-workspace-optimizer-$(BUILDARCH)
 
-build-x86_64: build-rust-optimizer-x86_64 build-workspace-optimizer-x86_64
-build-arm64: build-rust-optimizer-arm64 build-workspace-optimizer-arm64
+build-x86_64:
+	make build-rust-optimizer-x86_64
+	make build-workspace-optimizer-x86_64
+
+build-arm64:
+	make build-rust-optimizer-arm64
+	make build-workspace-optimizer-arm64
 
 publish-x86_64: build-x86_64
 	docker push $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG)
