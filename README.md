@@ -29,7 +29,7 @@ you to produce a smaller build that works with the cosmwasm integration tests
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.12.12
+  cosmwasm/rust-optimizer:0.12.13
 ```
 
 Demo this with `cosmwasm-examples` (going into eg. `erc20` subdir before running),
@@ -62,7 +62,7 @@ To compile all contracts in the workspace deterministically, you can run:
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/workspace-optimizer:0.12.12
+  cosmwasm/workspace-optimizer:0.12.13
 ```
 
 The downside is that to verify one contract in the workspace, you need to compile them
@@ -88,7 +88,7 @@ case, we can use the optimize.sh command:
 docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source="devcontract_cache_burner",target=/code/contracts/burner/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.12.12 ./contracts/burner
+  cosmwasm/rust-optimizer:0.12.13 ./contracts/burner
 ```
 
 ## Development

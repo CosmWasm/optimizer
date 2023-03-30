@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.12.13] - 2023-03-30
+
 - Bump Rust to 1.68.2.\
   This contains [cargo's sparse protocol support](https://blog.rust-lang.org/2023/03/09/Rust-1.68.0.html) which is enabled here.
 
@@ -183,7 +185,8 @@ sources and should not be used. 0.7.0, 0.7.1 and 0.7.3 unaffected.
 - Bump emscripten to 1.39.8-fastcomp
 - Bump Rust to 1.41.0
 
-[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.12...HEAD
+[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.13...HEAD
+[0.12.13]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.12...v0.12.13
 [0.12.12]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.11...v0.12.12
 [0.12.11]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.10...v0.12.11
 [0.12.10]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.9...v0.12.10
