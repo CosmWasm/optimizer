@@ -1,0 +1,29 @@
+[package]
+name = "abstract-tendermint-staking-api"
+version = { workspace = true }
+authors = { workspace = true }
+edition = { workspace = true }
+
+exclude = ["contract.wasm", "hash.txt"]
+
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["export"]
+export = []
+boot = ["dep:abstract-boot", "dep:boot-core"]
+
+
+# Keep as is until TendermintStake updates.
+[dependencies]
+cosmwasm-std = { workspace = true }
+cosmwasm-schema = { workspace = true }
+thiserror = { workspace = true }
+abstract-core = { workspace = true }
+abstract-sdk = { workspace = true }
+abstract-api = { workspace = true }
+
+boot-core = { workspace = true, optional = true }
+abstract-boot = { workspace = true, optional = true }

@@ -28,7 +28,8 @@ overflow-checks = true
 
 [features]
 # for more explicit tests, cargo test --features=backtraces
-backtraces = ["cosmwasm-std/backtraces"]
+# backtraces = ["cosmwasm-std/backtraces"]
+hello = []
 # use library feature to disable all instantiate/execute/query exports
 library = []
 

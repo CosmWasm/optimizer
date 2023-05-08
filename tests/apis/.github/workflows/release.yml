@@ -1,0 +1,38 @@
+name: Release Artifacts
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # Push events to matching v*, i.e. v1.0, v20.15.10
+      - "v[0-9]+.[0-9]+.[0-9]+-rc*" # Push events to matching v*, i.e. v1.0-rc1, v20.15.10-rc5
+      - "v[0-9]+.[0-9]+.[0-9]+-beta*" # Push events to matching v*, i.e. v1.0-rc1, v20.15.10-rc5
+
+
+jobs:
+  # Checks out the tag which is either created by the create-tag job or already exists
+  release-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install latest stable
+        uses: ATiltedTree/setup-rust@v1
+        with:
+          rust-version: stable
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Generate Cargo.lock
+        run: |
+          cargo fetch --verbose
+      - name: Build Artifacts
+        run: |
+          docker run --rm -v "$(pwd)":/code \
+          --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+          --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+          cosmwasm/workspace-optimizer:0.12.13
+          tar -zcvf cosmwasm-artifacts.tar.gz artifacts
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            cosmwasm-artifacts.tar.gz
+            artifacts/*.wasm
+          body_path: CHANGELOG.md

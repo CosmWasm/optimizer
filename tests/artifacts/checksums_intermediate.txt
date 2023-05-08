@@ -1,0 +1,1 @@
+1a0774db237c9b9e603d20b786f6cc835b19cca6af63588c6d193c3e6c7e0925  simple-contract/target/wasm32-unknown-unknown/release/simple_contract.wasm

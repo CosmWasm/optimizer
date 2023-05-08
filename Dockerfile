@@ -45,6 +45,16 @@ RUN mv binaryen-version_*/bin/wasm-opt /usr/local/bin
 # Check cargo version
 RUN cargo --version
 
+# Install cargo-feature for feature inspection
+RUN cargo install cargo-feature
+
+# Install yq to be able to parse the Cargo.toml
+RUN apk add yq
+
+# Install bash
+RUN apk add --no-cache bash
+
+
 # Check wasm-opt version
 RUN wasm-opt --version
 

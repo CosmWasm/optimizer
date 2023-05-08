@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InstantiateMsg",
+  "type": "object",
+  "required": [
+    "app",
+    "base"
+  ],
+  "properties": {
+    "app": {
+      "description": "custom instantiate msg attributes",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Empty"
+        }
+      ]
+    },
+    "base": {
+      "description": "base instantiate information",
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseInstantiateMsg"
+        }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "BaseInstantiateMsg": {
+      "description": "Used by Abstract to instantiate the contract The contract is then registered on the version control contract using [`crate::version_control::ExecuteMsg::AddApi`].",
+      "type": "object",
+      "required": [
+        "ans_host_address",
+        "version_control_address"
+      ],
+      "properties": {
+        "ans_host_address": {
+          "description": "Used to easily perform address translation",
+          "type": "string"
+        },
+        "version_control_address": {
+          "description": "Used to verify senders",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Empty": {
+      "description": "An empty struct that serves as a placeholder in different places, such as contracts that don't set a custom message.\n\nIt is designed to be expressable in correct JSON and JSON Schema but contains no meaningful data. Previously we used enums without cases, but those cannot represented as valid JSON Schema (https://github.com/CosmWasm/cosmwasm/issues/451)",
+      "type": "object"
+    }
+  }
+}
