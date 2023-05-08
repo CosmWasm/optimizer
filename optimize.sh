@@ -1,6 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+echo "Info: optimize.sh"
 
 set -o errexit -o nounset -o pipefail
+trap 'echo >&2 "Error on line $LINENO"' ERR
 command -v shellcheck >/dev/null && shellcheck "$0"
 
 export PATH=$PATH:/root/.cargo/bin
@@ -20,14 +23,24 @@ rm -f artifacts/checksums_intermediate.txt
 
 for CONTRACTDIR in "$@"; do
   echo "Building contract in $(realpath "$CONTRACTDIR") ..."
+    if [ ! -f "$CONTRACTDIR/Cargo.toml" ]; then
+      echo "Cargo.toml not found in $CONTRACTDIR. Skipping this directory."
+      continue
+    fi
   (
     cd "$CONTRACTDIR"
     echo "Info: Building in $CONTRACTDIR"
+    echo "Info: Printing Cargo.toml content"
 
-    pkg_name=$(yq e '.package.name' Cargo.toml -o y)
+    pkg_name=$(toml get -r Cargo.toml package.name)
     pkg_name=${pkg_name//-/_}
 
-    features=($(yq e '.package.metadata.optimizer.features.[]' Cargo.toml -o csv))
+    # Check if there are features
+    if toml get Cargo.toml package.metadata.optimizer.features >/dev/null 2>&1; then
+         IFS=$'\n' features=($(toml get Cargo.toml package.metadata.optimizer.features | jq -r '.[]'))
+    else
+        features=()
+    fi
 
     # Build the release for the contract and move it to the artifacts folder
     build_and_move_release() {
