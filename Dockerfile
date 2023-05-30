@@ -45,6 +45,9 @@ RUN mv binaryen-version_*/bin/wasm-opt /usr/local/bin
 # Check cargo version
 RUN cargo --version
 
+# Install cargo-feature for feature inspection
+RUN cargo install cargo-feature
+
 # Check wasm-opt version
 RUN wasm-opt --version
 
@@ -96,6 +99,14 @@ ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 # Being required for gcc linking
 RUN apk update && \
   apk add --no-cache musl-dev
+
+# Install bash
+RUN apk add --no-cache bash
+
+# Install yq to be able to parse the Cargo.toml
+RUN apk add --no-cache jq
+
+RUN cargo install toml-cli
 
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown

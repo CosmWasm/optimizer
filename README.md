@@ -39,6 +39,20 @@ Note that we use one registry cache (to avoid excessive downloads), but the targ
 contract that we compile. This means no interference between contracts, but very fast recompile times when making
 minor adjustments to a contract you had previously created an optimized build for.
 
+### Feature-Based Optimization
+
+You can add a [package.metadata.optimizer] section in your Cargo.toml to enable optimization for specific features. Here's an example:
+
+```toml
+[package.metadata.optimizer]
+features = ["juno", "terra"]
+```
+In this example, the build script will generate an optimized WASM for each of the features juno and terra in addition to the default optimized WASM.
+
+The output file name for the optimized wasm will be the same as the default wasm, suffixed with `-<feature_name>`. For example, if the default wasm is `contract.wasm`, the optimized wasm for the feature `juno` will be `contract-juno.wasm`.
+
+To use feature-based optimization, run the Docker image as usual. The script will automatically detect the [features] section in your Cargo.toml and optimize for each feature.
+
 ## Mono Repos
 
 ### Contracts as Workspace Members

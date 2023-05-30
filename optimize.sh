@@ -1,7 +1,9 @@
-#!/bin/ash
-# shellcheck shell=dash
-# See https://www.shellcheck.net/wiki/SC2187
+#!/usr/bin/env bash
+
+echo "Info: optimize.sh"
+
 set -o errexit -o nounset -o pipefail
+trap 'echo >&2 "Error on line $LINENO"' ERR
 command -v shellcheck >/dev/null && shellcheck "$0"
 
 export PATH=$PATH:/root/.cargo/bin
@@ -19,24 +21,49 @@ sccache -s
 mkdir -p artifacts
 rm -f artifacts/checksums_intermediate.txt
 
-# There are two cases here
-# 1. All contracts (or one) are included in the root workspace  (eg. `cosmwasm-template`, `cosmwasm-examples`, `cosmwasm-plus`)
-#    In this case, we pass no argument, just mount the proper directory.
-# 2. Contracts are excluded from the root workspace, but import relative paths from other packages (only `cosmwasm`).
-#    In this case, we mount root workspace and pass in a path `docker run <repo> ./contracts/hackatom`
-
-# This parameter allows us to mount a folder into docker container's "/code"
-# and build "/code/contracts/mycontract".
-# Note: if CONTRACTDIR is "." (default in Docker), this ends up as a noop
 for CONTRACTDIR in "$@"; do
   echo "Building contract in $(realpath "$CONTRACTDIR") ..."
+    if [ ! -f "$CONTRACTDIR/Cargo.toml" ]; then
+      echo "Cargo.toml not found in $CONTRACTDIR. Skipping this directory."
+      continue
+    fi
   (
     cd "$CONTRACTDIR"
+    echo "Info: Building in $CONTRACTDIR"
+    echo "Info: Printing Cargo.toml content"
 
-    # Linker flag "-s" for stripping (https://github.com/rust-lang/cargo/issues/3483#issuecomment-431209957)
-    # Note that shortcuts from .cargo/config are not available in source code packages from crates.io
-    RUSTFLAGS='-C link-arg=-s' cargo build --release --lib --target wasm32-unknown-unknown --locked
+    pkg_name=$(toml get -r Cargo.toml package.name)
+    pkg_name=${pkg_name//-/_}
+
+    # Check if there are features
+    if toml get Cargo.toml package.metadata.optimizer.features >/dev/null 2>&1; then
+         IFS=$'\n' features=($(toml get Cargo.toml package.metadata.optimizer.features | jq -r '.[]'))
+    else
+        features=()
+    fi
+
+    # Build the release for the contract and move it to the artifacts folder
+    build_and_move_release() {
+      local feature_flag=${1:-}
+      RUSTFLAGS='-C link-arg=-s' cargo build --release --lib --target wasm32-unknown-unknown --locked ${feature_flag}
+      local wasm_output="./target/wasm32-unknown-unknown/release/${pkg_name}".wasm
+      local wasm_name="./target/wasm32-unknown-unknown/release/${pkg_name}${feature_flag:+-}${feature_flag}".wasm
+      mv "$wasm_output" "$wasm_name"
+    }
+
+    # Build without features
+    build_and_move_release
+
+    # Build with features if present
+    if [ "${#features[@]}" -gt 0 ]; then
+      for feature in "${features[@]}"; do
+        echo "Building with feature: $feature"
+        build_and_move_release "--features $feature"
+      done
+    fi
   )
+
+  echo "Info: Finished building in $CONTRACTDIR"
 
   # wasm-optimize on all results
   for WASM in "$CONTRACTDIR"/target/wasm32-unknown-unknown/release/*.wasm; do
@@ -48,7 +75,7 @@ for CONTRACTDIR in "$@"; do
   done
 done
 
-# create hash
+# Create hash
 echo "Creating hashes ..."
 (
   cd artifacts
