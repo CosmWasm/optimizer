@@ -45,9 +45,6 @@ RUN mv binaryen-version_*/bin/wasm-opt /usr/local/bin
 # Check cargo version
 RUN cargo --version
 
-# Install cargo-feature for feature inspection
-RUN cargo install cargo-feature
-
 # Check wasm-opt version
 RUN wasm-opt --version
 
@@ -107,6 +104,9 @@ RUN apk add --no-cache bash
 RUN apk add --no-cache jq
 
 RUN cargo install toml-cli
+
+# Install cargo-feature for feature inspection
+RUN cargo install cargo-feature
 
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
