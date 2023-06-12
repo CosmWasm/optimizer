@@ -27,9 +27,9 @@ you to produce a smaller build that works with the cosmwasm integration tests
 
 ```sh
 docker run --rm -v "$(pwd)":/code \
-  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
-  cosmwasm/rust-optimizer:0.12.13
+  cosmwasm/rust-optimizer:0.13.0
 ```
 
 Demo this with `cosmwasm-examples` (going into eg. `erc20` subdir before running),
@@ -60,7 +60,7 @@ To compile all contracts in the workspace deterministically, you can run:
 
 ```shell
 docker run --rm -v "$(pwd)":/code \
-  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
   cosmwasm/workspace-optimizer:0.12.13
 ```
@@ -90,6 +90,29 @@ docker run --rm -v "$(pwd)":/code \
   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
   cosmwasm/rust-optimizer:0.12.13 ./contracts/burner
 ```
+
+## Caches
+
+The build system uses the folder `/target` in its local file system for all Rust compilation results.
+This ensures there is no conflict with the target folder of the source repository.
+It also means that for each compilation, Cargo will have an empty target folder and have to re-compile
+all contracts and all dependencies. In order to avoid this, you can optionally mount a Docker volume
+into the file system, as highlighted here:
+
+```diff
+ docker run --rm -v "$(pwd)":/code \
++  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
+   --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+   cosmwasm/rust-optimizer:0.13.0
+```
+
+Using this cache is considered best practice and included in all our example call snippets.
+
+Before version 0.13.0, the target folder was located at `/code/target`. This
+[caused situations](https://github.com/CosmWasm/rust-optimizer/issues/89) in which
+rust-optimizer/workspace-optimizer wrote to the target folder of the host
+in an unintended way. By ensuring the target location is not a subfolder of the mounted
+source code we can avoid those sort of problems.
 
 ## Development
 

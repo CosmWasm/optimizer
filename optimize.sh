@@ -35,11 +35,11 @@ for CONTRACTDIR in "$@"; do
 
     # Linker flag "-s" for stripping (https://github.com/rust-lang/cargo/issues/3483#issuecomment-431209957)
     # Note that shortcuts from .cargo/config are not available in source code packages from crates.io
-    RUSTFLAGS='-C link-arg=-s' cargo build --release --lib --target wasm32-unknown-unknown --locked
+    RUSTFLAGS='-C link-arg=-s' cargo build --target-dir=/target --release --lib --target wasm32-unknown-unknown --locked
   )
 
   # wasm-optimize on all results
-  for WASM in "$CONTRACTDIR"/target/wasm32-unknown-unknown/release/*.wasm; do
+  for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
     NAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
     echo "Creating intermediate hash for $NAME ..."
     sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt

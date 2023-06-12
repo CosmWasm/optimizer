@@ -13,7 +13,7 @@ commands:
             IMAGE=$(docker images ls --filter 'reference=cosmwasm/rust-optimizer*' --format "{{.Repository}}:{{.Tag}}" | head -n 1)
             echo "Testing $IMAGE in $(pwd) ..."
             docker run --rm -v "$(pwd)":/code \
-              --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+              --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
               --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
               "$IMAGE"
       - run:
@@ -25,7 +25,7 @@ commands:
             IMAGE=$(docker images ls --filter 'reference=cosmwasm/workspace-optimizer*' --format "{{.Repository}}:{{.Tag}}" | head -n 1)
             echo "Testing $IMAGE in $(pwd) ..."
             docker run --rm -v "$(pwd)":/code \
-              --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+              --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
               --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
               "$IMAGE"
 

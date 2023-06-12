@@ -2,6 +2,31 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Moved target folder from `/code/target` to `/target`. To upgrade your caller code use one of those diffs.
+  For rust-optimizer:
+
+  ```diff
+   docker run --rm -v "$(pwd)":/code \
+  -  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+  +  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
+     --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  -  cosmwasm/rust-optimizer:0.12.13
+  +  cosmwasm/rust-optimizer:0.13.0
+  ```
+
+  or for workspace-optimizer:
+
+  ```diff
+   docker run --rm -v "$(pwd)":/code \
+  -  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+  +  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
+     --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  -  cosmwasm/workspace-optimizer:0.12.11
+  +  cosmwasm/workspace-optimizer:0.13.0
+  ```
+
 ## [0.12.13] - 2023-03-30
 
 - Bump Rust to 1.68.2.\
