@@ -65,6 +65,7 @@ fn main() {
         let mut child = Command::new(CARGO_PATH)
             .args(&[
                 "build",
+                "--target-dir=/target",
                 "--release",
                 "--lib",
                 "--target=wasm32-unknown-unknown",
