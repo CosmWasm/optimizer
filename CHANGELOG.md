@@ -27,6 +27,8 @@
   +  cosmwasm/workspace-optimizer:0.13.0
   ```
 
+- Bump Rust to 1.69.0
+
 ## [0.12.13] - 2023-03-30
 
 - Bump Rust to 1.68.2.\
