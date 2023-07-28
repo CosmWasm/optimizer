@@ -7,7 +7,7 @@ DOCKER_TAG := 0.13.0
 # Native arch
 BUILDARCH := $(shell uname -m)
 
-# Build multi-CPU architecture images and publish them. rust alpine images support the linux/amd64 and linux/arm64/v8 architectures.
+# Build the native CPU arch images and publish them. Rust alpine images support the linux/amd64 and linux/arm64/v8 architectures.
 build: build-rust-optimizer build-workspace-optimizer
 
 build-rust-optimizer-x86_64:

@@ -20,7 +20,7 @@ mkdir -p artifacts
 rm -f artifacts/checksums_intermediate.txt
 
 # There are two cases here
-# 1. All contracts (or one) are included in the root workspace  (eg. `cosmwasm-template`, `cosmwasm-examples`, `cosmwasm-plus`)
+# 1. All contracts (or one) are included in the root workspace (eg. `cosmwasm-template`, `cosmwasm-examples`, `cosmwasm-plus`)
 #    In this case, we pass no argument, just mount the proper directory.
 # 2. Contracts are excluded from the root workspace, but import relative paths from other packages (only `cosmwasm`).
 #    In this case, we mount root workspace and pass in a path `docker run <repo> ./contracts/hackatom`
@@ -44,7 +44,8 @@ for CONTRACTDIR in "$@"; do
     echo "Creating intermediate hash for $NAME ..."
     sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt
     echo "Optimizing $NAME ..."
-    wasm-opt -Os "$WASM" -o "artifacts/$NAME"
+    # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
+    wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$NAME"
   done
 done
 

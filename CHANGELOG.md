@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Update to binaryen v114.
+- Bump Rust to current stable v1.71.0.
+- Add the `--signext-lowering` flag to `wasm-opt`. ([#127])
+
 ## [0.13.0] - 2023-06-20
 
 ### Changed

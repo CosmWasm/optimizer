@@ -65,7 +65,8 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
       echo "$INTERMEDIATE_SHA" >>"$INTERMEDIATE_SHAS"
 
       echo "Optimizing ${BASENAME}..."
-      wasm-opt -Os "$WASM" -o "$OPTIMIZED_WASM"
+      # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
+      wasm-opt -Os --signext-lowering "$WASM" -o "$OPTIMIZED_WASM"
       echo "Moving ${OPTIMIZED_WASM}..."
       mv "$OPTIMIZED_WASM" ../artifacts
     fi
