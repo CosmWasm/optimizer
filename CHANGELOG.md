@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Update to binaryen v114.
+
 ## [0.13.0] - 2023-06-20
 
 ### Changed
