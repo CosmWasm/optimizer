@@ -44,6 +44,7 @@ for CONTRACTDIR in "$@"; do
     echo "Creating intermediate hash for $NAME ..."
     sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt
     echo "Optimizing $NAME ..."
+    # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
     wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$NAME"
   done
 done
