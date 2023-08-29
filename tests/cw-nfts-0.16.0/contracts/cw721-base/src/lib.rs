@@ -30,6 +30,11 @@ pub mod entry {
         msg: InstantiateMsg,
     ) -> StdResult<Response> {
         let tract = Cw721Contract::<Extension, Empty, Empty, Empty>::default();
+
+        // Allows verifying that the contract was compiled with the `featured` feature (because it will have a different size)
+        #[cfg(feature = "featured")]
+        eprintln!("{:?}", include_bytes!("../bytes.in"));
+
         tract.instantiate(deps, env, info, msg)
     }
 

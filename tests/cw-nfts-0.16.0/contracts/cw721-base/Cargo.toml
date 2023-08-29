@@ -20,10 +20,10 @@ crate-type = ["cdylib", "rlib"]
 backtraces = ["cosmwasm-std/backtraces"]
 # use library feature to disable all instantiate/execute/query exports
 library = []
-hello = []
+featured = []
 
 [package.metadata.optimizer]
-features = ["hello"]
+features = ["featured"]
 
 [dependencies]
 cosmwasm-schema = { workspace = true }
