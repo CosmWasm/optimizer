@@ -51,7 +51,7 @@ fn is_cargo_project(path: &PathBuf) -> bool {
     path.is_dir()
 }
 
-const OUTPUT_DIR: &str = "target/wasm32-unknown-unknown/release";
+const OUTPUT_DIR: &str = "/target/wasm32-unknown-unknown/release";
 
 /// Build the contract at the path *contract* with the provided *features*.
 fn build_contract(contract: &PathBuf, wasm_name: &String, feature: Option<&String>) {

@@ -35,6 +35,9 @@ for CONTRACTDIR in "$@"; do
     pkg_name=$(toml get -r Cargo.toml package.name)
     pkg_name=${pkg_name//-/_}
 
+    # remove all previous artifacts
+    rm -rf /target/wasm32-unknown-unknown/release/*.wasm
+
     # Check if there are features
     if toml get Cargo.toml package.metadata.optimizer.features >/dev/null 2>&1; then
          IFS=$'\n' features=($(toml get Cargo.toml package.metadata.optimizer.features | jq -r '.[]'))
@@ -44,24 +47,30 @@ for CONTRACTDIR in "$@"; do
 
     # Build the release for the contract and move it to the artifacts folder
     build_and_move_release() {
-      local feature_flag=${1:-}
+      local feature_name=${1:-}
+      local feature_flag=""
+      if [ -n "$feature_name" ]; then
+        feature_flag="--features=${feature_name}"
+      fi
+      echo "Building with feature: $feature_name"
       RUSTFLAGS='-C link-arg=-s' cargo build --target-dir=/target --release --lib --target wasm32-unknown-unknown --locked ${feature_flag}
       local wasm_output="/target/wasm32-unknown-unknown/release/${pkg_name}".wasm
-      local wasm_name="/target/wasm32-unknown-unknown/release/${pkg_name}${feature_flag:+-}${feature_flag}".wasm
+      local wasm_name="/target/wasm32-unknown-unknown/release/${pkg_name}${feature_name:+-$feature_name}".wasm
+      echo "moving $wasm_output to $wasm_name"
       mv "$wasm_output" "$wasm_name"
     }
-
-    # Build without features
-    build_and_move_release
 
     # Build with features if present
     if [ "${#features[@]}" -gt 0 ]; then
       for feature in "${features[@]}"; do
-        echo "Building with feature: $feature"
-        build_and_move_release "--features $feature"
+        build_and_move_release $feature
       done
     fi
+    
+    # Build without features
+    build_and_move_release
   )
+  
 
   echo "Info: Finished building in $CONTRACTDIR"
 
