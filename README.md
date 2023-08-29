@@ -49,7 +49,7 @@ features = ["juno", "terra"]
 ```
 In this example, the build script will generate an optimized WASM for each of the features juno and terra in addition to the default optimized WASM.
 
-The output file name for the optimized wasm will be the same as the default wasm, suffixed with `-<feature_name>`. For example, if the default wasm is `contract.wasm`, the optimized wasm for the feature `juno` will be `contract-juno.wasm`. If the contract is compiled on ARM the suffix will be `<feature_name>-arm64`. So the optimized wasm for the feature `juno` on ARM will be `contract-juno-arm64.wasm`.
+The output file name for the optimized wasm will be the same as the default wasm, suffixed with `-<feature_name>`. For example, if the default wasm is `contract.wasm`, the optimized wasm for the feature `juno` will be `contract-juno.wasm`. If the contract is compiled on ARM the suffix will be `<feature_name>-aarch64`. So the optimized wasm for the feature `juno` on ARM will be `contract-juno-aarch64.wasm`.
 
 To use feature-based optimization, run the Docker image as usual. The script will automatically detect the [features] section in your Cargo.toml and optimize for each feature.
 
