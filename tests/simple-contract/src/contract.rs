@@ -25,6 +25,10 @@ pub fn instantiate(
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
     STATE.save(deps.storage, &state)?;
 
+    // Allows verifying that the contract was compiled with the `featured` feature (because it will have a different size)
+    #[cfg(feature = "featured")]
+    eprintln!("{:?}", include_bytes!("../bytes.in"));
+
     Ok(Response::new()
         .add_attribute("method", "instantiate")
         .add_attribute("owner", info.sender)
