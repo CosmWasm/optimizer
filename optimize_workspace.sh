@@ -30,12 +30,12 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
   INTERMEDIATE_SHAS="../artifacts/checksums_intermediate.txt"
   OPTIMIZED_SHAS="../artifacts/checksums.txt"
 
-  for WASM in ../target/wasm32-unknown-unknown/release/*.wasm; do
+  for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
     BASENAME=$(basename "$WASM" .wasm)
     NAME=${BASENAME}${SUFFIX}
     OPTIMIZED_WASM=${NAME}.wasm
 
-    INTERMEDIATE_SHA=$(sha256sum -- "$WASM" | sed 's,../target,target,g')
+    INTERMEDIATE_SHA=$(sha256sum -- "$WASM" | sed 's,/target,target,g')
 
     SKIP_OPTIMIZATION=false
     if test -f "../artifacts/${OPTIMIZED_WASM}"; then
@@ -65,7 +65,8 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
       echo "$INTERMEDIATE_SHA" >>"$INTERMEDIATE_SHAS"
 
       echo "Optimizing ${BASENAME}..."
-      wasm-opt -Os "$WASM" -o "$OPTIMIZED_WASM"
+      # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
+      wasm-opt -Os --signext-lowering "$WASM" -o "$OPTIMIZED_WASM"
       echo "Moving ${OPTIMIZED_WASM}..."
       mv "$OPTIMIZED_WASM" ../artifacts
     fi

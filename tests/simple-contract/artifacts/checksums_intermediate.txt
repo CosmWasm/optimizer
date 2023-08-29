@@ -1,1 +1,2 @@
-d843ee7b88cc896428c539bda94b86a8f07417ccb0e81311b5041db902d343a2  ./target/wasm32-unknown-unknown/release/simple_contract.wasm
+d680073d2168dc0ac95b9200563fb6c5b8818d0884a0ad9e86d5f351551fe8b0  /target/wasm32-unknown-unknown/release/simple_contract-hello.wasm
+df25e2f0bccbacb0d180f75dd2bea0843f08e89aaadcd2772e0eafaf0a45b3f1  /target/wasm32-unknown-unknown/release/simple_contract.wasm

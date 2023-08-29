@@ -35,6 +35,9 @@ for CONTRACTDIR in "$@"; do
     pkg_name=$(toml get -r Cargo.toml package.name)
     pkg_name=${pkg_name//-/_}
 
+    # remove all previous artifacts
+    rm -rf /target/wasm32-unknown-unknown/release/*.wasm
+
     # Check if there are features
     if toml get Cargo.toml package.metadata.optimizer.features >/dev/null 2>&1; then
          IFS=$'\n' features=($(toml get Cargo.toml package.metadata.optimizer.features | jq -r '.[]'))
@@ -44,34 +47,41 @@ for CONTRACTDIR in "$@"; do
 
     # Build the release for the contract and move it to the artifacts folder
     build_and_move_release() {
-      local feature_flag=${1:-}
-      RUSTFLAGS='-C link-arg=-s' cargo build --release --lib --target wasm32-unknown-unknown --locked ${feature_flag}
-      local wasm_output="./target/wasm32-unknown-unknown/release/${pkg_name}".wasm
-      local wasm_name="./target/wasm32-unknown-unknown/release/${pkg_name}${feature_flag:+-}${feature_flag}".wasm
+      local feature_name=${1:-}
+      local feature_flag=""
+      if [ -n "$feature_name" ]; then
+        feature_flag="--features=${feature_name}"
+      fi
+      echo "Info: Building with feature: $feature_name"
+      RUSTFLAGS='-C link-arg=-s' cargo build --target-dir=/target --release --lib --target wasm32-unknown-unknown --locked ${feature_flag}
+
+      # rename the wasm file (named after the package name) to the feature-specific name (if any).
+      local wasm_output="/target/wasm32-unknown-unknown/release/${pkg_name}".wasm
+      local wasm_name="/target/wasm32-unknown-unknown/release/${pkg_name}${feature_name:+-$feature_name}".wasm
       mv "$wasm_output" "$wasm_name"
     }
-
-    # Build without features
-    build_and_move_release
 
     # Build with features if present
     if [ "${#features[@]}" -gt 0 ]; then
       for feature in "${features[@]}"; do
-        echo "Building with feature: $feature"
-        build_and_move_release "--features $feature"
+        build_and_move_release $feature
       done
     fi
-  )
 
+    # Build without features after potentially building with features
+    build_and_move_release
+  )
+  
   echo "Info: Finished building in $CONTRACTDIR"
 
   # wasm-optimize on all results
-  for WASM in "$CONTRACTDIR"/target/wasm32-unknown-unknown/release/*.wasm; do
+  for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
     NAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
     echo "Creating intermediate hash for $NAME ..."
     sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt
     echo "Optimizing $NAME ..."
-    wasm-opt -Os "$WASM" -o "artifacts/$NAME"
+    # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
+    wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$NAME"
   done
 done
 
