@@ -45,7 +45,7 @@ for CONTRACTDIR in "$@"; do
     # Build the release for the contract and move it to the artifacts folder
     build_and_move_release() {
       local feature_flag=${1:-}
-      RUSTFLAGS='-C link-arg=-s' cargo build --release --lib --target wasm32-unknown-unknown --locked ${feature_flag}
+      RUSTFLAGS='-C link-arg=-s' cargo build --target-dir=/target --release --lib --target wasm32-unknown-unknown --locked ${feature_flag}
       local wasm_output="./target/wasm32-unknown-unknown/release/${pkg_name}".wasm
       local wasm_name="./target/wasm32-unknown-unknown/release/${pkg_name}${feature_flag:+-}${feature_flag}".wasm
       mv "$wasm_output" "$wasm_name"
@@ -66,12 +66,13 @@ for CONTRACTDIR in "$@"; do
   echo "Info: Finished building in $CONTRACTDIR"
 
   # wasm-optimize on all results
-  for WASM in "$CONTRACTDIR"/target/wasm32-unknown-unknown/release/*.wasm; do
+  for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
     NAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
     echo "Creating intermediate hash for $NAME ..."
     sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt
     echo "Optimizing $NAME ..."
-    wasm-opt -Os "$WASM" -o "artifacts/$NAME"
+    # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
+    wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$NAME"
   done
 done
 

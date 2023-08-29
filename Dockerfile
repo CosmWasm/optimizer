@@ -1,10 +1,10 @@
-FROM rust:1.68.2-alpine as targetarch
+FROM rust:1.71.0-alpine as targetarch
 
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
 ARG TARGETARCH
 
-ARG BINARYEN_VERSION="version_110"
+ARG BINARYEN_VERSION="version_114"
 
 RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 
@@ -88,7 +88,7 @@ RUN cd build_workspace && \
 #
 # base-optimizer
 #
-FROM rust:1.68.2-alpine as base-optimizer
+FROM rust:1.71.0-alpine as base-optimizer
 
 # Download the crates.io index using the new sparse protocol to improve performance
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse

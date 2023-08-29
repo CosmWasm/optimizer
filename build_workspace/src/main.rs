@@ -61,6 +61,7 @@ fn build_contract(contract: &PathBuf, wasm_name: &String, feature: Option<&Strin
         "build",
         "--release",
         "--lib",
+        "--target-dir=/target",
         "--target=wasm32-unknown-unknown",
         "--locked",
     ].into_iter().map(|arg| arg.to_string()).collect::<Vec<String>>();

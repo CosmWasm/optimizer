@@ -2,6 +2,41 @@
 
 ## [Unreleased]
 
+## [0.14.0] - 2023-07-28
+
+- Update to binaryen v114.
+- Bump Rust to current stable v1.71.0.
+- Add the `--signext-lowering` flag to `wasm-opt`. ([#127])
+
+## [0.13.0] - 2023-06-20
+
+### Changed
+
+- Moved target folder from `/code/target` to `/target`. To upgrade your caller code use one of those diffs.
+  For rust-optimizer:
+
+  ```diff
+   docker run --rm -v "$(pwd)":/code \
+  -  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+  +  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
+     --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  -  cosmwasm/rust-optimizer:0.12.13
+  +  cosmwasm/rust-optimizer:0.13.0
+  ```
+
+  or for workspace-optimizer:
+
+  ```diff
+   docker run --rm -v "$(pwd)":/code \
+  -  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/code/target \
+  +  --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
+     --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+  -  cosmwasm/workspace-optimizer:0.12.11
+  +  cosmwasm/workspace-optimizer:0.13.0
+  ```
+
+- Bump Rust to 1.69.0
+
 ## [0.12.13] - 2023-03-30
 
 - Bump Rust to 1.68.2.\
@@ -185,7 +220,8 @@ sources and should not be used. 0.7.0, 0.7.1 and 0.7.3 unaffected.
 - Bump emscripten to 1.39.8-fastcomp
 - Bump Rust to 1.41.0
 
-[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.13...HEAD
+[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.13...v0.13.0
 [0.12.13]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.12...v0.12.13
 [0.12.12]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.11...v0.12.12
 [0.12.11]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.10...v0.12.11
