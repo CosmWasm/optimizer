@@ -1,1 +1,0 @@
-62e6bfe8459c39edada137a353134250c4d189a2b23f65ad66e90a66204ad04f  simple_contract-aarch64.wasm

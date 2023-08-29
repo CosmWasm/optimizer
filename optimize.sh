@@ -46,8 +46,8 @@ for CONTRACTDIR in "$@"; do
     build_and_move_release() {
       local feature_flag=${1:-}
       RUSTFLAGS='-C link-arg=-s' cargo build --target-dir=/target --release --lib --target wasm32-unknown-unknown --locked ${feature_flag}
-      local wasm_output="./target/wasm32-unknown-unknown/release/${pkg_name}".wasm
-      local wasm_name="./target/wasm32-unknown-unknown/release/${pkg_name}${feature_flag:+-}${feature_flag}".wasm
+      local wasm_output="/target/wasm32-unknown-unknown/release/${pkg_name}".wasm
+      local wasm_name="/target/wasm32-unknown-unknown/release/${pkg_name}${feature_flag:+-}${feature_flag}".wasm
       mv "$wasm_output" "$wasm_name"
     }
 
