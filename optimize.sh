@@ -52,11 +52,12 @@ for CONTRACTDIR in "$@"; do
       if [ -n "$feature_name" ]; then
         feature_flag="--features=${feature_name}"
       fi
-      echo "Building with feature: $feature_name"
+      echo "Info: Building with feature: $feature_name"
       RUSTFLAGS='-C link-arg=-s' cargo build --target-dir=/target --release --lib --target wasm32-unknown-unknown --locked ${feature_flag}
+
+      # rename the wasm file (named after the package name) to the feature-specific name (if any).
       local wasm_output="/target/wasm32-unknown-unknown/release/${pkg_name}".wasm
       local wasm_name="/target/wasm32-unknown-unknown/release/${pkg_name}${feature_name:+-$feature_name}".wasm
-      echo "moving $wasm_output to $wasm_name"
       mv "$wasm_output" "$wasm_name"
     }
 
@@ -66,12 +67,11 @@ for CONTRACTDIR in "$@"; do
         build_and_move_release $feature
       done
     fi
-    
-    # Build without features
+
+    # Build without features after potentially building with features
     build_and_move_release
   )
   
-
   echo "Info: Finished building in $CONTRACTDIR"
 
   # wasm-optimize on all results
