@@ -1,7 +1,9 @@
-#!/bin/ash
-# shellcheck shell=dash
-# See https://www.shellcheck.net/wiki/SC2187
+#!/usr/bin/env bash
+
+echo "Info: optimize.sh"
+
 set -o errexit -o nounset -o pipefail
+trap 'echo >&2 "Error on line $LINENO"' ERR
 command -v shellcheck >/dev/null && shellcheck "$0"
 
 export PATH=$PATH:/root/.cargo/bin
@@ -30,13 +32,56 @@ rm -f artifacts/checksums_intermediate.txt
 # Note: if CONTRACTDIR is "." (default in Docker), this ends up as a noop
 for CONTRACTDIR in "$@"; do
   echo "Building contract in $(realpath "$CONTRACTDIR") ..."
+    if [ ! -f "$CONTRACTDIR/Cargo.toml" ]; then
+      echo "Cargo.toml not found in $CONTRACTDIR. Skipping this directory."
+      continue
+    fi
   (
     cd "$CONTRACTDIR"
+    echo "Info: Building in $CONTRACTDIR"
 
-    # Linker flag "-s" for stripping (https://github.com/rust-lang/cargo/issues/3483#issuecomment-431209957)
-    # Note that shortcuts from .cargo/config are not available in source code packages from crates.io
-    RUSTFLAGS='-C link-arg=-s' cargo build --target-dir=/target --release --lib --target wasm32-unknown-unknown --locked
+    # Get the package name from Cargo.toml
+    pkg_name=$(toml get -r Cargo.toml package.name)
+    pkg_name=${pkg_name//-/_}
+
+    # Remove all previous artifacts (helps in debugging)
+    rm -rf /target/wasm32-unknown-unknown/release/*.wasm
+
+    # Check if there are features
+    if toml get Cargo.toml package.metadata.optimizer.features >/dev/null 2>&1; then
+         IFS=$'\n' features=($(toml get Cargo.toml package.metadata.optimizer.features | jq -r '.[]'))
+    else
+        features=()
+    fi
+
+    # Build the release for the contract and move it to the artifacts folder
+    build_and_move_release() {
+      local feature_name=${1:-}
+      local feature_flag=""
+      if [ -n "$feature_name" ]; then
+        feature_flag="--features=${feature_name}"
+      fi
+      echo "Info: Building with feature: $feature_name"
+      RUSTFLAGS='-C link-arg=-s' cargo build --target-dir=/target --release --lib --target wasm32-unknown-unknown --locked ${feature_flag}
+
+      # rename the wasm file (named after the package name) to the feature-specific name (if any).
+      local wasm_output="/target/wasm32-unknown-unknown/release/${pkg_name}".wasm
+      local wasm_name="/target/wasm32-unknown-unknown/release/${pkg_name}${feature_name:+-$feature_name}".wasm
+      mv "$wasm_output" "$wasm_name"
+    }
+
+    # Build with features if present
+    if [ "${#features[@]}" -gt 0 ]; then
+      for feature in "${features[@]}"; do
+        build_and_move_release $feature
+      done
+    fi
+
+    # Build without features after potentially building with features
+    build_and_move_release
   )
+  
+  echo "Info: Finished building in $CONTRACTDIR"
 
   # wasm-optimize on all results
   for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
@@ -49,7 +94,7 @@ for CONTRACTDIR in "$@"; do
   done
 done
 
-# create hash
+# Create hash
 echo "Creating hashes ..."
 (
   cd artifacts

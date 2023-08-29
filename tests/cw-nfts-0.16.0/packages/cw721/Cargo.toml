@@ -1,0 +1,20 @@
+[package]
+name          = "cw721"
+description   = "Definition and types for the CosmWasm-721 NFT interface"
+authors       = [
+  "Ethan Frey <ethanfrey@users.noreply.github.com>",
+  "Orkun Külçe <orkun@deuslabs.fi>",
+]
+version       = { workspace = true }
+edition       = { workspace = true }
+license       = { workspace = true }
+repository    = { workspace = true }
+homepage      = { workspace = true }
+documentation = { workspace = true }
+
+[dependencies]
+cosmwasm-schema = { workspace = true }
+cosmwasm-std    = { workspace = true }
+cw-utils        = { workspace = true }
+schemars        = { workspace = true }
+serde           = { workspace = true }

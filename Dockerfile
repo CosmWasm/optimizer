@@ -1,4 +1,4 @@
-FROM rust:1.71.0-alpine as targetarch
+FROM rust:1.72.0-alpine as targetarch
 
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
@@ -88,7 +88,7 @@ RUN cd build_workspace && \
 #
 # base-optimizer
 #
-FROM rust:1.71.0-alpine as base-optimizer
+FROM rust:1.72.0-alpine as base-optimizer
 
 # Download the crates.io index using the new sparse protocol to improve performance
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
@@ -96,6 +96,17 @@ ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 # Being required for gcc linking
 RUN apk update && \
   apk add --no-cache musl-dev
+
+# Install bash
+RUN apk add --no-cache bash
+
+# Install yq to be able to parse the Cargo.toml
+RUN apk add --no-cache jq
+
+RUN cargo install toml-cli
+
+# Install cargo-feature for feature inspection
+RUN cargo install cargo-feature
 
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
