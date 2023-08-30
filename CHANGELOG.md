@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Bump Rust to current stable v1.72.0.
+
 ## [0.14.0] - 2023-07-28
 
 - Update to binaryen v114.
