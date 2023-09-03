@@ -1,3 +1,7 @@
+mod ext;
+
+use crate::ext::compress_file;
+use anyhow::Result;
 use glob::glob;
 use serde::Deserialize;
 use std::{
@@ -5,6 +9,7 @@ use std::{
     path::PathBuf,
     process::Command,
 };
+use walrus::{Module, RawCustomSection};
 
 const CARGO_PATH: &str = "cargo";
 const PACKAGE_PREFIX: &str = "contracts/";
@@ -30,7 +35,7 @@ fn is_cargo_project(path: &PathBuf) -> bool {
     path.is_dir()
 }
 
-fn main() {
+fn main() -> Result<()> {
     let file = fs::read_to_string("Cargo.toml").unwrap();
     let cargo_toml: CargoToml = toml::from_str(&file).unwrap();
     let members = cargo_toml.workspace.members;
@@ -60,9 +65,12 @@ fn main() {
     println!("Contracts to be built: {:?}", contract_packages);
 
     for contract in contract_packages {
-        println!("Building {:?} ...", contract);
+        let path = canonicalize(contract).unwrap();
 
-        let mut child = Command::new(CARGO_PATH)
+        println!("\nBuilding {:?}...", path.clone());
+
+        println!("  1. compile Wasm");
+        Command::new(CARGO_PATH)
             .args(&[
                 "build",
                 "--target-dir=/target",
@@ -72,10 +80,46 @@ fn main() {
                 "--locked",
             ])
             .env("RUSTFLAGS", "-C link-arg=-s")
-            .current_dir(canonicalize(contract).unwrap())
+            .current_dir(path.clone())
             .spawn()
-            .unwrap();
-        let error_code = child.wait().unwrap();
-        assert!(error_code.success());
+            .unwrap()
+            .wait()?;
+
+        println!("  2. build schema JSON");
+        Command::new(CARGO_PATH)
+            .args(&["run", "--bin", "schema"])
+            .current_dir(path.clone())
+            .spawn()
+            .unwrap()
+            .wait()?;
+
+        println!("  3. inject compressed JSON into Wasm");
+        let file_name = path.file_name().unwrap().to_str().unwrap();
+        let schema_stem = path.join("schema").join(file_name);
+        let data = compress_file(&schema_stem.with_extension("json")).unwrap();
+        let input = PathBuf::from("target/wasm32-unknown-unknown/release")
+            .join(file_name.replace("-", "_"))
+            .with_extension("wasm");
+        let mut module = Module::from_file(input.clone())?;
+        module.customs.add(RawCustomSection {
+            name: "schema".to_string(),
+            data: data.clone(),
+        });
+        println!(
+            "     updating in place: {}",
+            input.clone().to_string_lossy()
+        );
+        println!("     compressed schema size:    {:>4}kB", data.len() / 1024);
+        println!(
+            "     original Wasm size:        {:>4}kB",
+            fs::metadata(input.clone())?.len() / 1024
+        );
+        module.emit_wasm_file(input.clone())?;
+        println!(
+            "     Wasm with injected schema: {:>4}kB",
+            fs::metadata(input)?.len() / 1024
+        );
     }
+
+    Ok(())
 }

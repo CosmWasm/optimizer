@@ -10,3 +10,10 @@ publish = false
 toml = "0.4.2"
 serde = { version = "1.0.130", features = ["derive"] }
 glob = "0.3.0"
+
+## Utilities
+brotli = {version= "3.3.4", features = ["std"] }
+walrus = "0.19.0" # tools for working with Wasm
+
+## Errors
+anyhow = "1.0.51"
