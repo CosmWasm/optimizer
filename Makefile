@@ -2,7 +2,7 @@
 
 DOCKER_NAME_RUST_OPTIMIZER := "abstractmoney/rust-optimizer"
 DOCKER_NAME_WORKSPACE_OPTIMIZER := "abstractmoney/workspace-optimizer"
-DOCKER_TAG := 0.14.0
+DOCKER_TAG := 0.15.0
 
 # Native arch
 BUILDARCH := $(shell uname -m)
