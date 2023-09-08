@@ -94,8 +94,8 @@ fn build_contract(contract: &PathBuf, wasm_name: &str, build: &Build) {
         // e.g. "feature1","feature2","feature3"
         features
             .iter()
-            .fold(format!("\"{}\"", first_feature), |acc, val| {
-                format!("{acc}{}", format!(",\"{}\"", val))
+            .fold(first_feature, |acc, val| {
+                format!("{acc}{}", format!(",{}", val))
             })
     } else {
         "".to_string()
@@ -115,12 +115,24 @@ fn build_contract(contract: &PathBuf, wasm_name: &str, build: &Build) {
     let error_code = child.wait().unwrap();
     assert!(error_code.success());
 
-    // Copy to path name formatted as `<output_dir>/<wasm_name>-<build_name>.wasm`
-    // or `<output_dir>/<wasm_name>.wasm` if build_name is empty ("").
+    // Rename to name formatted as `<output_dir>/<wasm_name>-<build_name>.wasm`
     if !build_name.is_empty() {
-        let input_wasm_path = format!("{}/{}.wasm", OUTPUT_DIR, wasm_name);
-        let output_wasm_path = format!("{}/{}-{}.wasm", OUTPUT_DIR, wasm_name, build_name);
+        let input_wasm_path = default_wasm_path(wasm_name);
+        let output_wasm_path = wasm_path(wasm_name, build_name);
         fs::rename(&input_wasm_path, &output_wasm_path).expect("Failed to rename the output file");
+    }
+}
+
+/// Returns the default wasm path name formatted as `<output_dir>/<wasm_name>.wasm`
+fn default_wasm_path(wasm_name: &str) -> String {
+    format!("{}/{}.wasm", OUTPUT_DIR, wasm_name)
+}
+/// Returns path name formatted as `<output_dir>/<wasm_name>-<build_name>.wasm`
+fn wasm_path(wasm_name: &str, build_name: &str) -> String {
+    if build_name.is_empty() {
+        default_wasm_path(wasm_name)
+    } else {
+        format!("{}/{}-{}.wasm", OUTPUT_DIR, wasm_name, build_name)
     }
 }
 
@@ -153,10 +165,6 @@ fn main() {
 
     println!("Contracts to be built: {:?}", contract_packages);
 
-    // Keep track of the unique builds to prevent re-compiling the same contract
-    // K: features V: build name of build with those features
-    let mut built: HashMap<Vec<Feature>, BuildName> = HashMap::new();
-
     for contract in contract_packages {
         let contract_cargo_toml = fs::read_to_string(contract.join("Cargo.toml")).unwrap();
         let PackageCargoToml { package } = toml::from_str(&contract_cargo_toml).unwrap();
@@ -168,6 +176,11 @@ fn main() {
             .and_then(|metadata| metadata.optimizer)
             .and_then(|optimizer| optimizer.builds);
 
+        // Keep track of the unique builds to prevent re-compiling the same contract
+        // K: features V: build name of build with those features
+        let mut built: HashMap<Vec<Feature>, BuildName> = HashMap::new();
+
+
         // Build all the requested builds
         if let Some(builds) = builds {
             for build in builds.into_iter() {
@@ -177,6 +190,8 @@ fn main() {
 
                 if built.contains_key(&features) {
                     // build already exists, copy the wasm file with identical features to a new build name
+                    let built_wasm_name = built.get(&features).unwrap();
+                    fs::copy(wasm_path(&wasm_name, built_wasm_name), wasm_path(&wasm_name, &build.name)).expect("Failed to copy the output file");
                     continue;
                 }
                 build_contract(contract, &wasm_name, &build);
