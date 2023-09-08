@@ -1,12 +1,12 @@
 [package]
-name          = "cw721-non-transferable"
-authors       = ["Eliseo Cohen <eliseoci@users.noreply.github.com>"]
-description   = "Non-transferable CW721 NFT example"
-version       = { workspace = true }
-edition       = { workspace = true }
-license       = { workspace = true }
-repository    = { workspace = true }
-homepage      = { workspace = true }
+name = "cw721-non-transferable"
+authors = ["Eliseo Cohen <eliseoci@users.noreply.github.com>"]
+description = "Non-transferable CW721 NFT example"
+version = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+homepage = { workspace = true }
 documentation = { workspace = true }
 
 [lib]
@@ -20,10 +20,10 @@ library = []
 
 [dependencies]
 cosmwasm-schema = { workspace = true }
-cosmwasm-std    = { workspace = true }
+cosmwasm-std = { workspace = true }
 cw-storage-plus = { workspace = true }
-cw2             = { workspace = true }
-cw721           = { workspace = true }
-cw721-base      = { workspace = true, features = ["library"] }
-schemars        = { workspace = true }
-serde           = { workspace = true }
+cw2 = { workspace = true }
+cw721 = { workspace = true }
+cw721-base = { workspace = true, features = ["library"] }
+schemars = { workspace = true }
+serde = { workspace = true }
