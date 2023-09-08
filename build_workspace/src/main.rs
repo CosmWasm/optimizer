@@ -92,11 +92,9 @@ fn build_contract(contract: &PathBuf, wasm_name: &str, build: &Build) {
         let first_feature = features.swap_remove(0);
         // construct feature-args
         // e.g. "feature1","feature2","feature3"
-        features
-            .iter()
-            .fold(first_feature, |acc, val| {
-                format!("{acc}{}", format!(",{}", val))
-            })
+        features.iter().fold(first_feature, |acc, val| {
+            format!("{acc}{}", format!(",{}", val))
+        })
     } else {
         "".to_string()
     };
@@ -180,7 +178,6 @@ fn main() {
         // K: features V: build name of build with those features
         let mut built: HashMap<Vec<Feature>, BuildName> = HashMap::new();
 
-
         // Build all the requested builds
         if let Some(builds) = builds {
             for build in builds.into_iter() {
@@ -191,7 +188,11 @@ fn main() {
                 if built.contains_key(&features) {
                     // build already exists, copy the wasm file with identical features to a new build name
                     let built_wasm_name = built.get(&features).unwrap();
-                    fs::copy(wasm_path(&wasm_name, built_wasm_name), wasm_path(&wasm_name, &build.name)).expect("Failed to copy the output file");
+                    fs::copy(
+                        wasm_path(&wasm_name, built_wasm_name),
+                        wasm_path(&wasm_name, &build.name),
+                    )
+                    .expect("Failed to copy the output file");
                     continue;
                 }
                 build_contract(contract, &wasm_name, &build);
