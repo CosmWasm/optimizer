@@ -21,15 +21,6 @@ sccache -s
 mkdir -p artifacts
 rm -f artifacts/checksums_intermediate.txt
 
-# There are two cases here
-# 1. All contracts (or one) are included in the root workspace (eg. `cosmwasm-template`, `cosmwasm-examples`, `cosmwasm-plus`)
-#    In this case, we pass no argument, just mount the proper directory.
-# 2. Contracts are excluded from the root workspace, but import relative paths from other packages (only `cosmwasm`).
-#    In this case, we mount root workspace and pass in a path `docker run <repo> ./contracts/hackatom`
-
-# This parameter allows us to mount a folder into docker container's "/code"
-# and build "/code/contracts/mycontract".
-# Note: if CONTRACTDIR is "." (default in Docker), this ends up as a noop
 for CONTRACTDIR in "$@"; do
   echo "Building contract in $(realpath "$CONTRACTDIR") ..."
     if [ ! -f "$CONTRACTDIR/Cargo.toml" ]; then
@@ -43,9 +34,6 @@ for CONTRACTDIR in "$@"; do
     # Get the package name from Cargo.toml
     pkg_name=$(toml get -r Cargo.toml package.name)
     pkg_name=${pkg_name//-/_}
-
-    # Remove all previous artifacts (helps in debugging)
-    rm -rf /target/wasm32-unknown-unknown/release/*.wasm
 
     # Check if there are features
     if toml get Cargo.toml package.metadata.optimizer.features >/dev/null 2>&1; then

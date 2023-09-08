@@ -1,8 +1,8 @@
 .PHONY: build-rust-optimizer build-workspace-optimizer build create-rust-optimizer-multi use-rust-optimizer-multi publish-rust-optimizer-multi publish-workspace-optimizer-multi publish-multi
 
-DOCKER_NAME_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
-DOCKER_NAME_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
-DOCKER_TAG := 0.14.0
+DOCKER_NAME_RUST_OPTIMIZER := "abstractmoney/rust-optimizer"
+DOCKER_NAME_WORKSPACE_OPTIMIZER := "abstractmoney/workspace-optimizer"
+DOCKER_TAG := 0.15.0
 
 # Native arch
 BUILDARCH := $(shell uname -m)

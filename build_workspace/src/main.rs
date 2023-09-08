@@ -1,6 +1,7 @@
 use glob::glob;
 use serde::Deserialize;
 use std::{
+    collections::HashMap,
     fs::{self, canonicalize},
     path::PathBuf,
     process::Command,
@@ -8,6 +9,9 @@ use std::{
 
 const CARGO_PATH: &str = "cargo";
 const PACKAGE_PREFIX: &str = "contracts/";
+
+type BuildName = String;
+type Feature = String;
 
 #[derive(Deserialize, Debug)]
 pub struct WorkspaceCargoToml {
@@ -37,7 +41,16 @@ pub struct OptimizerMetadata {
 
 #[derive(Deserialize, Debug)]
 pub struct Optimizer {
-    features: Option<Vec<String>>,
+    builds: Option<Vec<Build>>,
+}
+
+/// A build entry that specifies the build of a contract with optional features.
+#[derive(Deserialize, Debug, Default)]
+pub struct Build {
+    /// Name appended to the build output file name.
+    pub name: BuildName,
+    /// Features to be enabled for this build.
+    pub features: Option<Vec<Feature>>,
 }
 
 /// Checks if the given path is a Cargo project. This is needed
@@ -54,8 +67,14 @@ fn is_cargo_project(path: &PathBuf) -> bool {
 const OUTPUT_DIR: &str = "/target/wasm32-unknown-unknown/release";
 
 /// Build the contract at the path *contract* with the provided *features*.
-fn build_contract(contract: &PathBuf, wasm_name: &String, feature: Option<&String>) {
-    println!("Building {:?} with features {:?}", contract, feature);
+fn build_contract(contract: &PathBuf, wasm_name: &str, build: &Build) {
+    let Build {
+        name: build_name,
+        features,
+    } = build;
+    let mut features = features.clone().unwrap_or_default();
+
+    eprintln!("Building {:?} with features {:?}", contract, features);
 
     let mut args = vec![
         "build",
@@ -64,12 +83,29 @@ fn build_contract(contract: &PathBuf, wasm_name: &String, feature: Option<&Strin
         "--target-dir=/target",
         "--target=wasm32-unknown-unknown",
         "--locked",
-    ].into_iter().map(|arg| arg.to_string()).collect::<Vec<String>>();
+    ]
+    .into_iter()
+    .map(|arg| arg.to_string())
+    .collect::<Vec<String>>();
 
-    if let Some(feature) = feature {
-        args.push(format!("--features={}", feature));
-    }
+    let featured_arg = if !features.is_empty() {
+        let first_feature = features.swap_remove(0);
+        // construct feature-args
+        // e.g. "feature1","feature2","feature3"
+        features
+            .iter()
+            .fold(first_feature, |acc, val| {
+                format!("{acc}{}", format!(",{}", val))
+            })
+    } else {
+        "".to_string()
+    };
 
+    eprintln!("featured_arg: {}", featured_arg);
+    // Add features to command
+    args.push(format!("--features={}", featured_arg));
+
+    // Run the build
     let mut child = Command::new(CARGO_PATH)
         .args(&args)
         .env("RUSTFLAGS", "-C link-arg=-s")
@@ -79,11 +115,24 @@ fn build_contract(contract: &PathBuf, wasm_name: &String, feature: Option<&Strin
     let error_code = child.wait().unwrap();
     assert!(error_code.success());
 
-    // The feature wasm should be suffixed with the feature name to differentiate itself
-    if let Some(feature) = feature {
-        let input_wasm_path = format!("{}/{}.wasm", OUTPUT_DIR, wasm_name);
-        let output_wasm_path = format!("{}/{}-{}.wasm", OUTPUT_DIR, wasm_name, feature);
+    // Rename to name formatted as `<output_dir>/<wasm_name>-<build_name>.wasm`
+    if !build_name.is_empty() {
+        let input_wasm_path = default_wasm_path(wasm_name);
+        let output_wasm_path = wasm_path(wasm_name, build_name);
         fs::rename(&input_wasm_path, &output_wasm_path).expect("Failed to rename the output file");
+    }
+}
+
+/// Returns the default wasm path name formatted as `<output_dir>/<wasm_name>.wasm`
+fn default_wasm_path(wasm_name: &str) -> String {
+    format!("{}/{}.wasm", OUTPUT_DIR, wasm_name)
+}
+/// Returns path name formatted as `<output_dir>/<wasm_name>-<build_name>.wasm`
+fn wasm_path(wasm_name: &str, build_name: &str) -> String {
+    if build_name.is_empty() {
+        default_wasm_path(wasm_name)
+    } else {
+        format!("{}/{}-{}.wasm", OUTPUT_DIR, wasm_name, build_name)
     }
 }
 
@@ -118,22 +167,41 @@ fn main() {
 
     for contract in contract_packages {
         let contract_cargo_toml = fs::read_to_string(contract.join("Cargo.toml")).unwrap();
-        let PackageCargoToml {
-            package,
-        } = toml::from_str(&contract_cargo_toml).unwrap();
+        let PackageCargoToml { package } = toml::from_str(&contract_cargo_toml).unwrap();
 
         let wasm_name = package.name.replace("-", "_");
 
-        let features = package.metadata
+        let builds = package
+            .metadata
             .and_then(|metadata| metadata.optimizer)
-            .and_then(|optimizer| optimizer.features);
-        // build contract for each feature
-        if let Some(features) = features {
-            for feature in features.iter() {
-                build_contract(contract, &wasm_name, Some(feature));
+            .and_then(|optimizer| optimizer.builds);
+
+        // Keep track of the unique builds to prevent re-compiling the same contract
+        // K: features V: build name of build with those features
+        let mut built: HashMap<Vec<Feature>, BuildName> = HashMap::new();
+
+
+        // Build all the requested builds
+        if let Some(builds) = builds {
+            for build in builds.into_iter() {
+                // Sort features so feature ordering doesn't matter.
+                let mut features = build.features.clone().unwrap_or_default();
+                features.sort();
+
+                if built.contains_key(&features) {
+                    // build already exists, copy the wasm file with identical features to a new build name
+                    let built_wasm_name = built.get(&features).unwrap();
+                    fs::copy(wasm_path(&wasm_name, built_wasm_name), wasm_path(&wasm_name, &build.name)).expect("Failed to copy the output file");
+                    continue;
+                }
+                build_contract(contract, &wasm_name, &build);
+                built.insert(features, build.name.clone());
             }
         }
-        // build contract without features
-        build_contract(contract, &wasm_name, None)
+
+        if !built.contains_key(&vec![]) {
+            // build contract without features or appended name
+            build_contract(contract, &wasm_name, &Build::default())
+        }
     }
 }
