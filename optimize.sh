@@ -31,42 +31,7 @@ for CONTRACTDIR in "$@"; do
     cd "$CONTRACTDIR"
     echo "Info: Building in $CONTRACTDIR"
 
-    # Get the package name from Cargo.toml
-    pkg_name=$(toml get -r Cargo.toml package.name)
-    pkg_name=${pkg_name//-/_}
-
-    # Check if there are features
-    if toml get Cargo.toml package.metadata.optimizer.features >/dev/null 2>&1; then
-         IFS=$'\n' features=($(toml get Cargo.toml package.metadata.optimizer.features | jq -r '.[]'))
-    else
-        features=()
-    fi
-
-    # Build the release for the contract and move it to the artifacts folder
-    build_and_move_release() {
-      local feature_name=${1:-}
-      local feature_flag=""
-      if [ -n "$feature_name" ]; then
-        feature_flag="--features=${feature_name}"
-      fi
-      echo "Info: Building with feature: $feature_name"
-      RUSTFLAGS='-C link-arg=-s' cargo build --target-dir=/target --release --lib --target wasm32-unknown-unknown --locked ${feature_flag}
-
-      # rename the wasm file (named after the package name) to the feature-specific name (if any).
-      local wasm_output="/target/wasm32-unknown-unknown/release/${pkg_name}".wasm
-      local wasm_name="/target/wasm32-unknown-unknown/release/${pkg_name}${feature_name:+-$feature_name}".wasm
-      mv "$wasm_output" "$wasm_name"
-    }
-
-    # Build with features if present
-    if [ "${#features[@]}" -gt 0 ]; then
-      for feature in "${features[@]}"; do
-        build_and_move_release $feature
-      done
-    fi
-
-    # Build without features after potentially building with features
-    build_and_move_release
+    /usr/local/bin/cw-build
   )
   
   echo "Info: Finished building in $CONTRACTDIR"

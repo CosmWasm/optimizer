@@ -17,7 +17,7 @@ FROM targetarch as builder-arm64
 ARG ARCH="aarch64"
 
 # GENERIC
-# The builder image builds binaries like wasm-opt, sccache and build_workspace.
+# The builder image builds binaries like wasm-opt, sccache and cw-build.
 # After the build process, only the final binaries are copied into the *-optimizer
 # images to avoid shipping all the source code and intermediate build results to the user.
 FROM builder-${TARGETARCH} as builder
@@ -67,23 +67,23 @@ RUN chmod +x /usr/local/bin/optimize.sh
 ADD optimize_workspace.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/optimize_workspace.sh
 
-# Being required for gcc linking of build_workspace
+# Being required for gcc linking of cw-build
 RUN apk add --no-cache musl-dev
 
-ADD build_workspace build_workspace
+ADD cw-build cw-build
 
 # Download the crates.io index using the new sparse protocol to improve performance
-# and avoid OOM in the build_workspace build.
+# and avoid OOM in the cw-build build.
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
-# Build build_workspace binary
+# Build cw-build binary
 # Those RUSTFLAGS reduce binary size from 4MB to 600 KB
-RUN cd build_workspace && RUSTFLAGS='-C link-arg=-s' cargo build --release
-# Check build_workspace binary
-RUN cd build_workspace && \
-  ls -lh target/release/build_workspace && \
-  (ldd target/release/build_workspace || true) && \
-  mv target/release/build_workspace /usr/local/bin
+RUN cd cw-build && RUSTFLAGS='-C link-arg=-s' cargo build --release
+# Check cw-build binary
+RUN cd cw-build && \
+  ls -lh target/release/cw-build && \
+  (ldd target/release/cw-build || true) && \
+  mv target/release/cw-build /usr/local/bin
 
 #
 # base-optimizer
@@ -126,7 +126,8 @@ ENV RUSTC_WRAPPER=sccache
 # Assume we mount the source code in /code
 WORKDIR /code
 
-# Add script as entry point
+# Add cw-build and set script as entry point
+COPY --from=builder /usr/local/bin/cw-build /usr/local/bin
 COPY --from=builder /usr/local/bin/optimize.sh /usr/local/bin
 
 ENTRYPOINT ["optimize.sh"]
@@ -141,9 +142,9 @@ FROM base-optimizer as workspace-optimizer
 # Assume we mount the source code in /code
 WORKDIR /code
 
-# Add script as entry point
+# Add cw-build and set script as entry point
 COPY --from=builder /usr/local/bin/optimize_workspace.sh /usr/local/bin
-COPY --from=builder /usr/local/bin/build_workspace /usr/local/bin
+COPY --from=builder /usr/local/bin/cw-build /usr/local/bin
 
 ENTRYPOINT ["optimize_workspace.sh"]
 # Default argument when none is provided
