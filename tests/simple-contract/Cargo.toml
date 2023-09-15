@@ -29,12 +29,19 @@ overflow-checks = true
 [features]
 # for more explicit tests, cargo test --features=backtraces
 # backtraces = ["cosmwasm-std/backtraces"]
-featured = []
+feature1 = []
 # use library feature to disable all instantiate/execute/query exports
 library = []
 
 [package.metadata.optimizer]
-features = ["featured"]
+builds = [
+  { name = "juno", features = [
+    "feature1",
+  ] },
+  { name = "osmosis", features = [
+    "feature1",
+  ] },
+]
 
 [package.metadata.scripts]
 optimize = """docker run --rm -v "$(pwd)":/code \
