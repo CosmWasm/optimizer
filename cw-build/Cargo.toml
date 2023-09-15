@@ -1,12 +1,15 @@
 [package]
-name = "build_workspace"
+name = "cw-build"
 version = "0.1.0"
 edition = "2018"
 publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+
 
 [dependencies]
 toml = "0.4.2"
 serde = { version = "1.0.130", features = ["derive"] }
 glob = "0.3.0"
+getopts = "0.2"
