@@ -1,5 +1,5 @@
-use bob_the_builder::build_workspace;
+use bob_the_builder::build;
 
 fn main() {
-    build_workspace();
+    build();
 }

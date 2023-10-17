@@ -30,14 +30,19 @@ fn is_cargo_project(path: &PathBuf) -> bool {
     path.is_dir()
 }
 
-pub fn build_workspace() {
+pub fn build() {
     let file = fs::read_to_string("Cargo.toml").unwrap();
     let cargo_toml: CargoToml = toml::from_str(&file).unwrap();
-    let members = cargo_toml.workspace.members;
 
-    println!("Found workspace member entries: {:?}", members);
+    println!(
+        "Found workspace member entries: {:?}",
+        &cargo_toml.workspace.members
+    );
+    build_workspace(&cargo_toml.workspace.members);
+}
 
-    let mut all_packages = members
+pub fn build_workspace(workspace_members: &[String]) {
+    let mut all_packages = workspace_members
         .iter()
         .map(|member| {
             glob(member)
