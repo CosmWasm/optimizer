@@ -19,7 +19,7 @@ rm -f target/wasm32-unknown-unknown/release/*.wasm
 
 # Build artifacts
 echo "Building artifacts in workspace..."
-/usr/local/bin/build_workspace
+/usr/local/bin/bob
 
 mkdir -p artifacts
 echo "Optimizing artifacts in workspace..."

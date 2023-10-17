@@ -70,6 +70,7 @@ RUN chmod +x /usr/local/bin/optimize_workspace.sh
 # Being required for gcc linking of build_workspace
 RUN apk add --no-cache musl-dev
 
+# Copy crate source
 ADD build_workspace build_workspace
 
 # Download the crates.io index using the new sparse protocol to improve performance
@@ -81,9 +82,9 @@ ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 RUN cd build_workspace && RUSTFLAGS='-C link-arg=-s' cargo build --release
 # Check build_workspace binary
 RUN cd build_workspace && \
-  ls -lh target/release/build_workspace && \
-  (ldd target/release/build_workspace || true) && \
-  mv target/release/build_workspace /usr/local/bin
+  ls -lh target/release/bob && \
+  (ldd target/release/bob || true) && \
+  mv target/release/bob /usr/local/bin
 
 #
 # base-optimizer
@@ -132,7 +133,7 @@ WORKDIR /code
 
 # Add script as entry point
 COPY --from=builder /usr/local/bin/optimize_workspace.sh /usr/local/bin
-COPY --from=builder /usr/local/bin/build_workspace /usr/local/bin
+COPY --from=builder /usr/local/bin/bob /usr/local/bin
 
 ENTRYPOINT ["optimize_workspace.sh"]
 # Default argument when none is provided
