@@ -17,7 +17,7 @@ FROM targetarch as builder-arm64
 ARG ARCH="aarch64"
 
 # GENERIC
-# The builder image builds binaries like wasm-opt, sccache and build_workspace.
+# The builder image builds binaries like wasm-opt, sccache and bob.
 # After the build process, only the final binaries are copied into the *-optimizer
 # images to avoid shipping all the source code and intermediate build results to the user.
 FROM builder-${TARGETARCH} as builder
@@ -67,21 +67,21 @@ RUN chmod +x /usr/local/bin/optimize.sh
 ADD optimize_workspace.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/optimize_workspace.sh
 
-# Being required for gcc linking of build_workspace
+# Being required for gcc linking of bob
 RUN apk add --no-cache musl-dev
 
 # Copy crate source
-ADD build_workspace build_workspace
+ADD bob_the_builder bob_the_builder
 
 # Download the crates.io index using the new sparse protocol to improve performance
-# and avoid OOM in the build_workspace build.
+# and avoid OOM in the bob_the_builder build.
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
-# Build build_workspace binary
+# Build bob binary
 # Those RUSTFLAGS reduce binary size from 4MB to 600 KB
-RUN cd build_workspace && RUSTFLAGS='-C link-arg=-s' cargo build --release
-# Check build_workspace binary
-RUN cd build_workspace && \
+RUN cd bob_the_builder && RUSTFLAGS='-C link-arg=-s' cargo build --release
+# Check bob binary
+RUN cd bob_the_builder && \
   ls -lh target/release/bob && \
   (ldd target/release/bob || true) && \
   mv target/release/bob /usr/local/bin
