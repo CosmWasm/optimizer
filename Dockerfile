@@ -101,7 +101,8 @@ RUN apk update && \
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
 
-# Add wasm-opt
+# Add bob and wasm-opt
+COPY --from=builder /usr/local/bin/bob /usr/local/bin
 COPY --from=builder /usr/local/bin/wasm-opt /usr/local/bin
 
 #
@@ -133,7 +134,6 @@ WORKDIR /code
 
 # Add script as entry point
 COPY --from=builder /usr/local/bin/optimize_workspace.sh /usr/local/bin
-COPY --from=builder /usr/local/bin/bob /usr/local/bin
 
 ENTRYPOINT ["optimize_workspace.sh"]
 # Default argument when none is provided
