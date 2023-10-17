@@ -1,23 +1,16 @@
+mod cargo_toml;
+
 use glob::glob;
-use serde::Deserialize;
 use std::{
     fs::{self, canonicalize},
     path::PathBuf,
     process::Command,
 };
 
+use cargo_toml::{is_workspace, IsWorkspace};
+
 const CARGO_PATH: &str = "cargo";
 const PACKAGE_PREFIX: &str = "contracts/";
-
-#[derive(Deserialize, Debug)]
-pub struct CargoToml {
-    workspace: Workspace,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct Workspace {
-    members: Vec<String>,
-}
 
 /// Checks if the given path is a Cargo project. This is needed
 /// to filter the glob results of a workspace member like `contracts/*`
@@ -32,13 +25,19 @@ fn is_cargo_project(path: &PathBuf) -> bool {
 
 pub fn build() {
     let file = fs::read_to_string("Cargo.toml").unwrap();
-    let cargo_toml: CargoToml = toml::from_str(&file).unwrap();
 
-    println!(
-        "Found workspace member entries: {:?}",
-        &cargo_toml.workspace.members
-    );
-    build_workspace(&cargo_toml.workspace.members);
+    match is_workspace(&file).unwrap() {
+        IsWorkspace::Yes { members } => {
+            println!("Found workspace member entries: {:?}", &members);
+            build_workspace(&members);
+        }
+        IsWorkspace::NoMembers => {
+            println!("Cargo.toml contains a workspace key but has no workspace members");
+        }
+        IsWorkspace::No => {
+            println!("Not a workspace");
+        }
+    }
 }
 
 pub fn build_workspace(workspace_members: &[String]) {
