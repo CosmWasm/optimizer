@@ -32,10 +32,7 @@ for CONTRACTDIR in "$@"; do
   echo "Building contract in $(realpath "$CONTRACTDIR") ..."
   (
     cd "$CONTRACTDIR"
-
-    # Linker flag "-s" for stripping (https://github.com/rust-lang/cargo/issues/3483#issuecomment-431209957)
-    # Note that shortcuts from .cargo/config are not available in source code packages from crates.io
-    RUSTFLAGS='-C link-arg=-s' cargo build --target-dir=/target --release --lib --target wasm32-unknown-unknown --locked
+    /usr/local/bin/bob
   )
 
   # wasm-optimize on all results
