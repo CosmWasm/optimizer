@@ -49,8 +49,8 @@ RUN cargo --version
 RUN wasm-opt --version
 
 # Download sccache and verify checksum
-ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-$ARCH-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
-RUN sha256sum /tmp/sccache.tar.gz | egrep '(e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca|90d91d21a767e3f558196dbd52395f6475c08de5c4951a4c8049575fa6894489)'
+ADD https://github.com/mozilla/sccache/releases/download/v0.5.4/sccache-v0.5.4-$ARCH-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
+RUN sha256sum /tmp/sccache.tar.gz | egrep '(4bf3ce366aa02599019093584a5cbad4df783f8d6e3610548c2044daa595d40b|85f0cfe9b3150e461801cf7453763080fc3604e255587e2a4886e55bb93e6b09)'
 
 # Extract and install sccache
 RUN tar -xf /tmp/sccache.tar.gz
