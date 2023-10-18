@@ -17,7 +17,7 @@ FROM targetarch as builder-arm64
 ARG ARCH="aarch64"
 
 # GENERIC
-# The builder image builds binaries like wasm-opt, sccache and bob.
+# The builder image builds binaries like wasm-opt and bob.
 # After the build process, only the final binaries are copied into the *-optimizer
 # images to avoid shipping all the source code and intermediate build results to the user.
 FROM builder-${TARGETARCH} as builder
@@ -47,18 +47,6 @@ RUN cargo --version
 
 # Check wasm-opt version
 RUN wasm-opt --version
-
-# Download sccache and verify checksum
-ADD https://github.com/mozilla/sccache/releases/download/v0.2.15/sccache-v0.2.15-$ARCH-unknown-linux-musl.tar.gz /tmp/sccache.tar.gz
-RUN sha256sum /tmp/sccache.tar.gz | egrep '(e5d03a9aa3b9fac7e490391bbe22d4f42c840d31ef9eaf127a03101930cbb7ca|90d91d21a767e3f558196dbd52395f6475c08de5c4951a4c8049575fa6894489)'
-
-# Extract and install sccache
-RUN tar -xf /tmp/sccache.tar.gz
-RUN mv sccache-v*/sccache /usr/local/bin/sccache
-RUN chmod +x /usr/local/bin/sccache
-
-# Check sccache version
-RUN sccache --version
 
 # Add scripts
 ADD optimize.sh /usr/local/bin/optimize.sh
@@ -109,10 +97,6 @@ COPY --from=builder /usr/local/bin/wasm-opt /usr/local/bin
 # rust-optimizer
 #
 FROM base-optimizer as rust-optimizer
-
-# Use sccache. Users can override this variable to disable caching.
-COPY --from=builder /usr/local/bin/sccache /usr/local/bin
-ENV RUSTC_WRAPPER=sccache
 
 # Assume we mount the source code in /code
 WORKDIR /code

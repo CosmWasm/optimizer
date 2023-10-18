@@ -15,8 +15,6 @@ SUFFIX=${SUFFIX:+-$SUFFIX}
 rustup toolchain list
 cargo --version
 
-echo "Info: RUSTC_WRAPPER=$RUSTC_WRAPPER"
-
 # Delete already built artifacts
 rm -f target/wasm32-unknown-unknown/release/*.wasm
 

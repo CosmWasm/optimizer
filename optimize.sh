@@ -15,11 +15,6 @@ SUFFIX=${SUFFIX:+-$SUFFIX}
 rustup toolchain list
 cargo --version
 
-echo "Info: RUSTC_WRAPPER=$RUSTC_WRAPPER"
-
-echo "Info: sccache stats before build"
-sccache -s
-
 mkdir -p artifacts
 rm -f artifacts/checksums_intermediate.txt
 
@@ -56,8 +51,5 @@ echo "Creating hashes ..."
   cd artifacts
   sha256sum -- *.wasm | tee checksums.txt
 )
-
-echo "Info: sccache stats after build"
-sccache -s
 
 echo "done"
