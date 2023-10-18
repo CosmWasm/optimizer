@@ -1,23 +1,16 @@
+mod cargo_toml;
+
 use glob::glob;
-use serde::Deserialize;
 use std::{
     fs::{self, canonicalize},
     path::PathBuf,
     process::Command,
 };
 
+use cargo_toml::{is_workspace, IsWorkspace};
+
 const CARGO_PATH: &str = "cargo";
 const PACKAGE_PREFIX: &str = "contracts/";
-
-#[derive(Deserialize, Debug)]
-pub struct CargoToml {
-    workspace: Workspace,
-}
-
-#[derive(Deserialize, Debug)]
-pub struct Workspace {
-    members: Vec<String>,
-}
 
 /// Checks if the given path is a Cargo project. This is needed
 /// to filter the glob results of a workspace member like `contracts/*`
@@ -30,14 +23,23 @@ fn is_cargo_project(path: &PathBuf) -> bool {
     path.is_dir()
 }
 
-fn main() {
+pub fn build() {
     let file = fs::read_to_string("Cargo.toml").unwrap();
-    let cargo_toml: CargoToml = toml::from_str(&file).unwrap();
-    let members = cargo_toml.workspace.members;
 
-    println!("Found workspace member entries: {:?}", members);
+    match is_workspace(&file).unwrap() {
+        IsWorkspace::Yes { members } => {
+            println!("Found workspace member entries: {:?}", &members);
+            build_workspace(&members);
+        }
+        IsWorkspace::NoMembers => {
+            println!("Cargo.toml contains a workspace key but has no workspace members");
+        }
+        IsWorkspace::No => build_single(),
+    }
+}
 
-    let mut all_packages = members
+pub fn build_workspace(workspace_members: &[String]) {
+    let mut all_packages = workspace_members
         .iter()
         .map(|member| {
             glob(member)
@@ -78,4 +80,26 @@ fn main() {
         let error_code = child.wait().unwrap();
         assert!(error_code.success());
     }
+}
+
+fn build_single() {
+    let project_path = PathBuf::from(".");
+
+    // Linker flag "-s" for stripping (https://github.com/rust-lang/cargo/issues/3483#issuecomment-431209957)
+    // Note that shortcuts from .cargo/config are not available in source code packages from crates.io
+    let mut child = Command::new(CARGO_PATH)
+        .args(&[
+            "build",
+            "--target-dir=/target",
+            "--release",
+            "--lib",
+            "--target=wasm32-unknown-unknown",
+            "--locked",
+        ])
+        .env("RUSTFLAGS", "-C link-arg=-s")
+        .current_dir(canonicalize(project_path).unwrap())
+        .spawn()
+        .unwrap();
+    let error_code = child.wait().unwrap();
+    assert!(error_code.success());
 }
