@@ -4,6 +4,7 @@
 
 - Bump Rust to current stable v1.72.0.
 - Use builder tool `bob` for both single contract and workspace builds ([#134])
+- Use sccache consistently in rust-optimizer and workspace-optimizer
 
 ## [0.14.0] - 2023-07-28
 

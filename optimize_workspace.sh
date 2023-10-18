@@ -17,6 +17,9 @@ cargo --version
 
 echo "Info: RUSTC_WRAPPER=$RUSTC_WRAPPER"
 
+echo "Info: sccache stats before build"
+sccache -s
+
 # Delete already built artifacts
 rm -f target/wasm32-unknown-unknown/release/*.wasm
 
@@ -81,5 +84,8 @@ echo "Post-processing artifacts in workspace..."
   cd artifacts
   sha256sum -- *.wasm | tee checksums.txt
 )
+
+echo "Info: sccache stats after build"
+sccache -s
 
 echo "done"

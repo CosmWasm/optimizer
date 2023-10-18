@@ -105,14 +105,14 @@ RUN rustup target add wasm32-unknown-unknown
 COPY --from=builder /usr/local/bin/bob /usr/local/bin
 COPY --from=builder /usr/local/bin/wasm-opt /usr/local/bin
 
+# Use sccache. Users can override this variable to disable caching.
+COPY --from=builder /usr/local/bin/sccache /usr/local/bin
+ENV RUSTC_WRAPPER=sccache
+
 #
 # rust-optimizer
 #
 FROM base-optimizer as rust-optimizer
-
-# Use sccache. Users can override this variable to disable caching.
-COPY --from=builder /usr/local/bin/sccache /usr/local/bin
-ENV RUSTC_WRAPPER=sccache
 
 # Assume we mount the source code in /code
 WORKDIR /code
