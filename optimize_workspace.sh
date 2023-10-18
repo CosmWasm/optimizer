@@ -11,8 +11,11 @@ MACHINE=$(uname -m)
 SUFFIX=${MACHINE#x86_64}
 SUFFIX=${SUFFIX:+-$SUFFIX}
 
+# Debug toolchain and default Rust version
 rustup toolchain list
 cargo --version
+
+echo "Info: RUSTC_WRAPPER=$RUSTC_WRAPPER"
 
 # Delete already built artifacts
 rm -f target/wasm32-unknown-unknown/release/*.wasm
