@@ -4,6 +4,8 @@
 
 - Bump Rust to current stable v1.72.0.
 - Use builder tool `bob` for both single contract and workspace builds ([#134])
+- Remove sccache.
+  This caching was only useful when compiling multiple independent Rust projects. cosmwasm/rust-optimizer currently supports that, but this feature is not needed anymore and should be removed. Instead, users can call rust-optimizer once for each contract or use workspace-optimizer.
 
 ## [0.14.0] - 2023-07-28
 

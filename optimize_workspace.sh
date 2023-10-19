@@ -11,6 +11,7 @@ MACHINE=$(uname -m)
 SUFFIX=${MACHINE#x86_64}
 SUFFIX=${SUFFIX:+-$SUFFIX}
 
+# Debug toolchain and default Rust version
 rustup toolchain list
 cargo --version
 
