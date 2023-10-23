@@ -17,7 +17,6 @@ cargo --version
 
 # Prepare artifacts directory for later use
 mkdir -p artifacts
-rm -f artifacts/checksums_intermediate.txt
 
 # There are two cases here
 # 1. The contract is included in the root workspace (eg. `cosmwasm-template`)
@@ -45,7 +44,6 @@ echo "Building project $(realpath "$PROJECTDIR") ..."
 for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
   NAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
   echo "Creating intermediate hash for $NAME ..."
-  sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt
   echo "Optimizing $NAME ..."
   # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
   wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$NAME"
