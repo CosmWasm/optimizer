@@ -34,24 +34,19 @@ echo "Building project $(realpath "$PROJECTDIR") ..."
 )
 
 echo "Optimizing artifacts in workspace..."
-TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 # Optimize artifacts
-(
-  cd "$TMPARTIFACTS"
+for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
+  BASENAME=$(basename "$WASM" .wasm)
+  NAME=${BASENAME}${SUFFIX}
+  OPTIMIZED_WASM=${NAME}.wasm
 
-  for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
-    BASENAME=$(basename "$WASM" .wasm)
-    NAME=${BASENAME}${SUFFIX}
-    OPTIMIZED_WASM=${NAME}.wasm
+  echo "Optimizing ${BASENAME}..."
+  # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
+  wasm-opt -Os --signext-lowering "$WASM" -o "$OPTIMIZED_WASM"
+  echo "Moving ${OPTIMIZED_WASM}..."
+  mv "$OPTIMIZED_WASM" ../artifacts
+done
 
-    echo "Optimizing ${BASENAME}..."
-    # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
-    wasm-opt -Os --signext-lowering "$WASM" -o "$OPTIMIZED_WASM"
-    echo "Moving ${OPTIMIZED_WASM}..."
-    mv "$OPTIMIZED_WASM" ../artifacts
-  done
-)
-rm -rf "$TMPARTIFACTS"
 echo "Post-processing artifacts in workspace..."
 (
   cd artifacts
