@@ -18,6 +18,11 @@ cargo --version
 # Prepare artifacts directory for later use
 mkdir -p artifacts
 
+# Delete previously built artifacts. Those can exist if the image is called
+# with a cache mounted to /target. In cases where contracts are removed over time,
+# old builds in cache should not be contained in the result of the next build.
+rm -f /target/wasm32-unknown-unknown/release/*.wasm
+
 # There are two cases here
 # 1. The contract is included in the root workspace (eg. `cosmwasm-template`)
 #    In this case, we pass no argument, just mount the proper directory.

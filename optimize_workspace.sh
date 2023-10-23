@@ -18,8 +18,10 @@ cargo --version
 # Prepare artifacts directory for later use
 mkdir -p artifacts
 
-# Delete already built artifacts
-rm -f target/wasm32-unknown-unknown/release/*.wasm
+# Delete previously built artifacts. Those can exist if the image is called
+# with a cache mounted to /target. In cases where contracts are removed over time,
+# old builds in cache should not be contained in the result of the next build.
+rm -f /target/wasm32-unknown-unknown/release/*.wasm
 
 # Ensure we get exactly one argument and this is a directory (the path to the Cargo project to be built)
 if [ "$#" -ne 1 ] || ! [ -d "$1" ]; then
