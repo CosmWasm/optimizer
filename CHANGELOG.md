@@ -6,6 +6,28 @@
 - Use builder tool `bob` for both single contract and workspace builds ([#134])
 - Remove sccache.
   This caching was only useful when compiling multiple independent Rust projects. cosmwasm/rust-optimizer currently supports that, but this feature is not needed anymore and should be removed. Instead, users can call rust-optimizer once for each contract or use workspace-optimizer.
+- Both rust-optimizer and workspace-optimizer now take exactly one path argument for
+  the project to be built. The Docker images default to `.` if not set.
+  This means calling rust-optimizer for multiple projects at once is now unsupported.
+  You should either migrate to a workspace or change the call from:
+
+  ```sh
+  docker run --rm -v "$(pwd)":/code \
+    --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
+    --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+    cosmwasm/rust-optimizer:0.14.0 ./contracts/*/
+  ```
+
+  to
+
+  ```sh
+  for contract_dir in contracts/*; do
+    docker run --rm -v "$(pwd)":/code \
+      --mount type=volume,source="$(basename "$(pwd)")_cache",target=/target \
+      --mount type=volume,source=registry_cache,target=/usr/local/cargo/registry \
+      cosmwasm/rust-optimizer:0.15.0 "$contract_dir"
+  done
+  ```
 
 ## [0.14.0] - 2023-07-28
 

@@ -15,14 +15,25 @@ SUFFIX=${SUFFIX:+-$SUFFIX}
 rustup toolchain list
 cargo --version
 
+# Prepare artifacts directory for later use
+mkdir -p artifacts
+rm -f artifacts/checksums_intermediate.txt
+
 # Delete already built artifacts
 rm -f target/wasm32-unknown-unknown/release/*.wasm
 
-# Build artifacts
-echo "Building artifacts in workspace..."
-/usr/local/bin/bob
+# Ensure we get exactly one argument and this is a directory (the path to the Cargo project to be built)
+if [ "$#" -ne 1 ] || ! [ -d "$1" ]; then
+  echo "Usage: $0 DIRECTORY" >&2
+  exit 1
+fi
+PROJECTDIR="$1"
+echo "Building project $(realpath "$PROJECTDIR") ..."
+(
+  cd "$PROJECTDIR"
+  /usr/local/bin/bob
+)
 
-mkdir -p artifacts
 echo "Optimizing artifacts in workspace..."
 TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 # Optimize artifacts

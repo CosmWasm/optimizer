@@ -15,34 +15,40 @@ SUFFIX=${SUFFIX:+-$SUFFIX}
 rustup toolchain list
 cargo --version
 
+# Prepare artifacts directory for later use
 mkdir -p artifacts
 rm -f artifacts/checksums_intermediate.txt
 
 # There are two cases here
-# 1. All contracts (or one) are included in the root workspace (eg. `cosmwasm-template`, `cosmwasm-examples`, `cosmwasm-plus`)
+# 1. The contract is included in the root workspace (eg. `cosmwasm-template`)
 #    In this case, we pass no argument, just mount the proper directory.
 # 2. Contracts are excluded from the root workspace, but import relative paths from other packages (only `cosmwasm`).
 #    In this case, we mount root workspace and pass in a path `docker run <repo> ./contracts/hackatom`
 
 # This parameter allows us to mount a folder into docker container's "/code"
 # and build "/code/contracts/mycontract".
-# Note: if CONTRACTDIR is "." (default in Docker), this ends up as a noop
-for CONTRACTDIR in "$@"; do
-  echo "Building contract in $(realpath "$CONTRACTDIR") ..."
-  (
-    cd "$CONTRACTDIR"
-    /usr/local/bin/bob
-  )
+# The default value for $1 is "." (see CMD in the Dockerfile).
 
-  # wasm-optimize on all results
-  for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
-    NAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
-    echo "Creating intermediate hash for $NAME ..."
-    sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt
-    echo "Optimizing $NAME ..."
-    # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
-    wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$NAME"
-  done
+# Ensure we get exactly one argument and this is a directory (the path to the Cargo project to be built)
+if [ "$#" -ne 1 ] || ! [ -d "$1" ]; then
+  echo "Usage: $0 DIRECTORY" >&2
+  exit 1
+fi
+PROJECTDIR="$1"
+echo "Building project $(realpath "$PROJECTDIR") ..."
+(
+  cd "$PROJECTDIR"
+  /usr/local/bin/bob
+)
+
+# wasm-optimize on all results
+for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
+  NAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
+  echo "Creating intermediate hash for $NAME ..."
+  sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt
+  echo "Optimizing $NAME ..."
+  # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
+  wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$NAME"
 done
 
 # create hash
