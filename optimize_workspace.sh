@@ -17,7 +17,6 @@ cargo --version
 
 # Prepare artifacts directory for later use
 mkdir -p artifacts
-rm -f artifacts/checksums_intermediate.txt
 
 # Delete already built artifacts
 rm -f target/wasm32-unknown-unknown/release/*.wasm
@@ -39,22 +38,11 @@ TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
 # Optimize artifacts
 (
   cd "$TMPARTIFACTS"
-  INTERMEDIATE_SHAS="../artifacts/checksums_intermediate.txt"
 
   for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
     BASENAME=$(basename "$WASM" .wasm)
     NAME=${BASENAME}${SUFFIX}
     OPTIMIZED_WASM=${NAME}.wasm
-
-    INTERMEDIATE_SHA=$(sha256sum -- "$WASM" | sed 's,/target,target,g')
-
-    if test -f "$INTERMEDIATE_SHAS"; then
-      echo "Updating intermediate hash for ${BASENAME}..."
-      sed -ni "/$BASENAME/!p" "$INTERMEDIATE_SHAS"
-    else
-      echo "Creating intermediate hash for ${BASENAME}..."
-    fi
-    echo "$INTERMEDIATE_SHA" >>"$INTERMEDIATE_SHAS"
 
     echo "Optimizing ${BASENAME}..."
     # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
