@@ -33,18 +33,12 @@ echo "Building project $(realpath "$PROJECTDIR") ..."
   /usr/local/bin/bob
 )
 
-echo "Optimizing artifacts in workspace..."
-# Optimize artifacts
+echo "Optimizing artifacts ..."
 for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
-  BASENAME=$(basename "$WASM" .wasm)
-  NAME=${BASENAME}${SUFFIX}
-  OPTIMIZED_WASM=${NAME}.wasm
-
-  echo "Optimizing ${BASENAME}..."
+  OUT_FILENAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
+  echo "Optimizing $OUT_FILENAME ..."
   # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
-  wasm-opt -Os --signext-lowering "$WASM" -o "$OPTIMIZED_WASM"
-  echo "Moving ${OPTIMIZED_WASM}..."
-  mv "$OPTIMIZED_WASM" ../artifacts
+  wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$OUT_FILENAME"
 done
 
 echo "Post-processing artifacts..."
