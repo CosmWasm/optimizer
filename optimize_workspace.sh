@@ -47,9 +47,10 @@ for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
   mv "$OPTIMIZED_WASM" ../artifacts
 done
 
-echo "Post-processing artifacts in workspace..."
+echo "Post-processing artifacts..."
 (
   cd artifacts
+  # create hashes
   sha256sum -- *.wasm | tee checksums.txt
 )
 

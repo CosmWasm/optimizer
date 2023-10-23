@@ -49,10 +49,10 @@ for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
   wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$NAME"
 done
 
-# create hash
-echo "Creating hashes ..."
+echo "Post-processing artifacts..."
 (
   cd artifacts
+  # create hashes
   sha256sum -- *.wasm | tee checksums.txt
 )
 
