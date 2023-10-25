@@ -17,7 +17,11 @@ cargo --version
 
 # Prepare artifacts directory for later use
 mkdir -p artifacts
-rm -f artifacts/checksums_intermediate.txt
+
+# Delete previously built artifacts. Those can exist if the image is called
+# with a cache mounted to /target. In cases where contracts are removed over time,
+# old builds in cache should not be contained in the result of the next build.
+rm -f /target/wasm32-unknown-unknown/release/*.wasm
 
 # There are two cases here
 # 1. The contract is included in the root workspace (eg. `cosmwasm-template`)
@@ -41,20 +45,18 @@ echo "Building project $(realpath "$PROJECTDIR") ..."
   /usr/local/bin/bob
 )
 
-# wasm-optimize on all results
+echo "Optimizing artifacts ..."
 for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
-  NAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
-  echo "Creating intermediate hash for $NAME ..."
-  sha256sum -- "$WASM" | tee -a artifacts/checksums_intermediate.txt
-  echo "Optimizing $NAME ..."
+  OUT_FILENAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
+  echo "Optimizing $OUT_FILENAME ..."
   # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
-  wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$NAME"
+  wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$OUT_FILENAME"
 done
 
-# create hash
-echo "Creating hashes ..."
+echo "Post-processing artifacts..."
 (
   cd artifacts
+  # create hashes
   sha256sum -- *.wasm | tee checksums.txt
 )
 

@@ -17,10 +17,21 @@ cargo --version
 
 # Prepare artifacts directory for later use
 mkdir -p artifacts
-rm -f artifacts/checksums_intermediate.txt
 
-# Delete already built artifacts
-rm -f target/wasm32-unknown-unknown/release/*.wasm
+# Delete previously built artifacts. Those can exist if the image is called
+# with a cache mounted to /target. In cases where contracts are removed over time,
+# old builds in cache should not be contained in the result of the next build.
+rm -f /target/wasm32-unknown-unknown/release/*.wasm
+
+# There are two cases here
+# 1. The contract is included in the root workspace (eg. `cosmwasm-template`)
+#    In this case, we pass no argument, just mount the proper directory.
+# 2. Contracts are excluded from the root workspace, but import relative paths from other packages (only `cosmwasm`).
+#    In this case, we mount root workspace and pass in a path `docker run <repo> ./contracts/hackatom`
+
+# This parameter allows us to mount a folder into docker container's "/code"
+# and build "/code/contracts/mycontract".
+# The default value for $1 is "." (see CMD in the Dockerfile).
 
 # Ensure we get exactly one argument and this is a directory (the path to the Cargo project to be built)
 if [ "$#" -ne 1 ] || ! [ -d "$1" ]; then
@@ -34,60 +45,18 @@ echo "Building project $(realpath "$PROJECTDIR") ..."
   /usr/local/bin/bob
 )
 
-echo "Optimizing artifacts in workspace..."
-TMPARTIFACTS=$(mktemp -p "$(pwd)" -d artifacts.XXXXXX)
-# Optimize artifacts
-(
-  cd "$TMPARTIFACTS"
-  INTERMEDIATE_SHAS="../artifacts/checksums_intermediate.txt"
-  OPTIMIZED_SHAS="../artifacts/checksums.txt"
+echo "Optimizing artifacts ..."
+for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
+  OUT_FILENAME=$(basename "$WASM" .wasm)${SUFFIX}.wasm
+  echo "Optimizing $OUT_FILENAME ..."
+  # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
+  wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$OUT_FILENAME"
+done
 
-  for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
-    BASENAME=$(basename "$WASM" .wasm)
-    NAME=${BASENAME}${SUFFIX}
-    OPTIMIZED_WASM=${NAME}.wasm
-
-    INTERMEDIATE_SHA=$(sha256sum -- "$WASM" | sed 's,/target,target,g')
-
-    SKIP_OPTIMIZATION=false
-    if test -f "../artifacts/${OPTIMIZED_WASM}"; then
-      INTERMEDIATE_CACHE_HIT=$(
-        grep -Fxsq "$INTERMEDIATE_SHA" "$INTERMEDIATE_SHAS"
-        echo $?
-      )
-      OPTIMIZED_SHA=$(sha256sum -- "../artifacts/$OPTIMIZED_WASM" | sed 's,../artifacts/,,g')
-      OPTIMIZED_CACHE_HIT=$(
-        grep -Fxsq "$OPTIMIZED_SHA" "$OPTIMIZED_SHAS"
-        echo $?
-      )
-      if [ "$INTERMEDIATE_CACHE_HIT" -eq 0 ] && [ "$OPTIMIZED_CACHE_HIT" -eq 0 ]; then
-        SKIP_OPTIMIZATION=true
-      fi
-    fi
-
-    if [ "$SKIP_OPTIMIZATION" = true ]; then
-      echo "$BASENAME unchanged. Skipping optimization."
-    else
-      if test -f "$INTERMEDIATE_SHAS"; then
-        echo "Updating intermediate hash for ${BASENAME}..."
-        sed -ni "/$BASENAME/!p" "$INTERMEDIATE_SHAS"
-      else
-        echo "Creating intermediate hash for ${BASENAME}..."
-      fi
-      echo "$INTERMEDIATE_SHA" >>"$INTERMEDIATE_SHAS"
-
-      echo "Optimizing ${BASENAME}..."
-      # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
-      wasm-opt -Os --signext-lowering "$WASM" -o "$OPTIMIZED_WASM"
-      echo "Moving ${OPTIMIZED_WASM}..."
-      mv "$OPTIMIZED_WASM" ../artifacts
-    fi
-  done
-)
-rm -rf "$TMPARTIFACTS"
-echo "Post-processing artifacts in workspace..."
+echo "Post-processing artifacts..."
 (
   cd artifacts
+  # create hashes
   sha256sum -- *.wasm | tee checksums.txt
 )
 
