@@ -90,16 +90,16 @@ RUN rustup target add wasm32-unknown-unknown
 COPY --from=builder /usr/local/bin/bob /usr/local/bin
 COPY --from=builder /usr/local/bin/wasm-opt /usr/local/bin
 
-#
-# rust-optimizer
-#
-FROM base-optimizer as rust-optimizer
+# Add script as entry point
+COPY --from=builder /usr/local/bin/optimize.sh /usr/local/bin
 
 # Assume we mount the source code in /code
 WORKDIR /code
 
-# Add script as entry point
-COPY --from=builder /usr/local/bin/optimize.sh /usr/local/bin
+#
+# rust-optimizer
+#
+FROM base-optimizer as rust-optimizer
 
 ENTRYPOINT ["optimize.sh"]
 # Default argument when none is provided
@@ -109,12 +109,6 @@ CMD ["."]
 # workspace-optimizer
 #
 FROM base-optimizer as workspace-optimizer
-
-# Assume we mount the source code in /code
-WORKDIR /code
-
-# Add script as entry point
-COPY --from=builder /usr/local/bin/optimize.sh /usr/local/bin
 
 ENTRYPOINT ["optimize.sh"]
 # Default argument when none is provided
