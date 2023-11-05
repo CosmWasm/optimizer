@@ -52,9 +52,6 @@ RUN wasm-opt --version
 ADD optimize.sh /usr/local/bin/optimize.sh
 RUN chmod +x /usr/local/bin/optimize.sh
 
-ADD optimize_workspace.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/optimize_workspace.sh
-
 # Being required for gcc linking of bob
 RUN apk add --no-cache musl-dev
 
@@ -117,8 +114,8 @@ FROM base-optimizer as workspace-optimizer
 WORKDIR /code
 
 # Add script as entry point
-COPY --from=builder /usr/local/bin/optimize_workspace.sh /usr/local/bin
+COPY --from=builder /usr/local/bin/optimize.sh /usr/local/bin
 
-ENTRYPOINT ["optimize_workspace.sh"]
+ENTRYPOINT ["optimize.sh"]
 # Default argument when none is provided
 CMD ["."]
