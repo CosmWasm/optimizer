@@ -56,11 +56,8 @@ jobs:
             sudo apt install -y docker-ce docker-ce-cli containerd.io
       - checkout
       - run:
-          name: Build rust-optimizer
-          command: make build-rust-optimizer-x86_64
-      - run:
-          name: Build workspace-optimizer
-          command: make build-workspace-optimizer-x86_64
+          name: Build
+          command: make build-x86_64
       - test_images
 
   build-arm64:
@@ -87,11 +84,8 @@ jobs:
             sudo apt install -y docker-ce docker-ce-cli containerd.io
       - checkout
       - run:
-          name: Build rust-optimizer
-          command: make build-rust-optimizer-arm64
-      - run:
-          name: Build workspace-optimizer
-          command: make build-workspace-optimizer-arm64
+          name: Build
+          command: make build-arm64
       - test_images
 
   lint-scripts:
