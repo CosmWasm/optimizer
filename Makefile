@@ -1,45 +1,36 @@
-.PHONY: build-rust-optimizer build-workspace-optimizer build create-rust-optimizer-multi use-rust-optimizer-multi publish-rust-optimizer-multi publish-workspace-optimizer-multi publish-multi
-
-DOCKER_NAME_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
-DOCKER_NAME_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
-DOCKER_TAG := 0.14.0
+# Docker names (DN) for the images
+DN_OPTIMIZER := "cosmwasm/optimizer"
+DN_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
+DN_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
+DOCKER_TAG := 0.15.0-beta.1
 
 # Native arch
 BUILDARCH := $(shell uname -m)
 
-# Build the native CPU arch images and publish them. Rust alpine images support the linux/amd64 and linux/arm64/v8 architectures.
-build: build-rust-optimizer build-workspace-optimizer
+# Build the native CPU arch images
+.PHONY: build
+build: build-$(BUILDARCH)
 
-build-rust-optimizer-x86_64:
-	docker buildx build --pull --platform linux/amd64 -t $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --load .
-
-build-rust-optimizer-arm64:
-	docker buildx build --pull --platform linux/arm64/v8 -t $(DOCKER_NAME_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG) --target rust-optimizer --load .
-
-build-workspace-optimizer-x86_64:
-	docker buildx build --pull --platform linux/amd64 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG) --target workspace-optimizer --load .
-
-build-workspace-optimizer-arm64:
-	docker buildx build --pull --platform linux/arm64/v8 -t $(DOCKER_NAME_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG) --target workspace-optimizer --load .
-
-# Build only the native version by default
-build-rust-optimizer: build-rust-optimizer-$(BUILDARCH)
-
-# Build only the native version by default
-build-workspace-optimizer: build-workspace-optimizer-$(BUILDARCH)
-
+.PHONY: build-x86_64
 build-x86_64:
-	make build-rust-optimizer-x86_64
-	make build-workspace-optimizer-x86_64
+	docker buildx build --pull --platform linux/amd64 -t $(DN_OPTIMIZER):$(DOCKER_TAG) --target rust-optimizer --load .
+	docker tag $(DN_OPTIMIZER):$(DOCKER_TAG) $(DN_RUST_OPTIMIZER):$(DOCKER_TAG)
+	docker tag $(DN_OPTIMIZER):$(DOCKER_TAG) $(DN_WORKSPACE_OPTIMIZER):$(DOCKER_TAG)
 
+.PHONY: build-arm64
 build-arm64:
-	make build-rust-optimizer-arm64
-	make build-workspace-optimizer-arm64
+	docker buildx build --pull --platform linux/arm64/v8 -t $(DN_OPTIMIZER)-arm64:$(DOCKER_TAG) --target rust-optimizer --load .
+	docker tag $(DN_OPTIMIZER)-arm64:$(DOCKER_TAG) $(DN_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG)
+	docker tag $(DN_OPTIMIZER)-arm64:$(DOCKER_TAG) $(DN_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG)
 
+.PHONY: publish-x86_64
 publish-x86_64: build-x86_64
-	docker push $(DOCKER_NAME_RUST_OPTIMIZER):$(DOCKER_TAG)
-	docker push $(DOCKER_NAME_WORKSPACE_OPTIMIZER):$(DOCKER_TAG)
+	docker push $(DN_OPTIMIZER):$(DOCKER_TAG)
+	docker push $(DN_RUST_OPTIMIZER):$(DOCKER_TAG)
+	docker push $(DN_WORKSPACE_OPTIMIZER):$(DOCKER_TAG)
 
+.PHONY: publish-arm64
 publish-arm64: build-arm64
-	docker push $(DOCKER_NAME_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG)
-	docker push $(DOCKER_NAME_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG)
+	docker push $(DN_OPTIMIZER)-arm64:$(DOCKER_TAG)
+	docker push $(DN_RUST_OPTIMIZER)-arm64:$(DOCKER_TAG)
+	docker push $(DN_WORKSPACE_OPTIMIZER)-arm64:$(DOCKER_TAG)

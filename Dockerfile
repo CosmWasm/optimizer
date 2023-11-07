@@ -72,9 +72,9 @@ RUN cd bob_the_builder && \
   mv target/release/bob /usr/local/bin
 
 #
-# base-optimizer
+# rust-optimizer target
 #
-FROM rust:1.73.0-alpine as base-optimizer
+FROM rust:1.73.0-alpine as rust-optimizer
 
 # Download the crates.io index using the new sparse protocol to improve performance
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
@@ -95,20 +95,6 @@ COPY --from=builder /usr/local/bin/optimize.sh /usr/local/bin
 
 # Assume we mount the source code in /code
 WORKDIR /code
-
-#
-# rust-optimizer
-#
-FROM base-optimizer as rust-optimizer
-
-ENTRYPOINT ["optimize.sh"]
-# Default argument when none is provided
-CMD ["."]
-
-#
-# workspace-optimizer
-#
-FROM base-optimizer as workspace-optimizer
 
 ENTRYPOINT ["optimize.sh"]
 # Default argument when none is provided

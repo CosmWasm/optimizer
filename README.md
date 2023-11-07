@@ -117,8 +117,7 @@ source code we can avoid those sort of problems.
 ## Development
 
 Take a look at the [Makefile](https://github.com/CosmWasm/rust-optimizer/blob/master/Makefile)
-You can edit the Dockerfile (in a fork), and run `make build` to compile it,
-and `make run` to test it (requires the `CODE` env var to be set)
+You can edit the Dockerfile (in a fork), and run `make build` to compile it.
 
 ## Notice
 
