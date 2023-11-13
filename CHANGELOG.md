@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.15.0] - 2023-11-13
+
+- **cosmwasm/rust-optimizer and cosmwasm/workspace-optimizer were merged into cosmwasm/optimizer.**
+  The old image names are preserved but deprecated.
+- **cosmwasm/rust-optimizer-arm64 and cosmwasm/workspace-optimizer-arm64 were merged into cosmwasm/optimizer-arm64.**
+  The old image names are preserved but deprecated.
 - Bump Rust to current stable 1.73.0.
 - Use builder tool `bob` for both single contract and workspace builds ([#134])
 - Remove sccache.
@@ -247,7 +253,8 @@ sources and should not be used. 0.7.0, 0.7.1 and 0.7.3 unaffected.
 - Bump emscripten to 1.39.8-fastcomp
 - Bump Rust to 1.41.0
 
-[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.14.0...HEAD
+[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/CosmWasm/rust-optimizer/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/CosmWasm/rust-optimizer/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.13...v0.13.0
 [0.12.13]: https://github.com/CosmWasm/rust-optimizer/compare/v0.12.12...v0.12.13
