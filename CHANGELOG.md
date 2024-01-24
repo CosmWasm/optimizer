@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Bump Rust to current stable 1.75.0.
+
 ## [0.15.0] - 2023-11-13
 
 - **cosmwasm/rust-optimizer and cosmwasm/workspace-optimizer were merged into cosmwasm/optimizer.**
