@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - Bump Rust to current stable 1.75.0.
+- Bump wasm-opt to version v116.
 
 ## [0.15.0] - 2023-11-13
 
