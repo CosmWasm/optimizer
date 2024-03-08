@@ -157,5 +157,66 @@ pub mod package {
         })
     }
 
-    
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        #[test]
+        fn parse_default_toml_works() {
+            let toml = r#"
+            [package]
+            name = "my-contract"
+            "#;
+
+            let parsed = parse_toml(toml).unwrap();
+
+            assert_eq!(
+                parsed,
+                ParsedPackage {
+                    name: "my_contract".to_string(),
+                    default_build: true,
+                    builds: vec![]
+                }
+            );
+        }
+
+        #[test]
+        fn parse_toml_works() {
+            let toml = r#"
+            [package]
+            name = "my-contract"
+
+            [package.metadata.optimizer]
+            default-build = false
+            builds = [
+                { name = "optimized", features = ["opt1", "opt2"] },
+                { name = "debug", features = ["debug"] },
+            ]
+            "#;
+
+            let parsed = parse_toml(toml).unwrap();
+
+            assert_eq!(
+                parsed,
+                ParsedPackage {
+                    name: "my_contract".to_string(),
+                    default_build: false,
+                    builds: vec![
+                        Build {
+                            name: "optimized".to_string(),
+                            settings: BuildSettings {
+                                features: Some(vec!["opt1".to_string(), "opt2".to_string()])
+                            }
+                        },
+                        Build {
+                            name: "debug".to_string(),
+                            settings: BuildSettings {
+                                features: Some(vec!["debug".to_string()])
+                            }
+                        }
+                    ]
+                }
+            );
+        }
+    }
 }

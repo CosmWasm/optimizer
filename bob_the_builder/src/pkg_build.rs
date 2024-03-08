@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use crate::cargo_toml::package::{Build, BuildName, BuildSettings};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Eq, PartialEq)]
 pub struct ParsedPackage {
     pub name: String,
     pub builds: Vec<Build>,
