@@ -11,6 +11,10 @@ use crate::state::{State, STATE};
 const CONTRACT_NAME: &str = "crates.io:simple-contract";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
+#[cfg(feature = "test-feature")]
+#[allow(unused)]
+const BYTES: &[u8] = include_bytes!("../featured_bytes.in");
+
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn instantiate(
     deps: DepsMut,

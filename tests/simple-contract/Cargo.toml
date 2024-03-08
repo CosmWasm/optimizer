@@ -31,6 +31,13 @@ overflow-checks = true
 backtraces = ["cosmwasm-std/backtraces"]
 # use library feature to disable all instantiate/execute/query exports
 library = []
+test-feature = []
+
+[package.metadata.optimizer]
+default-build = true
+builds = [
+  { name = "test-feature", features = ["test-feature"] }
+]
 
 [package.metadata.scripts]
 optimize = """docker run --rm -v "$(pwd)":/code \
