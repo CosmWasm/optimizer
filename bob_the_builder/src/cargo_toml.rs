@@ -94,10 +94,14 @@ pub mod workspace {
 }
 
 pub mod package {
+    use std::hash::Hash;
+
     use serde::Deserialize;
 
-    type BuildName = String;
-    type Feature = String;
+    use crate::pkg_build::ParsedPackage;
+
+    pub type BuildName = String;
+    pub type Feature = String;
 
     #[derive(Deserialize, Debug)]
     pub struct PackageCargoToml {
@@ -115,42 +119,43 @@ pub mod package {
         optimizer: Option<Optimizer>,
     }
 
-    #[derive(Deserialize, Debug)]
+    #[derive(Deserialize, Debug, Default)]
     pub struct Optimizer {
+        #[serde(rename = "default-build")]
+        default_build: Option<bool>,
         builds: Option<Vec<Build>>,
     }
 
     /// A build entry that specifies the build of a contract with optional features.
-    #[derive(Deserialize, Debug, Default)]
+    #[derive(Deserialize, Debug, Default, PartialEq, Eq)]
     pub struct Build {
         /// Name appended to the build output file name.
         pub name: BuildName,
+        #[serde(flatten)]
+        pub settings: BuildSettings,
+    }
+
+    #[derive(Clone, Deserialize, Debug, Default, PartialEq, Eq, Hash)]
+    pub struct BuildSettings {
         /// Features to be enabled for this build.
         pub features: Option<Vec<Feature>>,
     }
 
-    #[derive(Deserialize, Debug)]
-    pub struct ParsedPackage {
-        pub name: String,
-        pub builds: Vec<Build>,
-    }
-
-    /// Get all the builds and wasm name from the `Cargo.toml` file at the given path.
+    /// Get all the builds and wasm name from the `Cargo.toml` file.
     pub fn parse_toml(file: &str) -> Result<ParsedPackage, toml::de::Error> {
         let PackageCargoToml { package } = toml::from_str(&file).unwrap();
 
-        // TODO: do in pre-build step
-        // let wasm_name = package.name.replace("-", "_");
-
-        let builds = package
+        let optimizer = package
             .metadata
             .and_then(|metadata| metadata.optimizer)
-            .and_then(|optimizer| optimizer.builds)
             .unwrap_or_default();
 
         Ok(ParsedPackage {
-            name: package.name,
-            builds,
+            name: package.name.replace("-", "_"),
+            default_build: optimizer.default_build.unwrap_or(true),
+            builds: optimizer.builds.unwrap_or_default(),
         })
     }
+
+    
 }
