@@ -7,7 +7,7 @@ use std::{
     process::Command,
 };
 
-use cargo_toml::{is_workspace, IsWorkspace};
+use cargo_toml::workspace::{is_workspace, IsWorkspace};
 
 const CARGO_PATH: &str = "cargo";
 const PACKAGE_PREFIX: &str = "contracts/";
