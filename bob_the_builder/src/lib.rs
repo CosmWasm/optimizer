@@ -1,13 +1,16 @@
 mod cargo_toml;
+mod pkg_build;
 
 use glob::glob;
 use std::{
-    fs::{self, canonicalize},
-    path::PathBuf,
-    process::Command,
+    fs::{self},
+    path::{Path, PathBuf},
 };
 
-use cargo_toml::{is_workspace, IsWorkspace};
+use cargo_toml::{
+    package::{self},
+    workspace::{is_workspace, IsWorkspace},
+};
 
 const CARGO_PATH: &str = "cargo";
 const PACKAGE_PREFIX: &str = "contracts/";
@@ -25,7 +28,6 @@ fn is_cargo_project(path: &PathBuf) -> bool {
 
 pub fn build() {
     let file = fs::read_to_string("Cargo.toml").unwrap();
-
     match is_workspace(&file).unwrap() {
         IsWorkspace::Yes { members } => {
             println!("Found workspace member entries: {:?}", &members);
@@ -34,7 +36,10 @@ pub fn build() {
         IsWorkspace::NoMembers => {
             println!("Cargo.toml contains a workspace key but has no workspace members");
         }
-        IsWorkspace::No => build_single(),
+        IsWorkspace::No => {
+            let package = package::parse_toml(&file).unwrap();
+            package.build(Path::new("."))
+        }
     }
 }
 
@@ -61,45 +66,10 @@ pub fn build_workspace(workspace_members: &[String]) {
 
     println!("Contracts to be built: {:?}", contract_packages);
 
-    for contract in contract_packages {
-        println!("Building {:?} ...", contract);
-
-        let mut child = Command::new(CARGO_PATH)
-            .args(&[
-                "build",
-                "--target-dir=/target",
-                "--release",
-                "--lib",
-                "--target=wasm32-unknown-unknown",
-                "--locked",
-            ])
-            .env("RUSTFLAGS", "-C link-arg=-s")
-            .current_dir(canonicalize(contract).unwrap())
-            .spawn()
-            .unwrap();
-        let error_code = child.wait().unwrap();
-        assert!(error_code.success());
+    for contract_dir in contract_packages {
+        let contract_cargo_toml = fs::read_to_string(contract_dir.join("Cargo.toml")).unwrap();
+        let package = package::parse_toml(&contract_cargo_toml).unwrap();
+        println!("Building {:?} ...", package.name);
+        package.build(&contract_dir);
     }
-}
-
-fn build_single() {
-    let project_path = PathBuf::from(".");
-
-    // Linker flag "-s" for stripping (https://github.com/rust-lang/cargo/issues/3483#issuecomment-431209957)
-    // Note that shortcuts from .cargo/config are not available in source code packages from crates.io
-    let mut child = Command::new(CARGO_PATH)
-        .args(&[
-            "build",
-            "--target-dir=/target",
-            "--release",
-            "--lib",
-            "--target=wasm32-unknown-unknown",
-            "--locked",
-        ])
-        .env("RUSTFLAGS", "-C link-arg=-s")
-        .current_dir(canonicalize(project_path).unwrap())
-        .spawn()
-        .unwrap();
-    let error_code = child.wait().unwrap();
-    assert!(error_code.success());
 }
