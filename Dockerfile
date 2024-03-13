@@ -93,6 +93,8 @@ COPY --from=builder /usr/local/bin/wasm-opt /usr/local/bin
 # Add script as entry point
 COPY --from=builder /usr/local/bin/optimize.sh /usr/local/bin
 
+RUN apk update && apk add bash jq
+
 # Assume we mount the source code in /code
 WORKDIR /code
 
