@@ -2,12 +2,24 @@ use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct CargoToml {
+    pub package: Option<Package>,
     pub workspace: Option<Workspace>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Workspace {
     pub members: Option<Vec<String>>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Package {
+    pub name: String,
+    pub metadata: Option<Metadata>,
+}
+
+#[derive(Default, Deserialize, Debug)]
+pub struct Metadata {
+    pub build_variants: Option<Vec<String>>,
 }
 
 #[derive(Debug, PartialEq)]
