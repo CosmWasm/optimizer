@@ -94,7 +94,7 @@ pub mod workspace {
 }
 
 pub mod package {
-    use std::hash::Hash;
+    use std::{collections::BTreeSet, hash::Hash};
 
     use serde::Deserialize;
 
@@ -138,7 +138,7 @@ pub mod package {
     #[derive(Clone, Deserialize, Debug, Default, PartialEq, Eq, Hash)]
     pub struct BuildSettings {
         /// Features to be enabled for this build.
-        pub features: Option<Vec<Feature>>,
+        pub features: Option<BTreeSet<Feature>>,
     }
 
     /// Get all the builds and wasm name from the `Cargo.toml` file.
@@ -191,6 +191,7 @@ pub mod package {
             builds = [
                 { name = "optimized", features = ["opt1", "opt2"] },
                 { name = "debug", features = ["debug"] },
+                { name = "boring", features = [] },
             ]
             "#;
 
@@ -205,13 +206,22 @@ pub mod package {
                         Build {
                             name: "optimized".to_string(),
                             settings: BuildSettings {
-                                features: Some(vec!["opt1".to_string(), "opt2".to_string()])
+                                features: Some(BTreeSet::from([
+                                    "opt1".to_string(),
+                                    "opt2".to_string()
+                                ]))
                             }
                         },
                         Build {
                             name: "debug".to_string(),
                             settings: BuildSettings {
-                                features: Some(vec!["debug".to_string()])
+                                features: Some(BTreeSet::from(["debug".to_string()]))
+                            }
+                        },
+                        Build {
+                            name: "boring".to_string(),
+                            settings: BuildSettings {
+                                features: Some(BTreeSet::default())
                             }
                         }
                     ]

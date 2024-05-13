@@ -19,10 +19,9 @@ impl ParsedPackage {
         let mut builds_with_settings: HashMap<BuildSettings, BuildName> = HashMap::new();
 
         // Build all the requested builds
-        for mut build in self.builds.into_iter() {
+        for build in self.builds.into_iter() {
             // Sort features so feature ordering doesn't matter.
-            let settings = &mut build.settings;
-            settings.features.as_mut().map(|f| f.sort());
+            let settings = &build.settings;
 
             if builds_with_settings.contains_key(settings) {
                 // build already exists, copy the wasm file with identical features to a new build name
@@ -69,14 +68,9 @@ impl Build {
         .map(|arg| arg.to_string())
         .collect::<Vec<String>>();
 
-        let featured_arg: String = if !features.is_empty() {
-            features.join(",")
-        } else {
-            String::new()
-        };
-
         // Add features to command
-        args.push(format!("--features={}", featured_arg));
+        let features_arg = features.into_iter().collect::<Vec<String>>().join(", ");
+        args.push(format!("--features={}", features_arg));
 
         // Run the build
         let mut child = Command::new(crate::CARGO_PATH)
