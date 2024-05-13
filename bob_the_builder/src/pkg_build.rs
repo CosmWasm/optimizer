@@ -1,8 +1,8 @@
-use std::{collections::HashMap, fs, path::Path, process::Command};
+use std::{fs, path::Path, process::Command};
 
 use serde::Deserialize;
 
-use crate::cargo_toml::package::{Build, BuildName, BuildSettings};
+use crate::cargo_toml::package::{Build, BuildSettings};
 
 #[derive(Deserialize, Debug, Eq, PartialEq)]
 pub struct ParsedPackage {
@@ -14,30 +14,12 @@ pub struct ParsedPackage {
 impl ParsedPackage {
     /// Build a contract with all the requested builds defined in `[package.metadata.optimizer]`
     pub fn build(self, path: &Path) {
-        // Keep track of the unique builds to prevent re-compiling the same contract
-        // TODO: Reconsider this caching layer (or make it optional)
-        let mut builds_with_settings: HashMap<BuildSettings, BuildName> = HashMap::new();
-
         // Build all the requested builds
         for build in self.builds.into_iter() {
-            // Sort features so feature ordering doesn't matter.
-            let settings = &build.settings;
-
-            if builds_with_settings.contains_key(settings) {
-                // build already exists, copy the wasm file with identical features to a new build name
-                let built_wasm_name = builds_with_settings.get(settings).unwrap();
-                fs::copy(
-                    wasm_path(&self.name, built_wasm_name),
-                    wasm_path(&self.name, &build.name),
-                )
-                .expect("Failed to copy the output file");
-                continue;
-            }
-            builds_with_settings.insert(settings.clone(), build.name.clone());
             build.build(path, &self.name);
         }
 
-        if !builds_with_settings.contains_key(&BuildSettings::default()) && self.default_build {
+        if self.default_build {
             // build contract without features or appended name
             Build::default().build(path, &self.name);
         }
