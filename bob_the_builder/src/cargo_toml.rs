@@ -120,16 +120,17 @@ pub mod package {
     }
 
     #[derive(Deserialize, Debug, Default)]
+    #[serde(rename_all = "kebab-case")]
     pub struct Optimizer {
         /// Indicates if a default build (a build without explicit features) should be built.
         /// Default to true.
-        #[serde(rename = "default-build")]
         default_build: Option<bool>,
         builds: Option<Vec<Build>>,
     }
 
     /// A build entry that specifies the build of a contract with optional features.
     #[derive(Deserialize, Debug, Default, PartialEq, Eq)]
+    #[serde(rename_all = "kebab-case")]
     pub struct Build {
         /// Name appended to the build output file name.
         pub name: BuildName,
@@ -138,6 +139,7 @@ pub mod package {
     }
 
     #[derive(Clone, Deserialize, Debug, Default, PartialEq, Eq, Hash)]
+    #[serde(rename_all = "kebab-case")]
     pub struct BuildSettings {
         /// Features to be enabled for this build.
         pub features: Option<BTreeSet<Feature>>,
