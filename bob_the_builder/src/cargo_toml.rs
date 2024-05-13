@@ -121,6 +121,8 @@ pub mod package {
 
     #[derive(Deserialize, Debug, Default)]
     pub struct Optimizer {
+        /// Indicates if a default build (a build without explicit features) should be built.
+        /// Default to true.
         #[serde(rename = "default-build")]
         default_build: Option<bool>,
         builds: Option<Vec<Build>>,
