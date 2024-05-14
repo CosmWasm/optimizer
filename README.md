@@ -126,7 +126,7 @@ This has been tested on Linux (Ubuntu / Debian). There are currently versions of
 architectures: Intel/Amd 64-bits, and Arm 64-bits (these run natively on Mac M1 machines).
 
 **However**, the native Arm version produces different wasm artifacts than the Intel version. Given that that impacts
-reproducibility, non-Intel images and build artifacts contain a "-arm64" suffix, to differentiate and flag them.
+reproducibility, non-Intel images contain a "-arm64" suffix and build artifacts contain a "-aarch64" suffix, to differentiate and flag them.
 
 Arm images are released to ease development and testing on Mac M1 machines. **For release / production use,
 only contracts built with the Intel optimizers must be used.**
