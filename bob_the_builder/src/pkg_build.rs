@@ -31,7 +31,11 @@ impl Build {
     pub fn build(self, contract: &Path, package_name: &str) {
         let Build {
             name: build_name,
-            settings: BuildSettings { features },
+            settings:
+                BuildSettings {
+                    features,
+                    default_features,
+                },
         } = self;
 
         let features = features.unwrap_or_default();
@@ -53,6 +57,11 @@ impl Build {
         // Add features to command
         let features_arg = features.into_iter().collect::<Vec<String>>().join(", ");
         args.push(format!("--features={}", features_arg));
+
+        // add default features to command
+        if let Some(false) = default_features {
+            args.push("--no-default-features".to_string());
+        }
 
         // Run the build
         let mut child = Command::new(crate::CARGO_PATH)

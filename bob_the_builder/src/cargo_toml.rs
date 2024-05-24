@@ -143,6 +143,9 @@ pub mod package {
     pub struct BuildSettings {
         /// Features to be enabled for this build.
         pub features: Option<BTreeSet<Feature>>,
+        /// Indicates if default features should be enabled for this build.
+        /// Default to true.
+        pub default_features: Option<bool>,
     }
 
     /// Get all the builds and wasm name from the `Cargo.toml` file.
@@ -193,9 +196,9 @@ pub mod package {
             [package.metadata.optimizer]
             default-build = false
             builds = [
-                { name = "optimized", features = ["opt1", "opt2"] },
+                { name = "optimized", features = ["opt1", "opt2"], default-features = true },
                 { name = "debug", features = ["debug"] },
-                { name = "boring", features = [] },
+                { name = "boring", features = [], default-features = false },
             ]
             "#;
 
@@ -213,19 +216,22 @@ pub mod package {
                                 features: Some(BTreeSet::from([
                                     "opt1".to_string(),
                                     "opt2".to_string()
-                                ]))
+                                ])),
+                                default_features: Some(true)
                             }
                         },
                         Build {
                             name: "debug".to_string(),
                             settings: BuildSettings {
-                                features: Some(BTreeSet::from(["debug".to_string()]))
+                                features: Some(BTreeSet::from(["debug".to_string()])),
+                                default_features: None,
                             }
                         },
                         Build {
                             name: "boring".to_string(),
                             settings: BuildSettings {
-                                features: Some(BTreeSet::default())
+                                features: Some(BTreeSet::default()),
+                                default_features: Some(false)
                             }
                         }
                     ]
