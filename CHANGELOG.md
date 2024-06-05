@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 - Bump Rust to current stable 1.78.0.
+- Remove "-aarch64" suffix from filename when .wasm files are built on an ARM system.
+  There is no good reason for those given that the builder images for ARM have a
+  different name and each builder image produces different results. ([#151])
+
+[#151]: https://github.com/CosmWasm/optimizer/issues/151
 
 ## [0.15.1] - 2024-02-25
 
