@@ -42,6 +42,8 @@ echo "Building project $(realpath "$PROJECTDIR") ..."
 
 echo "Optimizing artifacts ..."
 for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
+  [ -e "$WASM" ] || continue # https://superuser.com/a/519493
+
   OUT_FILENAME=$(basename "$WASM")
   echo "Optimizing $OUT_FILENAME ..."
   # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
@@ -51,8 +53,12 @@ done
 echo "Post-processing artifacts..."
 (
   cd artifacts
-  # create hashes
-  sha256sum -- *.wasm | tee checksums.txt
+
+  if test -n "$(find . -maxdepth 1 -name '*.wasm' -print -quit)"; then
+    sha256sum -- *.wasm | tee checksums.txt
+  else
+    echo "Warn: No .wasm file built. Check your build configuration in Cargo.toml."
+  fi
 )
 
-echo "done"
+echo "Done."
