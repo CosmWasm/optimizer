@@ -1,5 +1,5 @@
 [package]
-name = "simple-contract"
+name = "no-build"
 version = "0.1.0"
 authors = ["Simon Warta <simon@warta.it>"]
 edition = "2021"
@@ -26,14 +26,11 @@ overflow-checks = true
 backtraces = ["cosmwasm-std/backtraces"]
 # use library feature to disable all instantiate/execute/query exports
 library = []
-test-feature = []
 
+# No build at all 😱
 [package.metadata.optimizer]
-standard-build = true
-builds = [
-  { name = "test-feature", features = ["test-feature"] },
-  { name = "no-default", default-features = false }
-]
+standard-build = false
+builds = []
 
 [dependencies]
 cosmwasm-schema = "1.1.3"

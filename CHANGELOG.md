@@ -6,8 +6,20 @@
 - Remove "-aarch64" suffix from filename when .wasm files are built on an ARM system.
   There is no good reason for those given that the builder images for ARM have a
   different name and each builder image produces different results. ([#151])
+- Allow configuring multiple builds in a codebase using `[package.metadata.optimizer]` settings
+  in `Cargo.toml` ([#148], [#156]). E.g.
+  ```
+  [package.metadata.optimizer]
+  standard-build = true
+  builds = [
+    { name = "debug", features = ["debug"] }
+    { name = "tokenfactory", features = ["tokenfactory"], default-features = false },
+  ]
+  ```
 
 [#151]: https://github.com/CosmWasm/optimizer/issues/151
+[#148]: https://github.com/CosmWasm/optimizer/pull/148
+[#156]: https://github.com/CosmWasm/optimizer/pull/156
 
 ## [0.15.1] - 2024-02-25
 

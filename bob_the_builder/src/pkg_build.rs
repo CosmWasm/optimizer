@@ -7,21 +7,26 @@ use crate::cargo_toml::package::{Build, BuildSettings};
 #[derive(Deserialize, Debug, Eq, PartialEq)]
 pub struct ParsedPackage {
     pub name: String,
+    pub standard_build: bool,
+    /// Builds that are created on top of the standard build
     pub builds: Vec<Build>,
-    pub default_build: bool,
 }
 
 impl ParsedPackage {
     /// Build a contract with all the requested builds defined in `[package.metadata.optimizer]`
     pub fn build(self, path: &Path) {
-        // Build all the requested builds
-        for build in self.builds.into_iter() {
-            build.build(path, &self.name);
+        let ParsedPackage {
+            name: package_name,
+            standard_build,
+            mut builds,
+        } = self;
+        if standard_build {
+            builds.push(Build::default()); // add contract with default features
         }
 
-        if self.default_build {
-            // build contract without features or appended name
-            Build::default().build(path, &self.name);
+        // Build all the requested builds
+        for build in builds.into_iter() {
+            build.build(path, &package_name);
         }
     }
 }

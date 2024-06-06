@@ -122,14 +122,15 @@ pub mod package {
     #[derive(Deserialize, Debug, Default)]
     #[serde(rename_all = "kebab-case")]
     pub struct Optimizer {
-        /// Indicates if a default build (a build without explicit features) should be built.
-        /// Default to true.
-        default_build: Option<bool>,
+        /// Indicates if a standard build (a build without explicit features) should be created.
+        /// Defaults to true.
+        standard_build: Option<bool>,
+        /// A collection of named build configurations.
         builds: Option<Vec<Build>>,
     }
 
     /// A build entry that specifies the build of a contract with optional features.
-    #[derive(Deserialize, Debug, Default, PartialEq, Eq)]
+    #[derive(Deserialize, Debug, Default, PartialEq, Eq, Clone)]
     #[serde(rename_all = "kebab-case")]
     pub struct Build {
         /// Name appended to the build output file name.
@@ -159,7 +160,7 @@ pub mod package {
 
         Ok(ParsedPackage {
             name: package.name.replace("-", "_"),
-            default_build: optimizer.default_build.unwrap_or(true),
+            standard_build: optimizer.standard_build.unwrap_or(true),
             builds: optimizer.builds.unwrap_or_default(),
         })
     }
@@ -181,7 +182,7 @@ pub mod package {
                 parsed,
                 ParsedPackage {
                     name: "my_contract".to_string(),
-                    default_build: true,
+                    standard_build: true,
                     builds: vec![]
                 }
             );
@@ -194,7 +195,7 @@ pub mod package {
             name = "my-contract"
 
             [package.metadata.optimizer]
-            default-build = false
+            standard-build = false
             builds = [
                 { name = "optimized", features = ["opt1", "opt2"], default-features = true },
                 { name = "debug", features = ["debug"] },
@@ -208,7 +209,7 @@ pub mod package {
                 parsed,
                 ParsedPackage {
                     name: "my_contract".to_string(),
-                    default_build: false,
+                    standard_build: false,
                     builds: vec![
                         Build {
                             name: "optimized".to_string(),
