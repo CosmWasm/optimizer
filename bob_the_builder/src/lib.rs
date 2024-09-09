@@ -46,13 +46,12 @@ pub fn build() {
 pub fn build_workspace(workspace_members: &[String]) {
     let mut all_packages = workspace_members
         .iter()
-        .map(|member| {
+        .flat_map(|member| {
             glob(member)
                 .unwrap()
                 .map(|path| path.unwrap())
                 .filter(is_cargo_project)
         })
-        .flatten()
         .collect::<Vec<_>>();
 
     all_packages.sort();
@@ -70,6 +69,6 @@ pub fn build_workspace(workspace_members: &[String]) {
         let contract_cargo_toml = fs::read_to_string(contract_dir.join("Cargo.toml")).unwrap();
         let package = package::parse_toml(&contract_cargo_toml).unwrap();
         println!("Building {:?} ...", package.name);
-        package.build(&contract_dir);
+        package.build(contract_dir);
     }
 }

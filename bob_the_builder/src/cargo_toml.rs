@@ -23,7 +23,7 @@ pub mod workspace {
 
     /// Detects if this is a workspace or not
     pub fn is_workspace(file: &str) -> Result<IsWorkspace, toml::de::Error> {
-        let parsed: CargoToml = toml::from_str(&file)?;
+        let parsed: CargoToml = toml::from_str(file)?;
 
         if let Some(workspace) = parsed.workspace {
             if let Some(members) = workspace.members {
@@ -151,7 +151,7 @@ pub mod package {
 
     /// Get all the builds and wasm name from the `Cargo.toml` file.
     pub fn parse_toml(file: &str) -> Result<ParsedPackage, toml::de::Error> {
-        let PackageCargoToml { package } = toml::from_str(&file).unwrap();
+        let PackageCargoToml { package } = toml::from_str(file).unwrap();
 
         let optimizer = package
             .metadata
