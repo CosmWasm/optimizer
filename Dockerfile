@@ -1,4 +1,4 @@
-FROM rust:1.78.0-alpine AS targetarch
+FROM rust:1.81.0-alpine AS targetarch
 
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
@@ -74,7 +74,7 @@ RUN cd bob_the_builder && \
 #
 # rust-optimizer target
 #
-FROM rust:1.78.0-alpine AS rust-optimizer
+FROM rust:1.81.0-alpine AS rust-optimizer
 
 # Download the crates.io index using the new sparse protocol to improve performance
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
