@@ -1,4 +1,4 @@
-FROM rust:1.78.0-alpine as targetarch
+FROM rust:1.78.0-alpine AS targetarch
 
 ARG BUILDPLATFORM
 ARG TARGETPLATFORM
@@ -9,18 +9,18 @@ ARG BINARYEN_VERSION="version_116"
 RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 
 # AMD64
-FROM targetarch as builder-amd64
+FROM targetarch AS builder-amd64
 ARG ARCH="x86_64"
 
 # ARM64
-FROM targetarch as builder-arm64
+FROM targetarch AS builder-arm64
 ARG ARCH="aarch64"
 
 # GENERIC
 # The builder image builds binaries like wasm-opt and bob.
 # After the build process, only the final binaries are copied into the *-optimizer
 # images to avoid shipping all the source code and intermediate build results to the user.
-FROM builder-${TARGETARCH} as builder
+FROM builder-${TARGETARCH} AS builder
 
 # Download binaryen sources
 ADD https://github.com/WebAssembly/binaryen/archive/refs/tags/$BINARYEN_VERSION.tar.gz /tmp/binaryen.tar.gz
@@ -74,7 +74,7 @@ RUN cd bob_the_builder && \
 #
 # rust-optimizer target
 #
-FROM rust:1.78.0-alpine as rust-optimizer
+FROM rust:1.78.0-alpine AS rust-optimizer
 
 # Download the crates.io index using the new sparse protocol to improve performance
 ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
