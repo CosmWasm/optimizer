@@ -1,7 +1,7 @@
 # Docker names (DN) for the images
-DN_OPTIMIZER := "cosmwasm/optimizer"
-DN_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
-DN_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
+DN_OPTIMIZER := "babylonlabs/optimizer"
+DN_RUST_OPTIMIZER := "babylonlabs/rust-optimizer"
+DN_WORKSPACE_OPTIMIZER := "babylonlabs/workspace-optimizer"
 DOCKER_TAG := 0.16.0
 
 # Native arch

@@ -93,6 +93,11 @@ COPY --from=builder /usr/local/bin/wasm-opt /usr/local/bin
 # Add script as entry point
 COPY --from=builder /usr/local/bin/optimize.sh /usr/local/bin
 
+
+# clang and llvm are required for compiling rust-secp256k1 in rust-bitcoin
+RUN apk update && \
+    apk add --no-cache clang llvm
+
 # Assume we mount the source code in /code
 WORKDIR /code
 
