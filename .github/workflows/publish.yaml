@@ -1,0 +1,13 @@
+name: docker_publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  docker_pipeline:
+    uses: babylonlabs-io/.github/.github/workflows/reusable_docker_pipeline.yml@v0.6.0
+    secrets: inherit
+    with:
+      publish: true
