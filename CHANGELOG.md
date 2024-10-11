@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.16.1] - 2024-10-11
+
 - Bump Rust to current stable 1.81.0
 
 ## [0.16.0] - 2024-06-06
@@ -281,7 +283,8 @@ sources and should not be used. 0.7.0, 0.7.1 and 0.7.3 unaffected.
 - Bump emscripten to 1.39.8-fastcomp
 - Bump Rust to 1.41.0
 
-[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.16.0...HEAD
+[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.16.1...HEAD
+[0.16.1]: https://github.com/CosmWasm/rust-optimizer/compare/v0.16.0...v0.16.1
 [0.16.0]: https://github.com/CosmWasm/rust-optimizer/compare/v0.15.1...v0.16.0
 [0.15.1]: https://github.com/CosmWasm/rust-optimizer/compare/v0.15.0...v0.15.1
 [0.15.0]: https://github.com/CosmWasm/rust-optimizer/compare/v0.14.0...v0.15.0
