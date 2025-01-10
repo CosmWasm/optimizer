@@ -94,6 +94,8 @@ COPY --from=builder /usr/local/bin/wasm-opt /usr/local/bin
 COPY --from=builder /usr/local/bin/optimize.sh /usr/local/bin
 
 
+# Install extra minifying  tools
+RUN cargo install wasm-snip
 # clang and llvm are required for compiling rust-secp256k1 in rust-bitcoin
 RUN apk update && \
     apk add --no-cache clang llvm
