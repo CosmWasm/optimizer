@@ -51,6 +51,7 @@ RUN apk update && apk add make
 RUN cd wabt && git checkout $WABT_VERSION && git submodule update --init && make clang-release
 
 # Run tests
+RUN apk update && apk add bash
 RUN cd wabt && make test-clang-release
 
 # Install wasm-strip
