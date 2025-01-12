@@ -55,7 +55,7 @@ RUN apk update && apk add bash
 RUN cd wabt && make test-clang-release
 
 # Install wasm-strip
-RUN strip wabtout/clang/Release/wasm-strip
+RUN strip wabt/out/clang/Release/wasm-strip
 RUN mv wabt/out/clang/Release/wasm-strip /usr/local/bin/
 
 # Check cargo version
