@@ -45,9 +45,16 @@ for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
   [ -e "$WASM" ] || continue # https://superuser.com/a/519493
 
   OUT_FILENAME=$(basename "$WASM")
+  # Adapted from https://github.com/near/near-sdk-rs/blob/master/minifier/minify.sh
+  echo "Minifying $OUT_FILENAME, make sure it is not stripped"
+  wasm-snip "$WASM" --snip-rust-fmt-code --snip-rust-panicking-code -p core::num::flt2dec::.* -p core::fmt::float::.* \
+    --output "temp-$OUT_FILENAME"
+  wasm-strip "temp-$OUT_FILENAME"
   echo "Optimizing $OUT_FILENAME ..."
   # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
-  wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$OUT_FILENAME"
+  wasm-opt -Os --signext-lowering "temp-$OUT_FILENAME" -o "temp2-$OUT_FILENAME"
+  wasm-opt -Oz --signext-lowering "temp2-$OUT_FILENAME" -o "artifacts/$OUT_FILENAME"
+  rm "temp-$OUT_FILENAME" "temp2-$OUT_FILENAME"
 done
 
 echo "Post-processing artifacts..."

@@ -5,6 +5,7 @@ ARG TARGETPLATFORM
 ARG TARGETARCH
 
 ARG BINARYEN_VERSION="version_116"
+ARG WABT_VERSION="1.0.36"
 
 RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 
@@ -42,11 +43,29 @@ RUN cd binaryen-version_*/ && python3 check.py wasm-opt
 RUN strip binaryen-version_*/bin/wasm-opt
 RUN mv binaryen-version_*/bin/wasm-opt /usr/local/bin
 
+# Download wabt sources
+RUN git clone https://github.com/WebAssembly/wabt.git
+
+# Checkout and compile wasm-strip
+RUN apk update && apk add make
+RUN cd wabt && git checkout $WABT_VERSION && git submodule update --init && make clang-release
+
+# Run tests
+RUN apk update && apk add bash
+RUN cd wabt && make test-clang-release
+
+# Install wasm-strip
+RUN strip wabt/out/clang/Release/wasm-strip
+RUN mv wabt/out/clang/Release/wasm-strip /usr/local/bin/
+
 # Check cargo version
 RUN cargo --version
 
 # Check wasm-opt version
 RUN wasm-opt --version
+
+# Check wasm-strip version
+RUN wasm-strip --version
 
 # Add scripts
 ADD optimize.sh /usr/local/bin/optimize.sh
@@ -86,13 +105,16 @@ RUN apk update && \
 # Setup Rust with Wasm support
 RUN rustup target add wasm32-unknown-unknown
 
-# Add bob and wasm-opt
+# Add bob, wasm-opt and wasm-strip
 COPY --from=builder /usr/local/bin/bob /usr/local/bin
 COPY --from=builder /usr/local/bin/wasm-opt /usr/local/bin
+COPY --from=builder /usr/local/bin/wasm-strip /usr/local/bin
 
 # Add script as entry point
 COPY --from=builder /usr/local/bin/optimize.sh /usr/local/bin
 
+# Install extra minifying tools
+RUN cargo install wasm-snip
 
 # clang and llvm are required for compiling rust-secp256k1 in rust-bitcoin
 RUN apk update && \
