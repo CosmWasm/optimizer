@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Bump Rust to current stable 1.85.1
+
 ## [0.16.1] - 2024-10-11
 
 - Bump Rust to current stable 1.81.0
