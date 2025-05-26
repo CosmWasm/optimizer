@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-- Bump Rust to 1.86.0
+- Bump Rust to 1.86.0.
+  Note that contracts built with this version require CosmWasm 3.0+ on the chain and cannot be
+  uploaded to chains running lower versions.
 
 ## [0.16.1] - 2024-10-11
 
