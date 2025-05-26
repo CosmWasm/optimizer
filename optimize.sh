@@ -46,8 +46,7 @@ for WASM in /target/wasm32-unknown-unknown/release/*.wasm; do
 
   OUT_FILENAME=$(basename "$WASM")
   echo "Optimizing $OUT_FILENAME ..."
-  # --signext-lowering is needed to support blockchains runnning CosmWasm < 1.3. It can be removed eventually
-  wasm-opt -Os --signext-lowering "$WASM" -o "artifacts/$OUT_FILENAME"
+  wasm-opt -Os "$WASM" -o "artifacts/$OUT_FILENAME"
 done
 
 echo "Post-processing artifacts..."
