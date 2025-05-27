@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Bump Rust to 1.86.0. ([#168])
+- Remove `--signext-lowering` flag from `wasm-opt`. ([#168])
+
+Note that contracts built with this version _require CosmWasm 3.0+_ on the chain and cannot be
+uploaded to chains running lower versions.
+
+[#168]: https://github.com/CosmWasm/optimizer/pull/168
+
 ## [0.16.1] - 2024-10-11
 
 - Bump Rust to current stable 1.81.0
