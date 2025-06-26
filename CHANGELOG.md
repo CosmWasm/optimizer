@@ -293,7 +293,8 @@ sources and should not be used. 0.7.0, 0.7.1 and 0.7.3 unaffected.
 - Bump emscripten to 1.39.8-fastcomp
 - Bump Rust to 1.41.0
 
-[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.16.1...HEAD
+[unreleased]: https://github.com/CosmWasm/rust-optimizer/compare/v0.17.0...HEAD
+[0.17.0]: https://github.com/CosmWasm/rust-optimizer/compare/v0.16.1...v0.17.0
 [0.16.1]: https://github.com/CosmWasm/rust-optimizer/compare/v0.16.0...v0.16.1
 [0.16.0]: https://github.com/CosmWasm/rust-optimizer/compare/v0.15.1...v0.16.0
 [0.15.1]: https://github.com/CosmWasm/rust-optimizer/compare/v0.15.0...v0.15.1
