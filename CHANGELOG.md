@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.17.0] - 2025-06-26
+
 - Bump Rust to 1.86.0. ([#168])
 - Remove `--signext-lowering` flag from `wasm-opt`. ([#168])
 

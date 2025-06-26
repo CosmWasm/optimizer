@@ -2,7 +2,7 @@
 DN_OPTIMIZER := "cosmwasm/optimizer"
 DN_RUST_OPTIMIZER := "cosmwasm/rust-optimizer"
 DN_WORKSPACE_OPTIMIZER := "cosmwasm/workspace-optimizer"
-DOCKER_TAG := 0.16.1
+DOCKER_TAG := 0.17.0
 
 # Native arch
 BUILDARCH := $(shell uname -m)
